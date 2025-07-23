@@ -361,43 +361,43 @@ const BarcodeProcessor: React.FC = () => {
   return (
     <div className="tab-content">
       {mode === 'single' ? (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <div className="space-y-6">
-            <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-slate-200/50 p-6">
-              <div className="flex items-center justify-between mb-4">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-8">
+          <div className="space-y-4 sm:space-y-6">
+            <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-slate-200/50 p-6 sm:p-6">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 space-y-3 sm:space-y-0">
                 <h3 className="text-lg font-semibold text-slate-900 flex items-center">
                   <Settings className="w-5 h-5 mr-2 text-blue-600" />
                   {t('barcode_settings')}
                 </h3>
-                <div className="flex space-x-1 bg-slate-100/50 p-1 rounded-lg">
-                  <button
-                    onClick={() => setMode('single')}
-                    className={`px-3 py-1 rounded text-xs font-medium transition-all duration-200 ${
-                      mode === 'single'
-                        ? 'bg-white text-blue-600 shadow-sm'
-                        : 'text-slate-600 hover:text-slate-900'
-                    }`}
-                  >
-                    {t('single')}
-                  </button>
-                  <button
-                    onClick={() => setMode('batch')}
-                    className={`px-3 py-1 rounded text-xs font-medium transition-all duration-200 ${
-                      mode === 'batch'
-                        ? 'bg-white text-blue-600 shadow-sm'
-                        : 'text-slate-600 hover:text-slate-900'
-                    }`}
-                  >
-                    {t('batch')}
-                  </button>
-                </div>
+              </div>
+              <div className="flex space-x-1 bg-slate-100/50 p-1 rounded-lg mb-4">
+                <button
+                  onClick={() => setMode('single')}
+                  className={`px-3 py-2 sm:py-1 rounded-xl text-base sm:text-xs font-medium transition-all duration-200 ${
+                    mode === 'single'
+                      ? 'bg-white text-blue-600 shadow-sm'
+                      : 'text-slate-600 hover:text-slate-900'
+                  }`}
+                >
+                  {t('single')}
+                </button>
+                <button
+                  onClick={() => setMode('batch')}
+                  className={`px-3 py-2 sm:py-1 rounded-xl text-base sm:text-xs font-medium transition-all duration-200 ${
+                    mode === 'batch'
+                      ? 'bg-white text-blue-600 shadow-sm'
+                      : 'text-slate-600 hover:text-slate-900'
+                  }`}
+                >
+                  {t('batch')}
+                </button>
               </div>
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     {t('text_content')}
                   </label>
-                  <div className="flex space-x-2">
+                  <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
                     <input
                       type="text"
                       value={singleText}
@@ -407,7 +407,7 @@ const BarcodeProcessor: React.FC = () => {
                     />
                     <button
                       onClick={generateRandomCode}
-                      className="px-3 py-2 bg-slate-100/80 hover:bg-slate-200/80 rounded-lg transition-colors backdrop-blur-sm"
+                      className="px-3 py-2 bg-slate-100/80 hover:bg-slate-200/80 rounded-lg transition-colors backdrop-blur-sm sm:w-auto w-full"
                       title={t('generate_random')}
                     >
                       <RefreshCw className="w-4 h-4" />
@@ -439,7 +439,7 @@ const BarcodeProcessor: React.FC = () => {
                 </button>
                 {showSettings && (
                   <div className="space-y-4 pt-4 border-t border-gray-200">
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
                           {t('line_width')}: {width}
@@ -467,7 +467,7 @@ const BarcodeProcessor: React.FC = () => {
                         />
                       </div>
                     </div>
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
                           {t('font_size')}: {fontSize}px
@@ -495,7 +495,7 @@ const BarcodeProcessor: React.FC = () => {
                         />
                       </div>
                     </div>
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
                           {t('background_color')}
@@ -536,10 +536,10 @@ const BarcodeProcessor: React.FC = () => {
               </div>
             </div>
           </div>
-          <div className="space-y-6">
+          <div className="space-y-4 sm:space-y-6">
             <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-slate-200/50 p-6">
               <h3 className="text-lg font-semibold text-slate-900 mb-4">{t('barcode_preview')}</h3>
-              <div className="bg-gray-50 rounded-lg p-6 text-center">
+              <div className="bg-gray-50 rounded-lg p-4 sm:p-6 text-center">
                 <canvas
                   ref={canvasRef}
                   className="max-w-full mx-auto barcode-container bg-white rounded shadow-sm"
@@ -548,24 +548,24 @@ const BarcodeProcessor: React.FC = () => {
                 />
                 <svg ref={svgRef} style={{ display: 'none' }} width={width || 300} height={height || 100}></svg>
               </div>
-              <div className="mt-6 flex flex-wrap gap-2">
+              <div className="mt-4 sm:mt-6 flex flex-col sm:flex-row flex-wrap gap-2">
                 <button
                   onClick={() => downloadSingleBarcode('png')}
-                  className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-sm"
+                  className="flex items-center justify-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-sm"
                 >
                   <Download className="w-4 h-4 mr-2" />
                   {t('download_png')}
                 </button>
                 <button
                   onClick={() => downloadSingleBarcode('svg')}
-                  className="flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors shadow-sm"
+                  className="flex items-center justify-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors shadow-sm"
                 >
                   <Download className="w-4 h-4 mr-2" />
                   {t('download_svg')}
                 </button>
                 <button
                   onClick={copySingleBarcodeData}
-                  className={`flex items-center px-4 py-2 rounded-lg transition-colors shadow-sm ${
+                  className={`flex items-center justify-center px-4 py-2 rounded-lg transition-colors shadow-sm ${
                     copySuccess 
                       ? 'bg-green-100 text-green-700' 
                       : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
@@ -599,34 +599,34 @@ const BarcodeProcessor: React.FC = () => {
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           <div className="space-y-6">
-            <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-slate-200/50 p-6">
-              <div className="flex items-center justify-between mb-4">
+            <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-slate-200/50 p-6 sm:p-6">
+              <div className="flex items-center mb-4">
                 <h3 className="text-lg font-semibold text-slate-900 flex items-center">
                   <Settings className="w-5 h-5 mr-2 text-blue-600" />
                   {t('barcode_settings')}
                 </h3>
-                <div className="flex space-x-1 bg-slate-100/50 p-1 rounded-lg">
-                  <button
-                    onClick={() => setMode('single')}
-                    className={`px-3 py-1 rounded text-xs font-medium transition-all duration-200 ${
-                      mode === 'single'
-                        ? 'bg-white text-blue-600 shadow-sm'
-                        : 'text-slate-600 hover:text-slate-900'
-                    }`}
-                  >
-                    {t('single')}
-                  </button>
-                  <button
-                    onClick={() => setMode('batch')}
-                    className={`px-3 py-1 rounded text-xs font-medium transition-all duration-200 ${
-                      mode === 'batch'
-                        ? 'bg-white text-blue-600 shadow-sm'
-                        : 'text-slate-600 hover:text-slate-900'
-                    }`}
-                  >
-                    {t('batch')}
-                  </button>
-                </div>
+              </div>
+              <div className="flex space-x-1 bg-slate-100/50 p-1 rounded-lg mb-4">
+                <button
+                  onClick={() => setMode('single')}
+                  className={`px-3 py-2 sm:py-1 rounded-xl text-base sm:text-xs font-medium transition-all duration-200 ${
+                    mode === 'single'
+                      ? 'bg-white text-blue-600 shadow-sm'
+                      : 'text-slate-600 hover:text-slate-900'
+                  }`}
+                >
+                  {t('single')}
+                </button>
+                <button
+                  onClick={() => setMode('batch')}
+                  className={`px-3 py-2 sm:py-1 rounded-xl text-base sm:text-xs font-medium transition-all duration-200 ${
+                    mode === 'batch'
+                      ? 'bg-white text-blue-600 shadow-sm'
+                      : 'text-slate-600 hover:text-slate-900'
+                  }`}
+                >
+                  {t('batch')}
+                </button>
               </div>
               <div className="space-y-4">
                 <div>
@@ -773,11 +773,11 @@ const BarcodeProcessor: React.FC = () => {
               </div>
             </div>
             <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-slate-200/50 p-6">
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col gap-3 w-full sm:flex-row sm:gap-4 sm:w-auto mt-4">
                 <button
                   onClick={processItems}
                   disabled={processing || items.length === 0 || items.some(i => i.status === 'processing' || i.status === 'completed')}
-                  className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:bg-slate-300 disabled:cursor-not-allowed transition-colors flex items-center space-x-2 shadow-sm"
+                  className="flex items-center justify-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:bg-slate-300 disabled:cursor-not-allowed transition-colors shadow-sm"
                 >
                   {processing ? (
                     <Loader className="w-4 h-4 mr-2 animate-spin" />
@@ -786,31 +786,29 @@ const BarcodeProcessor: React.FC = () => {
                   )}
                   <span>{t('start_processing')}</span>
                 </button>
-                <div className="flex space-x-2">
-                  <button
-                    onClick={downloadResults}
-                    disabled={completedCount === 0}
-                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-slate-300 disabled:cursor-not-allowed transition-colors flex items-center space-x-2 shadow-sm"
-                  >
-                    <Download className="w-4 h-4" />
-                    <span>{t('export_zip')}</span>
-                  </button>
-                  <button
-                    onClick={exportPDF}
-                    disabled={completedCount === 0}
-                    className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:bg-slate-300 disabled:cursor-not-allowed transition-colors flex items-center space-x-2 shadow-sm"
-                  >
-                    <Download className="w-4 h-4" />
-                    <span>{t('export_pdf')}</span>
-                  </button>
-                  <button
-                    onClick={clearItems}
-                    disabled={items.length === 0}
-                    className="px-4 py-2 bg-slate-600 text-white rounded-lg hover:bg-slate-700 disabled:bg-slate-300 disabled:cursor-not-allowed transition-colors shadow-sm"
-                  >
-                    {t('clear')}
-                  </button>
-                </div>
+                <button
+                  onClick={downloadResults}
+                  disabled={completedCount === 0}
+                  className="flex items-center justify-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-slate-300 disabled:cursor-not-allowed transition-colors shadow-sm"
+                >
+                  <Download className="w-4 h-4 mr-2" />
+                  <span>{t('export_zip')}</span>
+                </button>
+                <button
+                  onClick={exportPDF}
+                  disabled={completedCount === 0}
+                  className="flex items-center justify-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:bg-slate-300 disabled:cursor-not-allowed transition-colors shadow-sm"
+                >
+                  <Download className="w-4 h-4 mr-2" />
+                  <span>{t('export_pdf')}</span>
+                </button>
+                <button
+                  onClick={clearItems}
+                  disabled={items.length === 0}
+                  className="flex items-center justify-center px-4 py-2 bg-slate-600 text-white rounded-lg hover:bg-slate-700 disabled:bg-slate-300 disabled:cursor-not-allowed transition-colors shadow-sm"
+                >
+                  {t('clear')}
+                </button>
               </div>
               {processing && processingCount > 0 && (
                 <div className="mt-4">

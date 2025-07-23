@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Package, FileText, Settings } from 'lucide-react';
+import { Package, FileText, Settings, Menu, X } from 'lucide-react';
 import BarcodeProcessor from './components/BatchProcessor';
 import BarcodeScanner from './components/BarcodeScanner';
 import PrivacyPolicy from './components/PrivacyPolicy';
@@ -17,6 +17,7 @@ function App() {
   const { t, i18n } = useTranslation();
   const [activeTab, setActiveTab] = useState<TabType>('generate');
   const [currentRoute, setCurrentRoute] = useState<RouteType>('home');
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     const handleHashChange = () => {
@@ -68,18 +69,22 @@ function App() {
         <header className="bg-white/90 backdrop-blur-md border-b border-slate-200/50 sticky top-0 z-50" role="banner">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
+            {/* Logo and Title */}
             <div className="flex items-center space-x-3">
               <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-lg flex items-center justify-center" aria-hidden="true">
                 <Package className="w-4 h-4 text-white" />
               </div>
-              <div>
+              <div className="hidden sm:block">
                 <h1 className="text-xl font-semibold text-slate-900">{t('title')}</h1>
                 <p className="text-xs text-slate-500">{t('slogan')}</p>
               </div>
+              <div className="sm:hidden">
+                <h1 className="text-lg font-semibold text-slate-900">{t('title')}</h1>
+              </div>
             </div>
             
-            {/* Main Navigation */}
-            <nav className="flex items-center space-x-1" role="navigation" aria-label={t('main_navigation')}>
+            {/* Desktop Navigation */}
+            <nav className="hidden md:flex items-center space-x-1" role="navigation" aria-label={t('main_navigation')}>
               <div className="flex space-x-1 bg-slate-100/50 p-1 rounded-xl" role="tablist">
                 {tabs.map((tab) => (
                   <button
@@ -115,13 +120,70 @@ function App() {
                 </select>
               </div>
             </nav>
+
+            {/* Mobile Menu Button */}
+            <div className="md:hidden flex items-center space-x-2">
+              <div className="mr-2">
+                <label htmlFor="mobile-language-select" className="sr-only">{t('language')}</label>
+                <select
+                  id="mobile-language-select"
+                  className="text-xs bg-transparent border-none outline-none text-slate-600"
+                  value={i18n.language}
+                  onChange={e => changeLanguage(e.target.value)}
+                  title={t('language')}
+                  aria-label={t('language')}
+                >
+                  <option value="zh">{t('chinese')}</option>
+                  <option value="en">{t('english')}</option>
+                </select>
+              </div>
+              <button
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="p-2 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-100/50"
+                aria-label={mobileMenuOpen ? t('close_menu') : t('open_menu')}
+              >
+                {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+              </button>
+            </div>
           </div>
+
+          {/* Mobile Navigation Menu */}
+          {mobileMenuOpen && (
+            <div className="md:hidden border-t border-slate-200/50 py-4">
+              <div className="flex flex-col gap-3" role="tablist">
+                {tabs.map((tab) => (
+                  <button
+                    key={tab.id}
+                    onClick={() => {
+                      setActiveTab(tab.id);
+                      setMobileMenuOpen(false);
+                    }}
+                    className={`w-full flex items-center gap-3 px-4 py-4 rounded-xl text-base font-medium transition-all duration-200 ${
+                      activeTab === tab.id
+                        ? 'bg-blue-50 text-blue-600 border border-blue-200'
+                        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                    }`}
+                    title={tab.description}
+                    role="tab"
+                    aria-selected={activeTab === tab.id}
+                    aria-controls={`${tab.id}-panel`}
+                  >
+                    <tab.icon className="w-5 h-5" aria-hidden="true" />
+                    <span>{tab.label}</span>
+                    {tab.description && (
+                      <span className="text-xs text-slate-500 ml-auto">{tab.description}</span>
+                    )}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </header>
       )}
 
       {/* Main Content */}
-      <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6" role="main">
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6" role="main">
         <div className="transition-all duration-300">
           {currentRoute === 'home' && (
             <>
@@ -151,12 +213,12 @@ function App() {
 
       {/* Footer */}
       {currentRoute === 'home' && (
-        <footer className="bg-slate-50/50 border-t border-slate-200/50 mt-12" role="contentinfo">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <footer className="bg-slate-50/50 border-t border-slate-200/50 mt-8 sm:mt-12" role="contentinfo">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
           <div className="text-center text-slate-500 text-sm">
             <p>&copy; 2025 {t('footer')}</p>
             <nav className="mt-2" aria-label={t('footer_navigation')}>
-              <ul className="flex justify-center space-x-4 text-xs">
+              <ul className="flex flex-col sm:flex-row justify-center space-y-2 sm:space-y-0 sm:space-x-4 text-xs">
                 <li><a href="#privacy" className="hover:text-slate-700">{t('privacy_policy')}</a></li>
                 <li><a href="#terms" className="hover:text-slate-700">{t('terms_of_service')}</a></li>
                 <li><a href="#contact" className="hover:text-slate-700">{t('contact_us')}</a></li>
