@@ -106,7 +106,7 @@ const BarcodeScanner: React.FC = () => {
         result.fileName,
         result.text,
         result.format,
-        result.timestamp.toLocaleString('zh-CN')
+        result.timestamp.toLocaleString(i18n.language === 'zh' ? 'zh-CN' : 'en-US')
       ])
     ].map(row => row.join(',')).join('\n');
 

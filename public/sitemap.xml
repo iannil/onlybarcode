@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  <!-- 中文主页 -->
+  <url>
+    <loc>https://barhub.example.com/</loc>
+    <lastmod>2025-01-27</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://barhub.example.com/en/"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://barhub.example.com/"/>
+  </url>
+  
+  <!-- 英文主页 -->
+  <url>
+    <loc>https://barhub.example.com/en/</loc>
+    <lastmod>2025-01-27</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://barhub.example.com/en/"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://barhub.example.com/"/>
+  </url>
+  
+  <!-- 中文生成页面 -->
+  <url>
+    <loc>https://barhub.example.com/generate</loc>
+    <lastmod>2025-01-27</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://barhub.example.com/en/generate"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://barhub.example.com/generate"/>
+  </url>
+  
+  <!-- 英文生成页面 -->
+  <url>
+    <loc>https://barhub.example.com/en/generate</loc>
+    <lastmod>2025-01-27</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://barhub.example.com/en/generate"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://barhub.example.com/generate"/>
+  </url>
+  
+  <!-- 中文扫描页面 -->
+  <url>
+    <loc>https://barhub.example.com/scan</loc>
+    <lastmod>2025-01-27</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://barhub.example.com/en/scan"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://barhub.example.com/scan"/>
+  </url>
+  
+  <!-- 英文扫描页面 -->
+  <url>
+    <loc>https://barhub.example.com/en/scan</loc>
+    <lastmod>2025-01-27</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://barhub.example.com/en/scan"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://barhub.example.com/scan"/>
+  </url>
+</urlset> 

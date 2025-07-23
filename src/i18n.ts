@@ -16,6 +16,12 @@ const resources = {
       language: 'Language',
       chinese: 'Chinese',
       english: 'English',
+      loading: 'Loading...',
+      privacy_policy: 'Privacy Policy',
+      terms_of_service: 'Terms of Service',
+      contact_us: 'Contact Us',
+      main_navigation: 'Main Navigation',
+      footer_navigation: 'Footer Navigation',
       
       // BatchProcessor translations
       barcode_settings: 'Barcode Settings',
@@ -101,6 +107,12 @@ const resources = {
       language: '语言',
       chinese: '中文',
       english: 'English',
+      loading: '加载中...',
+      privacy_policy: '隐私政策',
+      terms_of_service: '使用条款',
+      contact_us: '联系我们',
+      main_navigation: '主导航',
+      footer_navigation: '页脚导航',
       
       // BatchProcessor translations
       barcode_settings: '条形码设置',

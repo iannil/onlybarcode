@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Package, FileText, Settings } from 'lucide-react';
 import BarcodeProcessor from './components/BatchProcessor';
 import BarcodeScanner from './components/BarcodeScanner';
+import SEOHead from './components/SEOHead';
+import { getSeoConfig, getAlternateLanguages } from './config/seo';
 import './App.css';
 import { useTranslation } from 'react-i18next';
 
@@ -20,14 +22,24 @@ function App() {
     i18n.changeLanguage(lng);
   };
 
+  const seoConfig = getSeoConfig(i18n.language, activeTab);
+  const alternateLanguages = getAlternateLanguages();
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50">
+    <>
+      <SEOHead 
+        title={seoConfig.title}
+        description={seoConfig.description}
+        keywords={seoConfig.keywords}
+        alternateLanguages={alternateLanguages}
+      />
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50">
       {/* Header with Navigation */}
-      <header className="bg-white/90 backdrop-blur-md border-b border-slate-200/50 sticky top-0 z-50">
+      <header className="bg-white/90 backdrop-blur-md border-b border-slate-200/50 sticky top-0 z-50" role="banner">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-lg flex items-center justify-center">
+              <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-lg flex items-center justify-center" aria-hidden="true">
                 <Package className="w-4 h-4 text-white" />
               </div>
               <div>
@@ -37,8 +49,8 @@ function App() {
             </div>
             
             {/* Main Navigation */}
-            <nav className="flex items-center space-x-1">
-              <div className="flex space-x-1 bg-slate-100/50 p-1 rounded-xl">
+            <nav className="flex items-center space-x-1" role="navigation" aria-label={t('main_navigation')}>
+              <div className="flex space-x-1 bg-slate-100/50 p-1 rounded-xl" role="tablist">
                 {tabs.map((tab) => (
                   <button
                     key={tab.id}
@@ -49,18 +61,24 @@ function App() {
                         : 'text-slate-600 hover:text-slate-900 hover:bg-white/50'
                     }`}
                     title={tab.description}
+                    role="tab"
+                    aria-selected={activeTab === tab.id}
+                    aria-controls={`${tab.id}-panel`}
                   >
-                    <tab.icon className="w-4 h-4" />
+                    <tab.icon className="w-4 h-4" aria-hidden="true" />
                     <span>{tab.label}</span>
                   </button>
                 ))}
               </div>
               <div className="ml-4">
+                <label htmlFor="language-select" className="sr-only">{t('language')}</label>
                 <select
+                  id="language-select"
                   className="text-xs bg-transparent border-none outline-none text-slate-600 hover:text-slate-900 cursor-pointer"
                   value={i18n.language}
                   onChange={e => changeLanguage(e.target.value)}
                   title={t('language')}
+                  aria-label={t('language')}
                 >
                   <option value="zh">{t('chinese')}</option>
                   <option value="en">{t('english')}</option>
@@ -72,22 +90,44 @@ function App() {
       </header>
 
       {/* Main Content */}
-      <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6" role="main">
         <div className="transition-all duration-300">
-          {activeTab === 'generate' && <BarcodeProcessor />}
-          {activeTab === 'scan' && <BarcodeScanner />}
+          <section 
+            id="generate-panel" 
+            role="tabpanel" 
+            aria-labelledby="generate-tab"
+            className={activeTab === 'generate' ? 'block' : 'hidden'}
+          >
+            <BarcodeProcessor />
+          </section>
+          <section 
+            id="scan-panel" 
+            role="tabpanel" 
+            aria-labelledby="scan-tab"
+            className={activeTab === 'scan' ? 'block' : 'hidden'}
+          >
+            <BarcodeScanner />
+          </section>
         </div>
       </main>
 
       {/* Footer */}
-      <footer className="bg-slate-50/50 border-t border-slate-200/50 mt-12">
+      <footer className="bg-slate-50/50 border-t border-slate-200/50 mt-12" role="contentinfo">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="text-center text-slate-500 text-sm">
             <p>&copy; 2025 {t('footer')}</p>
+            <nav className="mt-2" aria-label={t('footer_navigation')}>
+              <ul className="flex justify-center space-x-4 text-xs">
+                <li><a href="/privacy" className="hover:text-slate-700">{t('privacy_policy')}</a></li>
+                <li><a href="/terms" className="hover:text-slate-700">{t('terms_of_service')}</a></li>
+                <li><a href="/contact" className="hover:text-slate-700">{t('contact_us')}</a></li>
+              </ul>
+            </nav>
           </div>
         </div>
       </footer>
     </div>
+    </>
   );
 }
 
