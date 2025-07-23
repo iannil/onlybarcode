@@ -109,7 +109,7 @@ function App() {
                 <label htmlFor="language-select" className="sr-only">{t('language')}</label>
                 <select
                   id="language-select"
-                  className="text-xs bg-transparent border-none outline-none text-slate-600 hover:text-slate-900 cursor-pointer"
+                  className="text-base border border-gray-300 rounded px-2 py-1 text-slate-700 bg-white"
                   value={i18n.language}
                   onChange={e => changeLanguage(e.target.value)}
                   title={t('language')}
@@ -127,7 +127,7 @@ function App() {
                 <label htmlFor="mobile-language-select" className="sr-only">{t('language')}</label>
                 <select
                   id="mobile-language-select"
-                  className="text-xs bg-transparent border-none outline-none text-slate-600"
+                  className="text-base border border-gray-300 rounded px-2 py-1 text-slate-700 bg-white"
                   value={i18n.language}
                   onChange={e => changeLanguage(e.target.value)}
                   title={t('language')}
