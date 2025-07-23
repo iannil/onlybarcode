@@ -1,17 +1,46 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Package, FileText, Settings } from 'lucide-react';
 import BarcodeProcessor from './components/BatchProcessor';
 import BarcodeScanner from './components/BarcodeScanner';
+import PrivacyPolicy from './components/PrivacyPolicy';
+import TermsOfService from './components/TermsOfService';
+import ContactUs from './components/ContactUs';
 import SEOHead from './components/SEOHead';
 import { getSeoConfig, getAlternateLanguages } from './config/seo';
 import './App.css';
 import { useTranslation } from 'react-i18next';
 
 type TabType = 'generate' | 'scan';
+type RouteType = 'home' | 'privacy' | 'terms' | 'contact';
 
 function App() {
   const { t, i18n } = useTranslation();
   const [activeTab, setActiveTab] = useState<TabType>('generate');
+  const [currentRoute, setCurrentRoute] = useState<RouteType>('home');
+
+  useEffect(() => {
+    const handleHashChange = () => {
+      const hash = window.location.hash.slice(1);
+      switch (hash) {
+        case 'privacy':
+          setCurrentRoute('privacy');
+          break;
+        case 'terms':
+          setCurrentRoute('terms');
+          break;
+        case 'contact':
+          setCurrentRoute('contact');
+          break;
+        default:
+          setCurrentRoute('home');
+          break;
+      }
+    };
+
+    handleHashChange();
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, []);
 
   const tabs = [
     { id: 'generate' as TabType, label: t('generate'), icon: Package, description: t('generate_desc') },
@@ -35,7 +64,8 @@ function App() {
       />
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50">
       {/* Header with Navigation */}
-      <header className="bg-white/90 backdrop-blur-md border-b border-slate-200/50 sticky top-0 z-50" role="banner">
+      {currentRoute === 'home' && (
+        <header className="bg-white/90 backdrop-blur-md border-b border-slate-200/50 sticky top-0 z-50" role="banner">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center space-x-3">
@@ -88,44 +118,54 @@ function App() {
           </div>
         </div>
       </header>
+      )}
 
       {/* Main Content */}
       <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6" role="main">
         <div className="transition-all duration-300">
-          <section 
-            id="generate-panel" 
-            role="tabpanel" 
-            aria-labelledby="generate-tab"
-            className={activeTab === 'generate' ? 'block' : 'hidden'}
-          >
-            <BarcodeProcessor />
-          </section>
-          <section 
-            id="scan-panel" 
-            role="tabpanel" 
-            aria-labelledby="scan-tab"
-            className={activeTab === 'scan' ? 'block' : 'hidden'}
-          >
-            <BarcodeScanner />
-          </section>
+          {currentRoute === 'home' && (
+            <>
+              <section 
+                id="generate-panel" 
+                role="tabpanel" 
+                aria-labelledby="generate-tab"
+                className={activeTab === 'generate' ? 'block' : 'hidden'}
+              >
+                <BarcodeProcessor />
+              </section>
+              <section 
+                id="scan-panel" 
+                role="tabpanel" 
+                aria-labelledby="scan-tab"
+                className={activeTab === 'scan' ? 'block' : 'hidden'}
+              >
+                <BarcodeScanner />
+              </section>
+            </>
+          )}
+          {currentRoute === 'privacy' && <PrivacyPolicy />}
+          {currentRoute === 'terms' && <TermsOfService />}
+          {currentRoute === 'contact' && <ContactUs />}
         </div>
       </main>
 
       {/* Footer */}
-      <footer className="bg-slate-50/50 border-t border-slate-200/50 mt-12" role="contentinfo">
+      {currentRoute === 'home' && (
+        <footer className="bg-slate-50/50 border-t border-slate-200/50 mt-12" role="contentinfo">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="text-center text-slate-500 text-sm">
             <p>&copy; 2025 {t('footer')}</p>
             <nav className="mt-2" aria-label={t('footer_navigation')}>
               <ul className="flex justify-center space-x-4 text-xs">
-                <li><a href="/privacy" className="hover:text-slate-700">{t('privacy_policy')}</a></li>
-                <li><a href="/terms" className="hover:text-slate-700">{t('terms_of_service')}</a></li>
-                <li><a href="/contact" className="hover:text-slate-700">{t('contact_us')}</a></li>
+                <li><a href="#privacy" className="hover:text-slate-700">{t('privacy_policy')}</a></li>
+                <li><a href="#terms" className="hover:text-slate-700">{t('terms_of_service')}</a></li>
+                <li><a href="#contact" className="hover:text-slate-700">{t('contact_us')}</a></li>
               </ul>
             </nav>
           </div>
         </div>
       </footer>
+      )}
     </div>
     </>
   );
