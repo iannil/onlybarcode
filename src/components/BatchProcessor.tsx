@@ -50,6 +50,8 @@ const BarcodeProcessor: React.FC = () => {
   const [pageHeight, setPageHeight] = useState(140);
   // 用于存储每个条码图片的实际宽度
   const [imgSizes, setImgSizes] = useState<Record<string, { width: number; height: number }>>({});
+  // 在 state 区域添加 repeatCount
+  const [repeatCount, setRepeatCount] = useState<number>(1);
 
   const formats = [
     { value: 'CODE128', label: 'Code 128' },
@@ -145,12 +147,17 @@ const BarcodeProcessor: React.FC = () => {
   // 批量逻辑（原BatchProcessor）
   const handleTextImport = (text: string) => {
     const lines = text.split('\n').filter(line => line.trim());
-    const newItems: BarcodeItem[] = lines.map((line, index) => ({
-      id: `text-${Date.now()}-${index}`,
-      text: line.trim(),
-      status: 'pending',
-    }));
-    setItems(newItems); // 只保留本次输入内容，覆盖原有 items
+    let newItems: BarcodeItem[] = [];
+    lines.forEach((line, index) => {
+      for (let i = 0; i < repeatCount; i++) {
+        newItems.push({
+          id: `text-${Date.now()}-${index}-${i}`,
+          text: line.trim(),
+          status: 'pending',
+        });
+      }
+    });
+    setItems(newItems);
   };
 
   const handleFileImport = async (files: File[]) => {
@@ -348,7 +355,7 @@ const BarcodeProcessor: React.FC = () => {
       setItems([]);
     }
     // eslint-disable-next-line
-  }, [batchText]);
+  }, [batchText, repeatCount]);
 
   // barcodesPerRow 已经是受控布局，布局会自动响应
 
@@ -417,44 +424,41 @@ const BarcodeProcessor: React.FC = () => {
 
   return (
     <div className="tab-content">
-      {/* 模式切换 */}
-      <div className="mb-8">
-        <div className="flex space-x-1 bg-gray-100 p-1 rounded-lg max-w-md mx-auto">
-          <button
-            onClick={() => setMode('single')}
-            className={`flex-1 flex items-center justify-center space-x-2 px-4 py-2 rounded-md text-sm font-medium transition-all ${
-              mode === 'single'
-                ? 'bg-white text-blue-600 shadow-sm'
-                : 'text-gray-600 hover:text-gray-900'
-            }`}
-          >
-            <Package className="w-4 h-4" />
-            <span>单个生成</span>
-          </button>
-          <button
-            onClick={() => setMode('batch')}
-            className={`flex-1 flex items-center justify-center space-x-2 px-4 py-2 rounded-md text-sm font-medium transition-all ${
-              mode === 'batch'
-                ? 'bg-white text-blue-600 shadow-sm'
-                : 'text-gray-600 hover:text-gray-900'
-            }`}
-          >
-            <FileText className="w-4 h-4" />
-            <span>批量生成</span>
-          </button>
-        </div>
-      </div>
-
       {/* 主体内容 */}
       {mode === 'single' ? (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* 输入设置 */}
           <div className="space-y-6">
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-                <Settings className="w-5 h-5 mr-2 text-blue-600" />
-                条形码设置
-              </h3>
+            <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-slate-200/50 p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-slate-900 flex items-center">
+                  <Settings className="w-5 h-5 mr-2 text-blue-600" />
+                  条形码设置
+                </h3>
+                {/* 简洁的模式切换 */}
+                <div className="flex space-x-1 bg-slate-100/50 p-1 rounded-lg">
+                  <button
+                    onClick={() => setMode('single')}
+                    className={`px-3 py-1 rounded text-xs font-medium transition-all duration-200 ${
+                      mode === 'single'
+                        ? 'bg-white text-blue-600 shadow-sm'
+                        : 'text-slate-600 hover:text-slate-900'
+                    }`}
+                  >
+                    单个
+                  </button>
+                  <button
+                    onClick={() => setMode('batch')}
+                    className={`px-3 py-1 rounded text-xs font-medium transition-all duration-200 ${
+                      mode === 'batch'
+                        ? 'bg-white text-blue-600 shadow-sm'
+                        : 'text-slate-600 hover:text-slate-900'
+                    }`}
+                  >
+                    批量
+                  </button>
+                </div>
+              </div>
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -465,12 +469,12 @@ const BarcodeProcessor: React.FC = () => {
                       type="text"
                       value={singleText}
                       onChange={(e) => setSingleText(e.target.value)}
-                      className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      className="flex-1 px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white/50 backdrop-blur-sm"
                       placeholder="请输入要生成条形码的文本"
                     />
                     <button
                       onClick={generateRandomCode}
-                      className="px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+                      className="px-3 py-2 bg-slate-100/80 hover:bg-slate-200/80 rounded-lg transition-colors backdrop-blur-sm"
                       title="生成随机码"
                     >
                       <RefreshCw className="w-4 h-4" />
@@ -601,8 +605,8 @@ const BarcodeProcessor: React.FC = () => {
           </div>
           {/* 预览区 */}
           <div className="space-y-6">
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">条形码预览</h3>
+            <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-slate-200/50 p-6">
+              <h3 className="text-lg font-semibold text-slate-900 mb-4">条形码预览</h3>
               <div className="bg-gray-50 rounded-lg p-6 text-center">
                 <canvas
                   ref={canvasRef}
@@ -615,24 +619,24 @@ const BarcodeProcessor: React.FC = () => {
               <div className="mt-6 flex flex-wrap gap-2">
                 <button
                   onClick={() => downloadSingleBarcode('png')}
-                  className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                  className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-sm"
                 >
                   <Download className="w-4 h-4 mr-2" />
                   下载 PNG
                 </button>
                 <button
                   onClick={() => downloadSingleBarcode('svg')}
-                  className="flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                  className="flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors shadow-sm"
                 >
                   <Download className="w-4 h-4 mr-2" />
                   下载 SVG
                 </button>
                 <button
                   onClick={copySingleBarcodeData}
-                  className={`flex items-center px-4 py-2 rounded-lg transition-colors ${
+                  className={`flex items-center px-4 py-2 rounded-lg transition-colors shadow-sm ${
                     copySuccess 
                       ? 'bg-green-100 text-green-700' 
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
                   }`}
                 >
                   {copySuccess ? (
@@ -649,7 +653,7 @@ const BarcodeProcessor: React.FC = () => {
                 </button>
               </div>
             </div>
-            <div className="bg-blue-50 rounded-xl p-4">
+            <div className="bg-blue-50/80 backdrop-blur-sm rounded-2xl p-4">
               <h4 className="text-sm font-medium text-blue-900 mb-2">使用提示</h4>
               <ul className="text-sm text-blue-800 space-y-1">
                 <li>• 不同格式对文本内容有特定要求</li>
@@ -664,11 +668,36 @@ const BarcodeProcessor: React.FC = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* 批量输入区 */}
           <div className="space-y-6">
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-                <Settings className="w-5 h-5 mr-2 text-blue-600" />
-                条形码设置
-              </h3>
+            <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-slate-200/50 p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-slate-900 flex items-center">
+                  <Settings className="w-5 h-5 mr-2 text-blue-600" />
+                  条形码设置
+                </h3>
+                {/* 简洁的模式切换 */}
+                <div className="flex space-x-1 bg-slate-100/50 p-1 rounded-lg">
+                  <button
+                    onClick={() => setMode('single')}
+                    className={`px-3 py-1 rounded text-xs font-medium transition-all duration-200 ${
+                      mode === 'single'
+                        ? 'bg-white text-blue-600 shadow-sm'
+                        : 'text-slate-600 hover:text-slate-900'
+                    }`}
+                  >
+                    单个
+                  </button>
+                  <button
+                    onClick={() => setMode('batch')}
+                    className={`px-3 py-1 rounded text-xs font-medium transition-all duration-200 ${
+                      mode === 'batch'
+                        ? 'bg-white text-blue-600 shadow-sm'
+                        : 'text-slate-600 hover:text-slate-900'
+                    }`}
+                  >
+                    批量
+                  </button>
+                </div>
+              </div>
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">条形码格式</label>
@@ -783,6 +812,21 @@ const BarcodeProcessor: React.FC = () => {
                         显示文本
                       </label>
                     </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          条码重复生成次数
+                        </label>
+                        <input
+                          type="number"
+                          min={1}
+                          max={20}
+                          value={repeatCount}
+                          onChange={e => setRepeatCount(Number(e.target.value) || 1)}
+                          className="w-full px-2 py-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                        />
+                      </div>
+                    </div>
                   </div>
                 )}
                 {/* 保留每行条码数输入框和页面宽高设置（如需）可放在高级设置下方，否则移除 */}
@@ -800,12 +844,12 @@ const BarcodeProcessor: React.FC = () => {
                 />
               </div>
             </div>
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-slate-200/50 p-6">
               <div className="flex items-center justify-between">
                 <button
                   onClick={processItems}
                   disabled={processing || items.length === 0 || items.some(i => i.status === 'processing' || i.status === 'completed')}
-                  className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors flex items-center space-x-2"
+                  className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:bg-slate-300 disabled:cursor-not-allowed transition-colors flex items-center space-x-2 shadow-sm"
                 >
                   {processing ? (
                     <Loader className="w-4 h-4 mr-2 animate-spin" />
@@ -818,7 +862,7 @@ const BarcodeProcessor: React.FC = () => {
                   <button
                     onClick={downloadResults}
                     disabled={completedCount === 0}
-                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors flex items-center space-x-2"
+                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-slate-300 disabled:cursor-not-allowed transition-colors flex items-center space-x-2 shadow-sm"
                   >
                     <Download className="w-4 h-4" />
                     <span>导出 ZIP</span>
@@ -826,7 +870,7 @@ const BarcodeProcessor: React.FC = () => {
                   <button
                     onClick={exportPDF}
                     disabled={completedCount === 0}
-                    className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors flex items-center space-x-2"
+                    className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:bg-slate-300 disabled:cursor-not-allowed transition-colors flex items-center space-x-2 shadow-sm"
                   >
                     <Download className="w-4 h-4" />
                     <span>导出 PDF</span>
@@ -834,7 +878,7 @@ const BarcodeProcessor: React.FC = () => {
                   <button
                     onClick={clearItems}
                     disabled={items.length === 0}
-                    className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+                    className="px-4 py-2 bg-slate-600 text-white rounded-lg hover:bg-slate-700 disabled:bg-slate-300 disabled:cursor-not-allowed transition-colors shadow-sm"
                   >
                     清空
                   </button>
@@ -859,10 +903,10 @@ const BarcodeProcessor: React.FC = () => {
                 <h4 className="text-sm font-semibold text-gray-500 mb-2">处理列表</h4>
                 <div className="space-y-1 max-h-40 overflow-y-auto">
                   {items.length === 0 ? (
-                    <div className="text-center py-4 text-gray-400 text-xs">
-                      <Package className="w-8 h-8 mx-auto mb-2 text-gray-200" />
-                      <p>暂无处理项目</p>
-                    </div>
+                                    <div className="text-center py-4 text-slate-400 text-xs">
+                  <Package className="w-8 h-8 mx-auto mb-2 text-slate-200" />
+                  <p>暂无处理项目</p>
+                </div>
                   ) : (
                     items.map((item) => (
                       <div key={item.id} className="flex items-center justify-between px-2 py-1 rounded hover:bg-gray-100 transition-colors">
@@ -895,17 +939,17 @@ const BarcodeProcessor: React.FC = () => {
                   )}
                 </div>
                 {items.length > 0 && (
-                  <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl p-4 mt-4">
-                    <h4 className="text-sm font-medium text-gray-900 mb-3">处理统计</h4>
+                                  <div className="bg-gradient-to-r from-blue-50/80 to-purple-50/80 rounded-2xl p-4 mt-4 backdrop-blur-sm">
+                  <h4 className="text-sm font-medium text-slate-900 mb-3">处理统计</h4>
                     <div className="grid grid-cols-2 gap-4">
-                      <div className="text-center">
-                        <div className="text-2xl font-bold text-green-600">{completedCount}</div>
-                        <div className="text-xs text-gray-600">成功完成</div>
-                      </div>
-                      <div className="text-center">
-                        <div className="text-2xl font-bold text-red-600">{errorCount}</div>
-                        <div className="text-xs text-gray-600">处理失败</div>
-                      </div>
+                                              <div className="text-center">
+                          <div className="text-2xl font-bold text-green-600">{completedCount}</div>
+                          <div className="text-xs text-slate-600">成功完成</div>
+                        </div>
+                        <div className="text-center">
+                          <div className="text-2xl font-bold text-red-600">{errorCount}</div>
+                          <div className="text-xs text-slate-600">处理失败</div>
+                        </div>
                     </div>
                   </div>
                 )}
@@ -915,9 +959,9 @@ const BarcodeProcessor: React.FC = () => {
           {/* 结果区 */}
           <div className="space-y-6">
             {/* 只保留条码预览区 */}
-            <div className="bg-white rounded-xl shadow-lg border-2 border-blue-400 p-6 min-h-[220px] flex flex-col">
+            <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-slate-200/50 p-6 min-h-[220px] flex flex-col">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-bold text-blue-700">条码预览</h3>
+                <h3 className="text-lg font-semibold text-slate-900">条码预览</h3>
               </div>
               {/* 条码预览每行数量设置，仅批量模式显示 */}
               <div className="mb-4 flex items-center space-x-4">

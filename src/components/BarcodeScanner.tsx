@@ -122,15 +122,15 @@ const BarcodeScanner: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Upload Section */}
         <div className="space-y-6">
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+          <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-slate-200/50 p-6">
+            <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center">
               <Image className="w-5 h-5 mr-2 text-blue-600" />
               图片上传
             </h3>
 
             <div
-              className={`upload-zone border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-all duration-300 ${
-                dragOver ? 'dragover' : ''
+              className={`upload-zone border-2 border-dashed rounded-2xl p-8 text-center cursor-pointer transition-all duration-300 ${
+                dragOver ? 'dragover border-blue-400 bg-blue-50/50' : 'border-slate-300 hover:border-slate-400 hover:bg-slate-50/50'
               }`}
               onDragOver={handleDragOver}
               onDragLeave={handleDragLeave}
@@ -138,14 +138,14 @@ const BarcodeScanner: React.FC = () => {
               onClick={() => fileInputRef.current?.click()}
             >
               <div className="flex flex-col items-center space-y-4">
-                <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center">
+                <div className="w-16 h-16 bg-blue-100/80 rounded-full flex items-center justify-center backdrop-blur-sm">
                   <Upload className="w-8 h-8 text-blue-600" />
                 </div>
                 <div>
-                  <p className="text-lg font-medium text-gray-900">
+                  <p className="text-lg font-medium text-slate-900">
                     拖拽图片到此处或点击上传
                   </p>
-                  <p className="text-sm text-gray-500 mt-1">
+                  <p className="text-sm text-slate-500 mt-1">
                     支持 JPG、PNG、WEBP 格式，可多选
                   </p>
                 </div>
@@ -177,7 +177,7 @@ const BarcodeScanner: React.FC = () => {
           </div>
 
           {/* Instructions */}
-          <div className="bg-blue-50 rounded-xl p-4">
+          <div className="bg-blue-50/80 backdrop-blur-sm rounded-2xl p-4">
             <h4 className="text-sm font-medium text-blue-900 mb-2">识别提示</h4>
             <ul className="text-sm text-blue-800 space-y-1">
               <li>• 确保图片清晰，条形码完整可见</li>
@@ -190,9 +190,9 @@ const BarcodeScanner: React.FC = () => {
 
         {/* Results Section */}
         <div className="space-y-6">
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+          <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-slate-200/50 p-6">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-900 flex items-center">
+              <h3 className="text-lg font-semibold text-slate-900 flex items-center">
                 <CheckCircle className="w-5 h-5 mr-2 text-green-600" />
                 识别结果 ({results.length})
               </h3>
@@ -200,13 +200,13 @@ const BarcodeScanner: React.FC = () => {
                 <div className="flex space-x-2">
                   <button
                     onClick={exportResults}
-                    className="px-3 py-1 bg-green-600 text-white text-sm rounded-md hover:bg-green-700 transition-colors"
+                    className="px-3 py-1 bg-green-600 text-white text-sm rounded-md hover:bg-green-700 transition-colors shadow-sm"
                   >
                     导出CSV
                   </button>
                   <button
                     onClick={clearResults}
-                    className="px-3 py-1 bg-gray-600 text-white text-sm rounded-md hover:bg-gray-700 transition-colors"
+                    className="px-3 py-1 bg-slate-600 text-white text-sm rounded-md hover:bg-slate-700 transition-colors shadow-sm"
                   >
                     清空
                   </button>
