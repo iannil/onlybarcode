@@ -18,12 +18,12 @@ const SEOHead: React.FC<SEOHeadProps> = ({
   title,
   description,
   keywords,
-  image = 'https://barhub.example.com/og-image.png',
-  url = 'https://barhub.example.com/',
+  image = 'https://654653.com/og-image.png',
+  url = 'https://654653.com/',
   type = 'website',
   alternateLanguages = [
-    { lang: 'zh', url: 'https://barhub.example.com/' },
-    { lang: 'en', url: 'https://barhub.example.com/en/' }
+    { lang: 'zh', url: 'https://654653.com/' },
+    { lang: 'en', url: 'https://654653.com/en/' }
   ]
 }) => {
   const { t, i18n } = useTranslation();
@@ -127,7 +127,7 @@ const SEOHead: React.FC<SEOHeadProps> = ({
     const xDefault = document.createElement('link');
     xDefault.rel = 'alternate';
     xDefault.hreflang = 'x-default';
-    xDefault.href = languages[0]?.url || 'https://barhub.example.com/';
+    xDefault.href = languages[0]?.url || 'https://654653.com/';
     document.head.appendChild(xDefault);
   };
 

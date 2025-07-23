@@ -2,7 +2,7 @@ User-agent: *
 Allow: /
 
 # Sitemap
-Sitemap: https://barhub.example.com/sitemap.xml
+Sitemap: https://654653.com/sitemap.xml
 
 # Crawl-delay
 Crawl-delay: 1 

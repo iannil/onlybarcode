@@ -3,61 +3,61 @@
         xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <!-- 中文主页 -->
   <url>
-    <loc>https://barhub.example.com/</loc>
+    <loc>https://654653.com/</loc>
     <lastmod>2025-01-27</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://barhub.example.com/en/"/>
-    <xhtml:link rel="alternate" hreflang="zh" href="https://barhub.example.com/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://654653.com/en/"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://654653.com/"/>
   </url>
   
   <!-- 英文主页 -->
   <url>
-    <loc>https://barhub.example.com/en/</loc>
+    <loc>https://654653.com/en/</loc>
     <lastmod>2025-01-27</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://barhub.example.com/en/"/>
-    <xhtml:link rel="alternate" hreflang="zh" href="https://barhub.example.com/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://654653.com/en/"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://654653.com/"/>
   </url>
   
   <!-- 中文生成页面 -->
   <url>
-    <loc>https://barhub.example.com/generate</loc>
+    <loc>https://654653.com/generate</loc>
     <lastmod>2025-01-27</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://barhub.example.com/en/generate"/>
-    <xhtml:link rel="alternate" hreflang="zh" href="https://barhub.example.com/generate"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://654653.com/en/generate"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://654653.com/generate"/>
   </url>
   
   <!-- 英文生成页面 -->
   <url>
-    <loc>https://barhub.example.com/en/generate</loc>
+    <loc>https://654653.com/en/generate</loc>
     <lastmod>2025-01-27</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://barhub.example.com/en/generate"/>
-    <xhtml:link rel="alternate" hreflang="zh" href="https://barhub.example.com/generate"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://654653.com/en/generate"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://654653.com/generate"/>
   </url>
   
   <!-- 中文扫描页面 -->
   <url>
-    <loc>https://barhub.example.com/scan</loc>
+    <loc>https://654653.com/scan</loc>
     <lastmod>2025-01-27</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://barhub.example.com/en/scan"/>
-    <xhtml:link rel="alternate" hreflang="zh" href="https://barhub.example.com/scan"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://654653.com/en/scan"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://654653.com/scan"/>
   </url>
   
   <!-- 英文扫描页面 -->
   <url>
-    <loc>https://barhub.example.com/en/scan</loc>
+    <loc>https://654653.com/en/scan</loc>
     <lastmod>2025-01-27</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://barhub.example.com/en/scan"/>
-    <xhtml:link rel="alternate" hreflang="zh" href="https://barhub.example.com/scan"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://654653.com/en/scan"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://654653.com/scan"/>
   </url>
 </urlset> 
