@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import JsBarcode from 'jsbarcode';
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
-import { Upload, Download, FileText, Package, X, CheckCircle, AlertCircle, Loader, Settings, RefreshCw, Copy, Play, Trash } from 'lucide-react';
+import { Upload, Download, FileText, Package, X, CheckCircle, AlertCircle, Loader, Settings, RefreshCw, Copy, Play, Trash, Info } from 'lucide-react';
 import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
 
 interface BarcodeItem {
@@ -19,7 +19,7 @@ type Mode = 'single' | 'batch';
 
 const BarcodeProcessor: React.FC = () => {
   const { t } = useTranslation();
-  const [mode, setMode] = useState<Mode>('single');
+  const [mode, setMode] = useState<'single' | 'batch'>('single');
   const [singleText, setSingleText] = useState('123456789012');
   const [items, setItems] = useState<BarcodeItem[]>([]);
   const [processing, setProcessing] = useState(false);
@@ -44,6 +44,9 @@ const BarcodeProcessor: React.FC = () => {
   const [pageHeight, setPageHeight] = useState(140);
   const [imgSizes, setImgSizes] = useState<Record<string, { width: number; height: number }>>({});
   const [repeatCount, setRepeatCount] = useState<number>(1);
+  const [showUsageTips, setShowUsageTips] = useState(false);
+  const [singleError, setSingleError] = useState<string | null>(null);
+  const [singlePagePDF, setSinglePagePDF] = useState(false);
 
   const formats = [
     { value: 'CODE128', label: 'Code 128' },
@@ -69,9 +72,21 @@ const BarcodeProcessor: React.FC = () => {
           background: backgroundColor,
           lineColor,
         });
+        setSingleError(null);
       } catch (error) {
         console.error(error);
-        alert(t('barcode_generation_failed') + ': ' + (error instanceof Error ? error.message : error));
+        setSingleError(t('barcode_generation_failed') + ': ' + (error instanceof Error ? error.message : error));
+        // 清空 canvas
+        const ctx = canvasRef.current.getContext('2d');
+        if (ctx) {
+          ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+        }
+      }
+    } else if (canvasRef.current) {
+      // 如果内容为空也清空
+      const ctx = canvasRef.current.getContext('2d');
+      if (ctx) {
+        ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
       }
     }
   };
@@ -234,39 +249,59 @@ const BarcodeProcessor: React.FC = () => {
   };
 
   const exportPDF = async () => {
+    if (completedItems.length === 0) return;
     const pdfDoc = await PDFDocument.create();
-    const page = pdfDoc.addPage([595, 842]); // A4 size
-    const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
-    
-    const completedItems = items.filter(item => item.status === 'completed' && item.dataUrl);
-    const itemsPerPage = 8;
-    let currentPage = 0;
-    
-    for (let i = 0; i < completedItems.length; i += itemsPerPage) {
-      if (i > 0) {
-        currentPage++;
-        page = pdfDoc.addPage([595, 842]);
-      }
-      
-      const pageItems = completedItems.slice(i, i + itemsPerPage);
-      pageItems.forEach((item, index) => {
-        if (item.dataUrl) {
-          const y = 750 - (index * 90);
-          page.drawText(item.text, { x: 50, y, size: 12, font });
-          
-          // Convert data URL to image and embed
-          const base64Data = item.dataUrl.split(',')[1];
-          const imageBytes = Uint8Array.from(atob(base64Data), c => c.charCodeAt(0));
-          const image = pdfDoc.embedPng(imageBytes);
-          const { width: imgWidth, height: imgHeight } = image.scale(0.5);
-          page.drawImage(image, { x: 50, y: y - 60, width: imgWidth, height: imgHeight });
+    const pageMargin = 20;
+    if (singlePagePDF) {
+      // All barcodes on one page
+      const pageWidth = 595.28; // A4 width pt
+      const pageHeight = 841.89; // A4 height pt
+      const page = pdfDoc.addPage([pageWidth, pageHeight]);
+      let x = pageMargin;
+      let y = pageHeight - pageMargin;
+      const maxWidth = pageWidth - 2 * pageMargin;
+      const maxHeight = pageHeight - 2 * pageMargin;
+      const barcodeHeight = 80;
+      const barcodeMargin = 10;
+      let row = 0;
+      let col = 0;
+      const perRow = barcodesPerRow;
+      const cellWidth = maxWidth / perRow;
+      completedItems.forEach((item, idx) => {
+        if (!item.dataUrl) return;
+        if (col >= perRow) {
+          col = 0;
+          row++;
         }
+        const imgX = x + col * cellWidth + (cellWidth - 120) / 2;
+        const imgY = y - row * (barcodeHeight + barcodeMargin) - barcodeHeight;
+        pdfDoc.embedPng(item.dataUrl).then((img) => {
+          page.drawImage(img, {
+            x: imgX,
+            y: imgY,
+            width: 120,
+            height: barcodeHeight,
+          });
+        });
+        col++;
       });
+    } else {
+      // One barcode per page (existing logic)
+      for (const item of completedItems) {
+        if (!item.dataUrl) continue;
+        const page = pdfDoc.addPage([300, 140]);
+        const pngImage = await pdfDoc.embedPng(item.dataUrl);
+        page.drawImage(pngImage, {
+          x: 20,
+          y: 40,
+          width: 260,
+          height: 80,
+        });
+      }
     }
-    
     const pdfBytes = await pdfDoc.save();
     const blob = new Blob([pdfBytes], { type: 'application/pdf' });
-    saveAs(blob, `barcodes-${new Date().toISOString().split('T')[0]}.pdf`);
+    saveAs(blob, 'barcodes.pdf');
   };
 
   const removeItem = (id: string) => {
@@ -362,8 +397,8 @@ const BarcodeProcessor: React.FC = () => {
     <div className="tab-content">
       {mode === 'single' ? (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-8">
-          <div className="space-y-4 sm:space-y-6">
-            <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-slate-200/50 p-6 sm:p-6">
+          <div className="flex flex-col min-h-[420px] h-full gap-4 sm:gap-6">
+            <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-slate-200/50 p-6 sm:p-6 flex-shrink-0">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 space-y-3 sm:space-y-0">
                 <h3 className="text-lg font-semibold text-slate-900 flex items-center">
                   <Settings className="w-5 h-5 mr-2 text-blue-600" />
@@ -372,7 +407,7 @@ const BarcodeProcessor: React.FC = () => {
               </div>
               <div className="flex space-x-1 bg-slate-100/50 p-1 rounded-lg mb-4">
                 <button
-                  onClick={() => setMode('single')}
+                  onClick={() => setMode('single' as Mode)}
                   className={`flex-1 px-3 py-2 sm:py-1 rounded-xl text-base sm:text-xs font-medium transition-all duration-200 ${
                     mode === 'single'
                       ? 'bg-white text-blue-600 shadow-sm'
@@ -382,7 +417,7 @@ const BarcodeProcessor: React.FC = () => {
                   {t('single')}
                 </button>
                 <button
-                  onClick={() => setMode('batch')}
+                  onClick={() => setMode('batch' as Mode)}
                   className={`flex-1 px-3 py-2 sm:py-1 rounded-xl text-base sm:text-xs font-medium transition-all duration-200 ${
                     mode === 'batch'
                       ? 'bg-white text-blue-600 shadow-sm'
@@ -401,7 +436,10 @@ const BarcodeProcessor: React.FC = () => {
                     <input
                       type="text"
                       value={singleText}
-                      onChange={(e) => setSingleText(e.target.value)}
+                      onChange={(e) => {
+                        setSingleText(e.target.value);
+                        setSingleError(null);
+                      }}
                       className="flex-1 px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white/50 backdrop-blur-sm"
                       placeholder={t('text_content_placeholder')}
                     />
@@ -418,17 +456,51 @@ const BarcodeProcessor: React.FC = () => {
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     {t('barcode_format')}
                   </label>
-                  <select
-                    value={format}
-                    onChange={(e) => setFormat(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  >
-                    {formats.map((fmt) => (
-                      <option key={fmt.value} value={fmt.value}>
-                        {fmt.label}
-                      </option>
-                    ))}
-                  </select>
+                  <div className="flex items-center gap-2">
+                    <select
+                      value={format}
+                      onChange={(e) => setFormat(e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    >
+                      {formats.map((fmt) => (
+                        <option key={fmt.value} value={fmt.value}>
+                          {fmt.label}
+                        </option>
+                      ))}
+                    </select>
+                    <button
+                      className={`px-3 py-2 rounded-lg transition-colors backdrop-blur-sm flex items-center justify-center sm:w-auto focus:outline-none ${showUsageTips ? 'bg-blue-100 text-blue-700 hover:bg-blue-200' : 'bg-slate-100/80 hover:bg-slate-200/80'}`}
+                      onClick={() => setShowUsageTips((v) => !v)}
+                      aria-expanded={showUsageTips}
+                      aria-controls="usage-tips-list"
+                      type="button"
+                      title={t('usage_tips')}
+                    >
+                      <Info className={`w-5 h-5 ${showUsageTips ? 'text-blue-700' : 'text-slate-700'}`} />
+                    </button>
+                  </div>
+                  {showUsageTips && (
+                    <ul id="usage-tips-list" className="text-sm text-blue-800 space-y-1 mt-2">
+                      {format === 'EAN13' && (
+                        <>
+                          <li>• {t('ean13_requirement')}</li>
+                          <li>• {t('format_requirements')}</li>
+                        </>
+                      )}
+                      {format === 'CODE128' && (
+                        <>
+                          <li>• {t('code128_support')}</li>
+                          <li>• {t('format_requirements')}</li>
+                        </>
+                      )}
+                      {format !== 'EAN13' && format !== 'CODE128' && (
+                        <>
+                          <li>• {t('format_requirements')}</li>
+                          <li>• {t('adjust_size_color')}</li>
+                        </>
+                      )}
+                    </ul>
+                  )}
                 </div>
                 <button
                   onClick={() => setShowSettings(!showSettings)}
@@ -535,10 +607,14 @@ const BarcodeProcessor: React.FC = () => {
                 )}
               </div>
             </div>
+            <div className="flex-grow" />
           </div>
           <div className="space-y-4 sm:space-y-6">
             <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-slate-200/50 p-6">
-              <h3 className="text-lg font-semibold text-slate-900 mb-4">{t('barcode_preview')}</h3>
+              <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center">
+                <Package className="w-5 h-5 mr-2 text-blue-500" />
+                {t('barcode_preview')}
+              </h3>
               <div className="bg-gray-50 rounded-lg p-4 sm:p-6 text-center">
                 <canvas
                   ref={canvasRef}
@@ -547,6 +623,12 @@ const BarcodeProcessor: React.FC = () => {
                   height={height || 100}
                 />
                 <svg ref={svgRef} style={{ display: 'none' }} width={width || 300} height={height || 100}></svg>
+                {singleError && (
+                  <div className="mt-4 text-sm text-red-600 bg-red-50 border border-red-200 rounded p-2 flex items-center gap-2 justify-center">
+                    <AlertCircle className="w-4 h-4 text-red-400" />
+                    <span>{singleError}</span>
+                  </div>
+                )}
               </div>
               <div className="mt-4 sm:mt-6 flex flex-col sm:flex-row flex-wrap gap-2">
                 <button
@@ -585,15 +667,6 @@ const BarcodeProcessor: React.FC = () => {
                 </button>
               </div>
             </div>
-            <div className="bg-blue-50/80 backdrop-blur-sm rounded-2xl p-4">
-              <h4 className="text-sm font-medium text-blue-900 mb-2">{t('usage_tips')}</h4>
-              <ul className="text-sm text-blue-800 space-y-1">
-                <li>• {t('format_requirements')}</li>
-                <li>• {t('ean13_requirement')}</li>
-                <li>• {t('code128_support')}</li>
-                <li>• {t('adjust_size_color')}</li>
-              </ul>
-            </div>
           </div>
         </div>
       ) : (
@@ -608,7 +681,7 @@ const BarcodeProcessor: React.FC = () => {
               </div>
               <div className="flex space-x-1 bg-slate-100/50 p-1 rounded-lg mb-4">
                 <button
-                  onClick={() => setMode('single')}
+                  onClick={() => setMode('single' as Mode)}
                   className={`flex-1 px-3 py-2 sm:py-1 rounded-xl text-base sm:text-xs font-medium transition-all duration-200 ${
                     mode === 'single'
                       ? 'bg-white text-blue-600 shadow-sm'
@@ -618,7 +691,7 @@ const BarcodeProcessor: React.FC = () => {
                   {t('single')}
                 </button>
                 <button
-                  onClick={() => setMode('batch')}
+                  onClick={() => setMode('batch' as Mode)}
                   className={`flex-1 px-3 py-2 sm:py-1 rounded-xl text-base sm:text-xs font-medium transition-all duration-200 ${
                     mode === 'batch'
                       ? 'bg-white text-blue-600 shadow-sm'
@@ -631,15 +704,49 @@ const BarcodeProcessor: React.FC = () => {
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">{t('barcode_format')}</label>
-                  <select
-                    value={format}
-                    onChange={(e) => setFormat(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  >
-                    {formats.map((fmt) => (
-                      <option key={fmt.value} value={fmt.value}>{fmt.label}</option>
-                    ))}
-                  </select>
+                  <div className="flex items-center gap-2">
+                    <select
+                      value={format}
+                      onChange={(e) => setFormat(e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    >
+                      {formats.map((fmt) => (
+                        <option key={fmt.value} value={fmt.value}>{fmt.label}</option>
+                      ))}
+                    </select>
+                    <button
+                      className={`px-3 py-2 rounded-lg transition-colors backdrop-blur-sm flex items-center justify-center sm:w-auto focus:outline-none ${showUsageTips ? 'bg-blue-100 text-blue-700 hover:bg-blue-200' : 'bg-slate-100/80 hover:bg-slate-200/80'}`}
+                      onClick={() => setShowUsageTips((v) => !v)}
+                      aria-expanded={showUsageTips}
+                      aria-controls="usage-tips-list"
+                      type="button"
+                      title={t('usage_tips')}
+                    >
+                      <Info className={`w-5 h-5 ${showUsageTips ? 'text-blue-700' : 'text-slate-700'}`} />
+                    </button>
+                  </div>
+                  {showUsageTips && (
+                    <ul id="usage-tips-list" className="text-sm text-blue-800 space-y-1 mt-2">
+                      {format === 'EAN13' && (
+                        <>
+                          <li>• {t('ean13_requirement')}</li>
+                          <li>• {t('format_requirements')}</li>
+                        </>
+                      )}
+                      {format === 'CODE128' && (
+                        <>
+                          <li>• {t('code128_support')}</li>
+                          <li>• {t('format_requirements')}</li>
+                        </>
+                      )}
+                      {format !== 'EAN13' && format !== 'CODE128' && (
+                        <>
+                          <li>• {t('format_requirements')}</li>
+                          <li>• {t('adjust_size_color')}</li>
+                        </>
+                      )}
+                    </ul>
+                  )}
                 </div>
                 <button
                   onClick={() => setShowSettings(!showSettings)}
@@ -773,39 +880,39 @@ const BarcodeProcessor: React.FC = () => {
               </div>
             </div>
             <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-slate-200/50 p-6">
-              <div className="flex flex-col gap-3 w-full sm:flex-row sm:gap-4 sm:w-auto mt-4">
+              <div className="flex flex-row gap-x-2 gap-y-2 flex-nowrap overflow-x-auto whitespace-nowrap mt-4">
                 <button
                   onClick={processItems}
                   disabled={processing || items.length === 0 || items.some(i => i.status === 'processing' || i.status === 'completed')}
-                  className="flex items-center justify-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:bg-slate-300 disabled:cursor-not-allowed transition-colors shadow-sm"
+                  className="flex items-center justify-center px-3 py-2 text-sm bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:bg-slate-300 disabled:cursor-not-allowed transition-colors shadow-sm min-w-[90px]"
                 >
                   {processing ? (
                     <Loader className="w-4 h-4 mr-2 animate-spin" />
                   ) : (
                     <Play className="w-4 h-4 mr-2" />
                   )}
-                  <span>{t('start_processing')}</span>
+                  {t('start_processing')}
                 </button>
                 <button
                   onClick={downloadResults}
                   disabled={completedCount === 0}
-                  className="flex items-center justify-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-slate-300 disabled:cursor-not-allowed transition-colors shadow-sm"
+                  className="flex items-center justify-center px-3 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-slate-300 disabled:cursor-not-allowed transition-colors shadow-sm min-w-[90px]"
                 >
                   <Download className="w-4 h-4 mr-2" />
-                  <span>{t('export_zip')}</span>
+                  {t('export_zip')}
                 </button>
                 <button
                   onClick={exportPDF}
                   disabled={completedCount === 0}
-                  className="flex items-center justify-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:bg-slate-300 disabled:cursor-not-allowed transition-colors shadow-sm"
+                  className="flex items-center justify-center px-3 py-2 text-sm bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:bg-slate-300 disabled:cursor-not-allowed transition-colors shadow-sm min-w-[90px]"
                 >
                   <Download className="w-4 h-4 mr-2" />
-                  <span>{t('export_pdf')}</span>
+                  {t('export_pdf')}
                 </button>
                 <button
                   onClick={clearItems}
                   disabled={items.length === 0}
-                  className="flex items-center justify-center px-4 py-2 bg-slate-600 text-white rounded-lg hover:bg-slate-700 disabled:bg-slate-300 disabled:cursor-not-allowed transition-colors shadow-sm"
+                  className="flex items-center justify-center px-3 py-2 text-sm bg-slate-600 text-white rounded-lg hover:bg-slate-700 disabled:bg-slate-300 disabled:cursor-not-allowed transition-colors shadow-sm min-w-[90px]"
                 >
                   <Trash className="w-4 h-4 mr-2" />
                   {t('clear')}
@@ -885,7 +992,10 @@ const BarcodeProcessor: React.FC = () => {
           <div className="space-y-6">
             <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-slate-200/50 p-6 min-h-[220px] flex flex-col">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold text-slate-900">{t('barcode_preview')}</h3>
+                <h3 className="text-lg font-semibold text-slate-900 flex items-center">
+                  <Package className="w-5 h-5 mr-2 text-blue-500" />
+                  {t('barcode_preview')}
+                </h3>
               </div>
               <div className="mb-4 flex items-center space-x-4">
                 <label className="text-sm text-gray-700 font-medium">{t('barcodes_per_row')}</label>
@@ -898,6 +1008,16 @@ const BarcodeProcessor: React.FC = () => {
                   className="w-32"
                 />
                 <span className="text-blue-700 font-bold w-6 text-center">{barcodesPerRow}</span>
+                <div className="flex items-center ml-4">
+                  <input
+                    type="checkbox"
+                    id="singlePagePDF"
+                    checked={singlePagePDF}
+                    onChange={e => setSinglePagePDF(e.target.checked)}
+                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                  />
+                  <label htmlFor="singlePagePDF" className="ml-2 text-sm text-gray-700">{t('single_page_pdf')}</label>
+                </div>
               </div>
               {completedItems.length > 0 ? (
                 <div
