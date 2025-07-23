@@ -1,4 +1,5 @@
 import React, { useState, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { BrowserMultiFormatReader } from '@zxing/library';
 import { Upload, Image, X, CheckCircle, Copy, AlertCircle } from 'lucide-react';
 
@@ -12,6 +13,7 @@ interface ScanResult {
 }
 
 const BarcodeScanner: React.FC = () => {
+  const { t, i18n } = useTranslation();
   const [dragOver, setDragOver] = useState(false);
   const [scanning, setScanning] = useState(false);
   const [results, setResults] = useState<ScanResult[]>([]);
@@ -63,8 +65,8 @@ const BarcodeScanner: React.FC = () => {
 
         setResults(prev => [scanResult, ...prev]);
       } catch (error) {
-        console.error(`识别失败 ${file.name}:`, error);
-        setError(`无法识别文件 ${file.name} 中的条形码`);
+        console.error(`${t('recognition_failed')} ${file.name}:`, error);
+        setError(`${t('cannot_recognize_file')} ${file.name}`);
       }
     }
 
@@ -75,7 +77,7 @@ const BarcodeScanner: React.FC = () => {
     try {
       await navigator.clipboard.writeText(text);
     } catch (error) {
-      console.error('复制失败:', error);
+      console.error(t('copy_failed') + ':', error);
     }
   };
 
@@ -99,7 +101,7 @@ const BarcodeScanner: React.FC = () => {
 
   const exportResults = () => {
     const csv = [
-      ['文件名', '条形码内容', '格式', '识别时间'],
+      [t('filename'), t('barcode_content'), t('format'), t('recognition_time')],
       ...results.map(result => [
         result.fileName,
         result.text,
@@ -125,7 +127,7 @@ const BarcodeScanner: React.FC = () => {
           <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-slate-200/50 p-6">
             <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center">
               <Image className="w-5 h-5 mr-2 text-blue-600" />
-              图片上传
+              {t('image_upload')}
             </h3>
 
             <div
@@ -143,10 +145,10 @@ const BarcodeScanner: React.FC = () => {
                 </div>
                 <div>
                   <p className="text-lg font-medium text-slate-900">
-                    拖拽图片到此处或点击上传
+                    {t('drag_drop_upload')}
                   </p>
                   <p className="text-sm text-slate-500 mt-1">
-                    支持 JPG、PNG、WEBP 格式，可多选
+                    {t('supported_formats')}
                   </p>
                 </div>
               </div>
@@ -164,7 +166,7 @@ const BarcodeScanner: React.FC = () => {
             {scanning && (
               <div className="mt-4 flex items-center justify-center space-x-2 text-blue-600">
                 <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-                <span>正在识别条形码...</span>
+                <span>{t('scanning_barcodes')}</span>
               </div>
             )}
 
@@ -178,12 +180,12 @@ const BarcodeScanner: React.FC = () => {
 
           {/* Instructions */}
           <div className="bg-blue-50/80 backdrop-blur-sm rounded-2xl p-4">
-            <h4 className="text-sm font-medium text-blue-900 mb-2">识别提示</h4>
+            <h4 className="text-sm font-medium text-blue-900 mb-2">{t('recognition_tips')}</h4>
             <ul className="text-sm text-blue-800 space-y-1">
-              <li>• 确保图片清晰，条形码完整可见</li>
-              <li>• 支持多种条形码格式识别</li>
-              <li>• 可同时上传多张图片批量处理</li>
-              <li>• 识别结果可导出为CSV文件</li>
+              <li>• {t('ensure_clear_image')}</li>
+              <li>• {t('support_multiple_formats')}</li>
+              <li>• {t('batch_process_images')}</li>
+              <li>• {t('export_csv_results')}</li>
             </ul>
           </div>
         </div>
@@ -194,7 +196,7 @@ const BarcodeScanner: React.FC = () => {
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold text-slate-900 flex items-center">
                 <CheckCircle className="w-5 h-5 mr-2 text-green-600" />
-                识别结果 ({results.length})
+                {t('recognition_results')} ({results.length})
               </h3>
               {results.length > 0 && (
                 <div className="flex space-x-2">
@@ -202,13 +204,13 @@ const BarcodeScanner: React.FC = () => {
                     onClick={exportResults}
                     className="px-3 py-1 bg-green-600 text-white text-sm rounded-md hover:bg-green-700 transition-colors shadow-sm"
                   >
-                    导出CSV
+                    {t('export_csv')}
                   </button>
                   <button
                     onClick={clearResults}
                     className="px-3 py-1 bg-slate-600 text-white text-sm rounded-md hover:bg-slate-700 transition-colors shadow-sm"
                   >
-                    清空
+                    {t('clear')}
                   </button>
                 </div>
               )}
@@ -218,8 +220,8 @@ const BarcodeScanner: React.FC = () => {
               {results.length === 0 ? (
                 <div className="text-center py-8 text-gray-500">
                   <Image className="w-12 h-12 mx-auto mb-3 text-gray-300" />
-                  <p>暂无识别结果</p>
-                  <p className="text-sm">上传图片开始识别条形码</p>
+                  <p>{t('no_recognition_results')}</p>
+                  <p className="text-sm">{t('upload_images_start')}</p>
                 </div>
               ) : (
                 results.map((result) => (
@@ -244,21 +246,21 @@ const BarcodeScanner: React.FC = () => {
                         </div>
                         <div className="mt-1 space-y-1">
                           <div className="flex items-center space-x-2">
-                            <span className="text-xs font-medium text-gray-500">内容:</span>
+                            <span className="text-xs font-medium text-gray-500">{t('content')}:</span>
                             <span className="text-sm text-gray-900 font-mono bg-white px-2 py-1 rounded border">
                               {result.text}
                             </span>
                             <button
                               onClick={() => copyToClipboard(result.text)}
                               className="p-1 text-gray-400 hover:text-blue-600 transition-colors"
-                              title="复制内容"
+                              title={t('copy_content')}
                             >
                               <Copy className="w-3 h-3" />
                             </button>
                           </div>
                           <div className="flex items-center space-x-4 text-xs text-gray-500">
-                            <span>格式: {result.format}</span>
-                            <span>时间: {result.timestamp.toLocaleString('zh-CN')}</span>
+                            <span>{t('format')}: {result.format}</span>
+                            <span>{t('time')}: {result.timestamp.toLocaleString(i18n.language === 'zh' ? 'zh-CN' : 'en-US')}</span>
                           </div>
                         </div>
                       </div>

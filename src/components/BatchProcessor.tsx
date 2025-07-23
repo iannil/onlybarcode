@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import JsBarcode from 'jsbarcode';
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
@@ -17,16 +18,12 @@ interface BarcodeItem {
 type Mode = 'single' | 'batch';
 
 const BarcodeProcessor: React.FC = () => {
-  // 模式：单个/批量
+  const { t } = useTranslation();
   const [mode, setMode] = useState<Mode>('single');
-  // 单个输入
   const [singleText, setSingleText] = useState('123456789012');
-  // 批量输入
   const [items, setItems] = useState<BarcodeItem[]>([]);
   const [processing, setProcessing] = useState(false);
-  // 通用设置
   const [format, setFormat] = useState('CODE128');
-  // 1. width 只允许 number | undefined
   const [width, setWidth] = useState<number>(2);
   const [height, setHeight] = useState(100);
   const [displayValue, setDisplayValue] = useState(true);
@@ -41,16 +38,11 @@ const BarcodeProcessor: React.FC = () => {
   const textInputRef = useRef<HTMLTextAreaElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const svgRef = useRef<SVGSVGElement>(null);
-  // 条码预览每行数量，默认1，最大5
   const [barcodesPerRow, setBarcodesPerRow] = useState(1);
-  // 1. 新增批量输入文本的state
   const [batchText, setBatchText] = useState('');
-  // 1. 新增页面宽高 state
   const [pageWidth, setPageWidth] = useState<string | number>('');
   const [pageHeight, setPageHeight] = useState(140);
-  // 用于存储每个条码图片的实际宽度
   const [imgSizes, setImgSizes] = useState<Record<string, { width: number; height: number }>>({});
-  // 在 state 区域添加 repeatCount
   const [repeatCount, setRepeatCount] = useState<number>(1);
 
   const formats = [
@@ -64,7 +56,6 @@ const BarcodeProcessor: React.FC = () => {
     { value: 'codabar', label: 'Codabar' },
   ];
 
-  // 单个生成条形码
   const generateSingleBarcode = () => {
     if (canvasRef.current && singleText.trim()) {
       try {
@@ -80,17 +71,15 @@ const BarcodeProcessor: React.FC = () => {
         });
       } catch (error) {
         console.error(error);
-        alert('条码生成失败: ' + (error instanceof Error ? error.message : error));
+        alert(t('barcode_generation_failed') + ': ' + (error instanceof Error ? error.message : error));
       }
     }
   };
 
   useEffect(() => {
     if (mode === 'single') generateSingleBarcode();
-    // eslint-disable-next-line
-  }, [singleText, format, width, height, displayValue, fontSize, margin, backgroundColor, lineColor, mode]);
+  }, [singleText, format, width, height, displayValue, fontSize, margin, backgroundColor, lineColor, mode, t]);
 
-  // 单个下载
   const downloadSingleBarcode = (type: 'png' | 'svg') => {
     if (type === 'png' && canvasRef.current) {
       const link = document.createElement('a');
@@ -144,7 +133,6 @@ const BarcodeProcessor: React.FC = () => {
     }
   };
 
-  // 批量逻辑（原BatchProcessor）
   const handleTextImport = (text: string) => {
     const lines = text.split('\n').filter(line => line.trim());
     let newItems: BarcodeItem[] = [];
@@ -191,7 +179,7 @@ const BarcodeProcessor: React.FC = () => {
   const generateBarcode = async (text: string): Promise<string> => {
     return new Promise((resolve, reject) => {
       if (!text.trim()) {
-        reject(new Error('条码内容不能为空'));
+        reject(new Error(t('barcode_content_empty')));
         return;
       }
       const canvas = document.createElement('canvas');
@@ -208,121 +196,77 @@ const BarcodeProcessor: React.FC = () => {
         });
         resolve(canvas.toDataURL());
       } catch (error) {
-        console.error(error);
         reject(error);
       }
     });
   };
 
   const processItems = async () => {
-    if (items.length === 0) return;
     setProcessing(true);
     for (const item of items) {
-      if (item.status !== 'pending') continue;
-      setItems(prev => prev.map(i => i.id === item.id ? { ...i, status: 'processing' } : i));
-      try {
-        const dataUrl = await generateBarcode(item.text);
-        setItems(prev => prev.map(i => i.id === item.id ? { ...i, status: 'completed', dataUrl } : i));
-      } catch (error) {
-        setItems(prev => prev.map(i => i.id === item.id ? { ...i, status: 'error', error: error instanceof Error ? error.message : '处理失败' } : i));
+      if (item.status === 'pending') {
+        setItems(prev => prev.map(i => i.id === item.id ? { ...i, status: 'processing' } : i));
+        try {
+          const dataUrl = await generateBarcode(item.text);
+          setItems(prev => prev.map(i => i.id === item.id ? { ...i, status: 'completed', dataUrl } : i));
+        } catch (error) {
+          setItems(prev => prev.map(i => i.id === item.id ? { ...i, status: 'error', error: error instanceof Error ? error.message : t('processing_failed_generic') } : i));
+        }
+        await new Promise(resolve => setTimeout(resolve, 100));
       }
-      await new Promise(resolve => setTimeout(resolve, 100));
     }
     setProcessing(false);
   };
 
   const downloadResults = async () => {
+    const zip = new JSZip();
     const completedItems = items.filter(item => item.status === 'completed' && item.dataUrl);
-    if (completedItems.length === 0) return;
-    if (completedItems.length === 1) {
-      const item = completedItems[0];
-      const link = document.createElement('a');
-      link.href = item.dataUrl!;
-      link.download = `barcode-${item.text}.png`;
-      link.click();
-    } else {
-      const zip = new JSZip();
-      for (const item of completedItems) {
-        if (item.dataUrl) {
-          const response = await fetch(item.dataUrl);
-          const blob = await response.blob();
-          const fileName = `barcode-${item.text.replace(/[^a-zA-Z0-9]/g, '_')}.png`;
-          zip.file(fileName, blob);
-        }
+    
+    completedItems.forEach((item, index) => {
+      if (item.dataUrl) {
+        const base64Data = item.dataUrl.split(',')[1];
+        zip.file(`barcode-${item.text}-${index + 1}.png`, base64Data, { base64: true });
       }
-      const csvContent = [
-        ['文本内容', '文件名', '状态'],
-        ...items.map(item => [
-          item.text,
-          item.fileName || `barcode-${item.text.replace(/[^a-zA-Z0-9]/g, '_')}.png`,
-          item.status === 'completed' ? '成功' : item.status === 'error' ? '失败' : '待处理'
-        ])
-      ].map(row => row.join(',')).join('\n');
-      zip.file('batch_results.csv', '\ufeff' + csvContent);
-      const zipBlob = await zip.generateAsync({ type: 'blob' });
-      saveAs(zipBlob, `batch_barcodes_${new Date().toISOString().split('T')[0]}.zip`);
-    }
+    });
+    
+    const content = await zip.generateAsync({ type: 'blob' });
+    saveAs(content, `barcodes-${new Date().toISOString().split('T')[0]}.zip`);
   };
 
-  // PDF 导出逻辑
   const exportPDF = async () => {
-    const completedItems = items.filter(item => item.status === 'completed' && item.dataUrl);
-    if (completedItems.length === 0) return;
-
     const pdfDoc = await PDFDocument.create();
-
-    // Embed font once
+    const page = pdfDoc.addPage([595, 842]); // A4 size
     const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
-
-    for (const item of completedItems) {
-      // Load image as Uint8Array
-      const response = await fetch(item.dataUrl!);
-      const blob = await response.blob();
-      const arrayBuffer = await blob.arrayBuffer();
-      const pngImage = await pdfDoc.embedPng(new Uint8Array(arrayBuffer));
-      const imgWidth = pngImage.width;
-      const imgHeight = pngImage.height;
-
-      // Set page size to image size + some margin
-      const margin = 32;
-      const pageWidth = imgWidth + margin * 2;
-      const pageHeight = imgHeight + margin * 2 + 32; // extra for text
-      const page = pdfDoc.addPage([pageWidth, pageHeight]);
-
-      // Draw white background
-      page.drawRectangle({
-        x: 0,
-        y: 0,
-        width: pageWidth,
-        height: pageHeight,
-        color: rgb(1, 1, 1),
-      });
-
-      // Draw image centered
-      page.drawImage(pngImage, {
-        x: margin,
-        y: margin + 24,
-        width: imgWidth,
-        height: imgHeight,
-      });
-
-      // Draw text below barcode
-      // Center the text horizontally using font metrics
-      const fontSize = 16;
-      const textWidth = font.widthOfTextAtSize(item.text, fontSize);
-      const textX = (pageWidth - textWidth) / 2;
-      page.drawText(item.text, {
-        x: textX,
-        y: margin,
-        size: fontSize,
-        font,
-        color: rgb(0, 0, 0),
+    
+    const completedItems = items.filter(item => item.status === 'completed' && item.dataUrl);
+    const itemsPerPage = 8;
+    let currentPage = 0;
+    
+    for (let i = 0; i < completedItems.length; i += itemsPerPage) {
+      if (i > 0) {
+        currentPage++;
+        page = pdfDoc.addPage([595, 842]);
+      }
+      
+      const pageItems = completedItems.slice(i, i + itemsPerPage);
+      pageItems.forEach((item, index) => {
+        if (item.dataUrl) {
+          const y = 750 - (index * 90);
+          page.drawText(item.text, { x: 50, y, size: 12, font });
+          
+          // Convert data URL to image and embed
+          const base64Data = item.dataUrl.split(',')[1];
+          const imageBytes = Uint8Array.from(atob(base64Data), c => c.charCodeAt(0));
+          const image = pdfDoc.embedPng(imageBytes);
+          const { width: imgWidth, height: imgHeight } = image.scale(0.5);
+          page.drawImage(image, { x: 50, y: y - 60, width: imgWidth, height: imgHeight });
+        }
       });
     }
-
+    
     const pdfBytes = await pdfDoc.save();
     const blob = new Blob([pdfBytes], { type: 'application/pdf' });
-    saveAs(blob, `batch_barcodes_${new Date().toISOString().split('T')[0]}.pdf`);
+    saveAs(blob, `barcodes-${new Date().toISOString().split('T')[0]}.pdf`);
   };
 
   const removeItem = (id: string) => {
@@ -334,6 +278,7 @@ const BarcodeProcessor: React.FC = () => {
       return prev.filter(i => i.id !== id);
     });
   };
+
   const clearItems = () => {
     items.forEach(item => {
       if (item.dataUrl) {
@@ -347,40 +292,31 @@ const BarcodeProcessor: React.FC = () => {
   const errorCount = items.filter(item => item.status === 'error').length;
   const processingCount = items.filter(item => item.status === 'processing').length;
 
-  // 2. useEffect 监听 batchText 变化，自动导入并生成条码
   useEffect(() => {
     if (batchText.trim()) {
       handleTextImport(batchText);
     } else {
       setItems([]);
     }
-    // eslint-disable-next-line
   }, [batchText, repeatCount]);
 
-  // barcodesPerRow 已经是受控布局，布局会自动响应
-
-  // 新增 useEffect：参数变化时重置已完成items为pending，触发processItems重新生成图片
   useEffect(() => {
     if (mode === 'batch' && items.length > 0 && items.some(i => i.status === 'completed')) {
       setItems(prev => prev.map(i => i.status === 'completed' ? { ...i, status: 'pending', dataUrl: undefined, error: undefined } : i));
     }
-    // eslint-disable-next-line
-  }, [width, height, format, displayValue, fontSize, margin, backgroundColor, lineColor]);
+  }, [width, height, format, displayValue, fontSize, margin, backgroundColor, lineColor, mode]);
 
-  // 图片加载后回调，记录实际宽高
   const handleImgLoad = useCallback((id: string, e: React.SyntheticEvent<HTMLImageElement>) => {
     const { naturalWidth, naturalHeight } = e.currentTarget;
     setImgSizes(prev => ({ ...prev, [id]: { width: naturalWidth, height: naturalHeight } }));
   }, []);
 
-  // 预览区分组逻辑，保证每行高度一致
   const completedItems = items.filter(item => item.status === 'completed' && item.dataUrl);
   const previewRows: BarcodeItem[][] = [];
   for (let i = 0; i < completedItems.length; i += barcodesPerRow) {
     previewRows.push(completedItems.slice(i, i + barcodesPerRow));
   }
 
-  // 生成预览条码元素，保证每行高度一致
   const previewBarcodeElements: JSX.Element[] = [];
   previewRows.forEach((row, rowIdx) => {
     const margin = 16;
@@ -424,18 +360,15 @@ const BarcodeProcessor: React.FC = () => {
 
   return (
     <div className="tab-content">
-      {/* 主体内容 */}
       {mode === 'single' ? (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* 输入设置 */}
           <div className="space-y-6">
             <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-slate-200/50 p-6">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-semibold text-slate-900 flex items-center">
                   <Settings className="w-5 h-5 mr-2 text-blue-600" />
-                  条形码设置
+                  {t('barcode_settings')}
                 </h3>
-                {/* 简洁的模式切换 */}
                 <div className="flex space-x-1 bg-slate-100/50 p-1 rounded-lg">
                   <button
                     onClick={() => setMode('single')}
@@ -445,7 +378,7 @@ const BarcodeProcessor: React.FC = () => {
                         : 'text-slate-600 hover:text-slate-900'
                     }`}
                   >
-                    单个
+                    {t('single')}
                   </button>
                   <button
                     onClick={() => setMode('batch')}
@@ -455,14 +388,14 @@ const BarcodeProcessor: React.FC = () => {
                         : 'text-slate-600 hover:text-slate-900'
                     }`}
                   >
-                    批量
+                    {t('batch')}
                   </button>
                 </div>
               </div>
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    文本内容
+                    {t('text_content')}
                   </label>
                   <div className="flex space-x-2">
                     <input
@@ -470,12 +403,12 @@ const BarcodeProcessor: React.FC = () => {
                       value={singleText}
                       onChange={(e) => setSingleText(e.target.value)}
                       className="flex-1 px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white/50 backdrop-blur-sm"
-                      placeholder="请输入要生成条形码的文本"
+                      placeholder={t('text_content_placeholder')}
                     />
                     <button
                       onClick={generateRandomCode}
                       className="px-3 py-2 bg-slate-100/80 hover:bg-slate-200/80 rounded-lg transition-colors backdrop-blur-sm"
-                      title="生成随机码"
+                      title={t('generate_random')}
                     >
                       <RefreshCw className="w-4 h-4" />
                     </button>
@@ -483,7 +416,7 @@ const BarcodeProcessor: React.FC = () => {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    条形码格式
+                    {t('barcode_format')}
                   </label>
                   <select
                     value={format}
@@ -502,14 +435,14 @@ const BarcodeProcessor: React.FC = () => {
                   className="text-sm text-blue-600 hover:text-blue-700 flex items-center"
                 >
                   <Settings className="w-4 h-4 mr-1" />
-                  {showSettings ? '隐藏高级设置' : '显示高级设置'}
+                  {showSettings ? t('hide_advanced_settings') : t('show_advanced_settings')}
                 </button>
                 {showSettings && (
                   <div className="space-y-4 pt-4 border-t border-gray-200">
                     <div className="grid grid-cols-2 gap-4">
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
-                          线条宽度: {width}
+                          {t('line_width')}: {width}
                         </label>
                         <input
                           type="range"
@@ -522,7 +455,7 @@ const BarcodeProcessor: React.FC = () => {
                       </div>
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
-                          高度: {height}px
+                          {t('height')}: {height}px
                         </label>
                         <input
                           type="range"
@@ -537,7 +470,7 @@ const BarcodeProcessor: React.FC = () => {
                     <div className="grid grid-cols-2 gap-4">
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
-                          字体大小: {fontSize}px
+                          {t('font_size')}: {fontSize}px
                         </label>
                         <input
                           type="range"
@@ -550,7 +483,7 @@ const BarcodeProcessor: React.FC = () => {
                       </div>
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
-                          边距: {margin}px
+                          {t('margin')}: {margin}px
                         </label>
                         <input
                           type="range"
@@ -565,7 +498,7 @@ const BarcodeProcessor: React.FC = () => {
                     <div className="grid grid-cols-2 gap-4">
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
-                          背景颜色
+                          {t('background_color')}
                         </label>
                         <input
                           type="color"
@@ -576,7 +509,7 @@ const BarcodeProcessor: React.FC = () => {
                       </div>
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
-                          线条颜色
+                          {t('line_color')}
                         </label>
                         <input
                           type="color"
@@ -595,7 +528,7 @@ const BarcodeProcessor: React.FC = () => {
                         className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                       />
                       <label htmlFor="displayValue" className="ml-2 text-sm text-gray-700">
-                        显示文本
+                        {t('show_text')}
                       </label>
                     </div>
                   </div>
@@ -603,10 +536,9 @@ const BarcodeProcessor: React.FC = () => {
               </div>
             </div>
           </div>
-          {/* 预览区 */}
           <div className="space-y-6">
             <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-slate-200/50 p-6">
-              <h3 className="text-lg font-semibold text-slate-900 mb-4">条形码预览</h3>
+              <h3 className="text-lg font-semibold text-slate-900 mb-4">{t('barcode_preview')}</h3>
               <div className="bg-gray-50 rounded-lg p-6 text-center">
                 <canvas
                   ref={canvasRef}
@@ -622,14 +554,14 @@ const BarcodeProcessor: React.FC = () => {
                   className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-sm"
                 >
                   <Download className="w-4 h-4 mr-2" />
-                  下载 PNG
+                  {t('download_png')}
                 </button>
                 <button
                   onClick={() => downloadSingleBarcode('svg')}
                   className="flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors shadow-sm"
                 >
                   <Download className="w-4 h-4 mr-2" />
-                  下载 SVG
+                  {t('download_svg')}
                 </button>
                 <button
                   onClick={copySingleBarcodeData}
@@ -642,39 +574,37 @@ const BarcodeProcessor: React.FC = () => {
                   {copySuccess ? (
                     <>
                       <CheckCircle className="w-4 h-4 mr-2" />
-                      已复制
+                      {t('copied')}
                     </>
                   ) : (
                     <>
                       <Copy className="w-4 h-4 mr-2" />
-                      复制数据
+                      {t('copy_data')}
                     </>
                   )}
                 </button>
               </div>
             </div>
             <div className="bg-blue-50/80 backdrop-blur-sm rounded-2xl p-4">
-              <h4 className="text-sm font-medium text-blue-900 mb-2">使用提示</h4>
+              <h4 className="text-sm font-medium text-blue-900 mb-2">{t('usage_tips')}</h4>
               <ul className="text-sm text-blue-800 space-y-1">
-                <li>• 不同格式对文本内容有特定要求</li>
-                <li>• EAN-13需要12-13位数字</li>
-                <li>• Code 128支持字母和数字</li>
-                <li>• 可调节尺寸和颜色以适应不同需求</li>
+                <li>• {t('format_requirements')}</li>
+                <li>• {t('ean13_requirement')}</li>
+                <li>• {t('code128_support')}</li>
+                <li>• {t('adjust_size_color')}</li>
               </ul>
             </div>
           </div>
         </div>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* 批量输入区 */}
           <div className="space-y-6">
             <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-slate-200/50 p-6">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-semibold text-slate-900 flex items-center">
                   <Settings className="w-5 h-5 mr-2 text-blue-600" />
-                  条形码设置
+                  {t('barcode_settings')}
                 </h3>
-                {/* 简洁的模式切换 */}
                 <div className="flex space-x-1 bg-slate-100/50 p-1 rounded-lg">
                   <button
                     onClick={() => setMode('single')}
@@ -684,7 +614,7 @@ const BarcodeProcessor: React.FC = () => {
                         : 'text-slate-600 hover:text-slate-900'
                     }`}
                   >
-                    单个
+                    {t('single')}
                   </button>
                   <button
                     onClick={() => setMode('batch')}
@@ -694,13 +624,13 @@ const BarcodeProcessor: React.FC = () => {
                         : 'text-slate-600 hover:text-slate-900'
                     }`}
                   >
-                    批量
+                    {t('batch')}
                   </button>
                 </div>
               </div>
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">条形码格式</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">{t('barcode_format')}</label>
                   <select
                     value={format}
                     onChange={(e) => setFormat(e.target.value)}
@@ -716,14 +646,14 @@ const BarcodeProcessor: React.FC = () => {
                   className="text-sm text-blue-600 hover:text-blue-700 flex items-center"
                 >
                   <Settings className="w-4 h-4 mr-1" />
-                  {showSettings ? '隐藏高级设置' : '显示高级设置'}
+                  {showSettings ? t('hide_advanced_settings') : t('show_advanced_settings')}
                 </button>
                 {showSettings && (
                   <div className="space-y-4 pt-4 border-t border-gray-200">
                     <div className="grid grid-cols-2 gap-4">
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
-                          线条宽度: {width}
+                          {t('line_width')}: {width}
                         </label>
                         <input
                           type="range"
@@ -736,7 +666,7 @@ const BarcodeProcessor: React.FC = () => {
                       </div>
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
-                          高度: {height}px
+                          {t('height')}: {height}px
                         </label>
                         <input
                           type="range"
@@ -751,7 +681,7 @@ const BarcodeProcessor: React.FC = () => {
                     <div className="grid grid-cols-2 gap-4">
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
-                          字体大小: {fontSize}px
+                          {t('font_size')}: {fontSize}px
                         </label>
                         <input
                           type="range"
@@ -764,7 +694,7 @@ const BarcodeProcessor: React.FC = () => {
                       </div>
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
-                          边距: {margin}px
+                          {t('margin')}: {margin}px
                         </label>
                         <input
                           type="range"
@@ -779,7 +709,7 @@ const BarcodeProcessor: React.FC = () => {
                     <div className="grid grid-cols-2 gap-4">
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
-                          背景颜色
+                          {t('background_color')}
                         </label>
                         <input
                           type="color"
@@ -790,7 +720,7 @@ const BarcodeProcessor: React.FC = () => {
                       </div>
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
-                          线条颜色
+                          {t('line_color')}
                         </label>
                         <input
                           type="color"
@@ -809,13 +739,13 @@ const BarcodeProcessor: React.FC = () => {
                         className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                       />
                       <label htmlFor="displayValue-batch" className="ml-2 text-sm text-gray-700">
-                        显示文本
+                        {t('show_text')}
                       </label>
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
-                          条码重复生成次数
+                          {t('barcode_repeat_count')}
                         </label>
                         <input
                           type="number"
@@ -829,16 +759,14 @@ const BarcodeProcessor: React.FC = () => {
                     </div>
                   </div>
                 )}
-                {/* 保留每行条码数输入框和页面宽高设置（如需）可放在高级设置下方，否则移除 */}
               </div>
-              {/* 3. 条码文本输入 */}
               <div className="mt-6">
-                <label className="block text-sm font-medium text-gray-700 mb-2">文本输入 (每行一个)</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">{t('text_input')}</label>
                 <textarea
                   ref={textInputRef}
                   value={batchText}
                   onChange={e => setBatchText(e.target.value)}
-                  placeholder="输入要生成条形码的文本，每行一个"
+                  placeholder={t('text_input_placeholder')}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   rows={4}
                 />
@@ -856,7 +784,7 @@ const BarcodeProcessor: React.FC = () => {
                   ) : (
                     <Play className="w-4 h-4 mr-2" />
                   )}
-                  <span>开始处理</span>
+                  <span>{t('start_processing')}</span>
                 </button>
                 <div className="flex space-x-2">
                   <button
@@ -865,7 +793,7 @@ const BarcodeProcessor: React.FC = () => {
                     className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-slate-300 disabled:cursor-not-allowed transition-colors flex items-center space-x-2 shadow-sm"
                   >
                     <Download className="w-4 h-4" />
-                    <span>导出 ZIP</span>
+                    <span>{t('export_zip')}</span>
                   </button>
                   <button
                     onClick={exportPDF}
@@ -873,21 +801,21 @@ const BarcodeProcessor: React.FC = () => {
                     className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:bg-slate-300 disabled:cursor-not-allowed transition-colors flex items-center space-x-2 shadow-sm"
                   >
                     <Download className="w-4 h-4" />
-                    <span>导出 PDF</span>
+                    <span>{t('export_pdf')}</span>
                   </button>
                   <button
                     onClick={clearItems}
                     disabled={items.length === 0}
                     className="px-4 py-2 bg-slate-600 text-white rounded-lg hover:bg-slate-700 disabled:bg-slate-300 disabled:cursor-not-allowed transition-colors shadow-sm"
                   >
-                    清空
+                    {t('clear')}
                   </button>
                 </div>
               </div>
               {processing && processingCount > 0 && (
                 <div className="mt-4">
                   <div className="flex items-center justify-between text-sm text-gray-600 mb-2">
-                    <span>处理进度</span>
+                    <span>{t('processing_progress')}</span>
                     <span>{Math.round((completedCount + errorCount) / items.length * 100)}%</span>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2">
@@ -898,15 +826,14 @@ const BarcodeProcessor: React.FC = () => {
                   </div>
                 </div>
               )}
-              {/* 处理列表和统计合并显示 */}
               <div className="mt-6">
-                <h4 className="text-sm font-semibold text-gray-500 mb-2">处理列表</h4>
+                <h4 className="text-sm font-semibold text-gray-500 mb-2">{t('processing_list')}</h4>
                 <div className="space-y-1 max-h-40 overflow-y-auto">
                   {items.length === 0 ? (
-                                    <div className="text-center py-4 text-slate-400 text-xs">
-                  <Package className="w-8 h-8 mx-auto mb-2 text-slate-200" />
-                  <p>暂无处理项目</p>
-                </div>
+                    <div className="text-center py-4 text-slate-400 text-xs">
+                      <Package className="w-8 h-8 mx-auto mb-2 text-slate-200" />
+                      <p>{t('no_items')}</p>
+                    </div>
                   ) : (
                     items.map((item) => (
                       <div key={item.id} className="flex items-center justify-between px-2 py-1 rounded hover:bg-gray-100 transition-colors">
@@ -939,33 +866,30 @@ const BarcodeProcessor: React.FC = () => {
                   )}
                 </div>
                 {items.length > 0 && (
-                                  <div className="bg-gradient-to-r from-blue-50/80 to-purple-50/80 rounded-2xl p-4 mt-4 backdrop-blur-sm">
-                  <h4 className="text-sm font-medium text-slate-900 mb-3">处理统计</h4>
+                  <div className="bg-gradient-to-r from-blue-50/80 to-purple-50/80 rounded-2xl p-4 mt-4 backdrop-blur-sm">
+                    <h4 className="text-sm font-medium text-slate-900 mb-3">{t('processing_list')}</h4>
                     <div className="grid grid-cols-2 gap-4">
-                                              <div className="text-center">
-                          <div className="text-2xl font-bold text-green-600">{completedCount}</div>
-                          <div className="text-xs text-slate-600">成功完成</div>
-                        </div>
-                        <div className="text-center">
-                          <div className="text-2xl font-bold text-red-600">{errorCount}</div>
-                          <div className="text-xs text-slate-600">处理失败</div>
-                        </div>
+                      <div className="text-center">
+                        <div className="text-2xl font-bold text-green-600">{completedCount}</div>
+                        <div className="text-xs text-slate-600">{t('success_completed')}</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="text-2xl font-bold text-red-600">{errorCount}</div>
+                        <div className="text-xs text-slate-600">{t('processing_failed')}</div>
+                      </div>
                     </div>
                   </div>
                 )}
               </div>
             </div>
           </div>
-          {/* 结果区 */}
           <div className="space-y-6">
-            {/* 只保留条码预览区 */}
             <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-slate-200/50 p-6 min-h-[220px] flex flex-col">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold text-slate-900">条码预览</h3>
+                <h3 className="text-lg font-semibold text-slate-900">{t('barcode_preview')}</h3>
               </div>
-              {/* 条码预览每行数量设置，仅批量模式显示 */}
               <div className="mb-4 flex items-center space-x-4">
-                <label className="text-sm text-gray-700 font-medium">每行条码数</label>
+                <label className="text-sm text-gray-700 font-medium">{t('barcodes_per_row')}</label>
                 <input
                   type="range"
                   min={1}
@@ -994,7 +918,7 @@ const BarcodeProcessor: React.FC = () => {
               ) : (
                 <div className="flex flex-1 flex-col items-center justify-center py-12 text-gray-400">
                   <Package className="w-12 h-12 mb-4 text-gray-200" />
-                  <div className="text-base">暂无条码预览，请先输入内容并点击“开始处理”</div>
+                  <div className="text-base">{t('no_preview')}</div>
                 </div>
               )}
             </div>

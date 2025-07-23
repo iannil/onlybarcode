@@ -3,16 +3,22 @@ import { Package, FileText, Settings } from 'lucide-react';
 import BarcodeProcessor from './components/BatchProcessor';
 import BarcodeScanner from './components/BarcodeScanner';
 import './App.css';
+import { useTranslation } from 'react-i18next';
 
 type TabType = 'generate' | 'scan';
 
 function App() {
+  const { t, i18n } = useTranslation();
   const [activeTab, setActiveTab] = useState<TabType>('generate');
 
   const tabs = [
-    { id: 'generate' as TabType, label: '条码生成', icon: Package, description: '单个或批量生成条形码' },
-    { id: 'scan' as TabType, label: '条码识别', icon: FileText, description: '从图片中识别条形码' },
+    { id: 'generate' as TabType, label: t('generate'), icon: Package, description: t('generate_desc') },
+    { id: 'scan' as TabType, label: t('scan'), icon: FileText, description: t('scan_desc') },
   ];
+
+  const changeLanguage = (lng: string) => {
+    i18n.changeLanguage(lng);
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50">
@@ -25,8 +31,8 @@ function App() {
                 <Package className="w-4 h-4 text-white" />
               </div>
               <div>
-                <h1 className="text-xl font-semibold text-slate-900">条形码工具</h1>
-                <p className="text-xs text-slate-500">专业、快速、可靠</p>
+                <h1 className="text-xl font-semibold text-slate-900">{t('title')}</h1>
+                <p className="text-xs text-slate-500">{t('slogan')}</p>
               </div>
             </div>
             
@@ -50,7 +56,15 @@ function App() {
                 ))}
               </div>
               <div className="ml-4">
-                <Settings className="w-4 h-4 text-slate-400 hover:text-slate-600 cursor-pointer transition-colors" />
+                <select
+                  className="text-xs bg-transparent border-none outline-none text-slate-600 hover:text-slate-900 cursor-pointer"
+                  value={i18n.language}
+                  onChange={e => changeLanguage(e.target.value)}
+                  title={t('language')}
+                >
+                  <option value="zh">{t('chinese')}</option>
+                  <option value="en">{t('english')}</option>
+                </select>
               </div>
             </nav>
           </div>
@@ -69,7 +83,7 @@ function App() {
       <footer className="bg-slate-50/50 border-t border-slate-200/50 mt-12">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="text-center text-slate-500 text-sm">
-            <p>&copy; 2025 条形码工具. 专业、快速、可靠的条形码处理工具.</p>
+            <p>&copy; 2025 {t('footer')}</p>
           </div>
         </div>
       </footer>
