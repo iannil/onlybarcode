@@ -71,9 +71,9 @@ function App() {
 
   return (
     <>
-      {isAnalyticsEnabled() && (
+      {/* {isAnalyticsEnabled() && ( */}
         <GoogleAnalytics measurementId={ANALYTICS_CONFIG.MEASUREMENT_ID} />
-      )}
+      {/* )} */}
       <SEOHead 
         title={seoConfig.title}
         description={seoConfig.description}
