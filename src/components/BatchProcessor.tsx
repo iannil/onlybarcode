@@ -5,6 +5,7 @@ import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
 import { Upload, Download, FileText, Package, X, CheckCircle, AlertCircle, Loader, Settings, RefreshCw, Copy, Play, Trash, Info } from 'lucide-react';
 import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
+import { useAnalytics } from '../hooks/useAnalytics';
 
 interface BarcodeItem {
   id: string;
@@ -19,6 +20,7 @@ type Mode = 'single' | 'batch';
 
 const BarcodeProcessor: React.FC = () => {
   const { t } = useTranslation();
+  const { trackEvent, trackCustomEvent } = useAnalytics();
   const [mode, setMode] = useState<'single' | 'batch'>('single');
   const [singleText, setSingleText] = useState('123456789012');
   const [items, setItems] = useState<BarcodeItem[]>([]);
@@ -73,9 +75,24 @@ const BarcodeProcessor: React.FC = () => {
           lineColor,
         });
         setSingleError(null);
+        
+        // Track successful barcode generation
+        trackEvent({
+          action: 'barcode_generated',
+          category: 'barcode',
+          label: format,
+        });
       } catch (error) {
         console.error(error);
         setSingleError(t('barcode_generation_failed') + ': ' + (error instanceof Error ? error.message : error));
+        
+        // Track barcode generation error
+        trackEvent({
+          action: 'error_occurred',
+          category: 'system',
+          label: 'barcode_generation_failed',
+        });
+        
         // 清空 canvas
         const ctx = canvasRef.current.getContext('2d');
         if (ctx) {
@@ -101,6 +118,13 @@ const BarcodeProcessor: React.FC = () => {
       link.download = `barcode-${singleText}.png`;
       link.href = canvasRef.current.toDataURL();
       link.click();
+      
+      // Track download event
+      trackEvent({
+        action: 'barcode_downloaded',
+        category: 'barcode',
+        label: 'png',
+      });
     } else if (type === 'svg' && svgRef.current) {
       if (singleText.trim()) {
         try {
@@ -122,6 +146,13 @@ const BarcodeProcessor: React.FC = () => {
           link.href = svgUrl;
           link.click();
           URL.revokeObjectURL(svgUrl);
+          
+          // Track download event
+          trackEvent({
+            action: 'barcode_downloaded',
+            category: 'barcode',
+            label: 'svg',
+          });
         } catch (error) {}
       }
     }
@@ -231,6 +262,16 @@ const BarcodeProcessor: React.FC = () => {
       }
     }
     setProcessing(false);
+    
+    // Track batch processing completion
+    const completedCount = items.filter(item => item.status === 'completed').length;
+    const errorCount = items.filter(item => item.status === 'error').length;
+    
+    trackCustomEvent('batch_processed', {
+      total_items: items.length,
+      completed_count: completedCount,
+      error_count: errorCount,
+    });
   };
 
   const downloadResults = async () => {
@@ -302,6 +343,12 @@ const BarcodeProcessor: React.FC = () => {
     const pdfBytes = await pdfDoc.save();
     const blob = new Blob([pdfBytes], { type: 'application/pdf' });
     saveAs(blob, 'barcodes.pdf');
+    
+    // Track PDF export event
+    trackCustomEvent('pdf_exported', {
+      barcode_count: completedItems.length,
+      format: singlePagePDF ? 'single_page' : 'multi_page',
+    });
   };
 
   const removeItem = (id: string) => {

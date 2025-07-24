@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { BrowserMultiFormatReader } from '@zxing/library';
 import { Upload, Image, X, CheckCircle, Copy, AlertCircle } from 'lucide-react';
+import { useAnalytics } from '../hooks/useAnalytics';
 
 interface ScanResult {
   id: string;
@@ -14,6 +15,7 @@ interface ScanResult {
 
 const BarcodeScanner: React.FC = () => {
   const { t, i18n } = useTranslation();
+  const { trackEvent, trackCustomEvent } = useAnalytics();
   const [dragOver, setDragOver] = useState(false);
   const [scanning, setScanning] = useState(false);
   const [results, setResults] = useState<ScanResult[]>([]);
@@ -49,6 +51,9 @@ const BarcodeScanner: React.FC = () => {
     setScanning(true);
     setError(null);
 
+    let successCount = 0;
+    let errorCount = 0;
+
     for (const file of files) {
       try {
         const imageUrl = URL.createObjectURL(file);
@@ -64,13 +69,36 @@ const BarcodeScanner: React.FC = () => {
         };
 
         setResults(prev => [scanResult, ...prev]);
+        successCount++;
+        
+        // Track successful scan
+        trackEvent({
+          action: 'barcode_scanned',
+          category: 'barcode',
+          label: result.getBarcodeFormat().toString(),
+        });
       } catch (error) {
         console.error(`${t('recognition_failed')} ${file.name}:`, error);
         setError(`${t('cannot_recognize_file')} ${file.name}`);
+        errorCount++;
+        
+        // Track scan error
+        trackEvent({
+          action: 'error_occurred',
+          category: 'system',
+          label: 'barcode_scan_failed',
+        });
       }
     }
 
     setScanning(false);
+    
+    // Track batch scan completion
+    trackCustomEvent('batch_scan_completed', {
+      total_files: files.length,
+      success_count: successCount,
+      error_count: errorCount,
+    });
   };
 
   const copyToClipboard = async (text: string) => {

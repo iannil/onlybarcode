@@ -6,7 +6,10 @@ import PrivacyPolicy from './components/PrivacyPolicy';
 import TermsOfService from './components/TermsOfService';
 import ContactUs from './components/ContactUs';
 import SEOHead from './components/SEOHead';
+import GoogleAnalytics from './components/GoogleAnalytics';
 import { getSeoConfig, getAlternateLanguages } from './config/seo';
+import { ANALYTICS_CONFIG, isAnalyticsEnabled } from './config/analytics';
+import { useAnalytics } from './hooks/useAnalytics';
 import './App.css';
 import { useTranslation } from 'react-i18next';
 
@@ -15,6 +18,7 @@ type RouteType = 'home' | 'privacy' | 'terms' | 'contact';
 
 function App() {
   const { t, i18n } = useTranslation();
+  const { trackEvent, trackPageView } = useAnalytics();
   const [activeTab, setActiveTab] = useState<TabType>('generate');
   const [currentRoute, setCurrentRoute] = useState<RouteType>('home');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -22,26 +26,31 @@ function App() {
   useEffect(() => {
     const handleHashChange = () => {
       const hash = window.location.hash.slice(1);
+      let newRoute: RouteType = 'home';
+      
       switch (hash) {
         case 'privacy':
-          setCurrentRoute('privacy');
+          newRoute = 'privacy';
           break;
         case 'terms':
-          setCurrentRoute('terms');
+          newRoute = 'terms';
           break;
         case 'contact':
-          setCurrentRoute('contact');
+          newRoute = 'contact';
           break;
         default:
-          setCurrentRoute('home');
+          newRoute = 'home';
           break;
       }
+      
+      setCurrentRoute(newRoute);
+      trackPageView(window.location.pathname + window.location.hash);
     };
 
     handleHashChange();
     window.addEventListener('hashchange', handleHashChange);
     return () => window.removeEventListener('hashchange', handleHashChange);
-  }, []);
+  }, [trackPageView]);
 
   const tabs = [
     { id: 'generate' as TabType, label: t('generate'), icon: Package, description: t('generate_desc') },
@@ -50,6 +59,11 @@ function App() {
 
   const changeLanguage = (lng: string) => {
     i18n.changeLanguage(lng);
+    trackEvent({
+      action: 'language_change',
+      category: 'navigation',
+      label: lng,
+    });
   };
 
   const seoConfig = getSeoConfig(i18n.language, activeTab);
@@ -57,6 +71,9 @@ function App() {
 
   return (
     <>
+      {isAnalyticsEnabled() && (
+        <GoogleAnalytics measurementId={ANALYTICS_CONFIG.MEASUREMENT_ID} />
+      )}
       <SEOHead 
         title={seoConfig.title}
         description={seoConfig.description}
@@ -89,7 +106,14 @@ function App() {
                 {tabs.map((tab) => (
                   <button
                     key={tab.id}
-                    onClick={() => setActiveTab(tab.id)}
+                    onClick={() => {
+                      setActiveTab(tab.id);
+                      trackEvent({
+                        action: 'tab_switch',
+                        category: 'navigation',
+                        label: tab.id,
+                      });
+                    }}
                     className={`flex items-center justify-center space-x-2 px-5 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${
                       activeTab === tab.id
                         ? 'bg-white text-blue-600 shadow-sm ring-1 ring-slate-200/50'
@@ -157,6 +181,11 @@ function App() {
                     onClick={() => {
                       setActiveTab(tab.id);
                       setMobileMenuOpen(false);
+                      trackEvent({
+                        action: 'tab_switch',
+                        category: 'navigation',
+                        label: tab.id,
+                      });
                     }}
                     className={`w-full flex items-center gap-3 px-4 py-4 rounded-xl text-base font-medium transition-all duration-200 ${
                       activeTab === tab.id
