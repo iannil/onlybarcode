@@ -16,12 +16,14 @@ interface BarcodeItem {
   error?: string;
 }
 
-type Mode = 'single' | 'batch';
+interface BarcodeProcessorProps {
+  mode: 'single' | 'batch';
+  setMode: (mode: 'single' | 'batch') => void;
+}
 
-const BarcodeProcessor: React.FC = () => {
+const BarcodeProcessor: React.FC<BarcodeProcessorProps> = ({ mode, setMode }) => {
   const { t } = useTranslation();
   const { trackEvent, trackCustomEvent } = useAnalytics();
-  const [mode, setMode] = useState<'single' | 'batch'>('single');
   const [singleText, setSingleText] = useState('123456789012');
   const [items, setItems] = useState<BarcodeItem[]>([]);
   const [processing, setProcessing] = useState(false);
@@ -454,7 +456,10 @@ const BarcodeProcessor: React.FC = () => {
               </div>
               <div className="flex space-x-1 bg-slate-100/50 p-1 rounded-lg mb-4">
                 <button
-                  onClick={() => setMode('single' as Mode)}
+                  onClick={() => {
+                    setMode('single');
+                    window.location.hash = 'generate';
+                  }}
                   className={`flex-1 px-3 py-2 sm:py-1 rounded-xl text-base sm:text-xs font-medium transition-all duration-200 ${
                     mode === 'single'
                       ? 'bg-white text-blue-600 shadow-sm'
@@ -464,7 +469,10 @@ const BarcodeProcessor: React.FC = () => {
                   {t('single')}
                 </button>
                 <button
-                  onClick={() => setMode('batch' as Mode)}
+                  onClick={() => {
+                    setMode('batch');
+                    window.location.hash = 'generate-batch';
+                  }}
                   className={`flex-1 px-3 py-2 sm:py-1 rounded-xl text-base sm:text-xs font-medium transition-all duration-200 ${
                     mode === 'batch'
                       ? 'bg-white text-blue-600 shadow-sm'
@@ -728,7 +736,10 @@ const BarcodeProcessor: React.FC = () => {
               </div>
               <div className="flex space-x-1 bg-slate-100/50 p-1 rounded-lg mb-4">
                 <button
-                  onClick={() => setMode('single' as Mode)}
+                  onClick={() => {
+                    setMode('single');
+                    window.location.hash = 'generate';
+                  }}
                   className={`flex-1 px-3 py-2 sm:py-1 rounded-xl text-base sm:text-xs font-medium transition-all duration-200 ${
                     mode === 'single'
                       ? 'bg-white text-blue-600 shadow-sm'
@@ -738,7 +749,10 @@ const BarcodeProcessor: React.FC = () => {
                   {t('single')}
                 </button>
                 <button
-                  onClick={() => setMode('batch' as Mode)}
+                  onClick={() => {
+                    setMode('batch');
+                    window.location.hash = 'generate-batch';
+                  }}
                   className={`flex-1 px-3 py-2 sm:py-1 rounded-xl text-base sm:text-xs font-medium transition-all duration-200 ${
                     mode === 'batch'
                       ? 'bg-white text-blue-600 shadow-sm'
@@ -927,11 +941,11 @@ const BarcodeProcessor: React.FC = () => {
               </div>
             </div>
             <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-slate-200/50 p-6">
-              <div className="flex flex-row gap-x-2 gap-y-2 flex-nowrap overflow-x-auto whitespace-nowrap mt-4">
+              <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-2 mt-4">
                 <button
                   onClick={processItems}
                   disabled={processing || items.length === 0 || items.some(i => i.status === 'processing' || i.status === 'completed')}
-                  className="flex items-center justify-center px-3 py-2 text-sm bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:bg-slate-300 disabled:cursor-not-allowed transition-colors shadow-sm min-w-[90px]"
+                  className="flex items-center justify-center px-3 py-2 text-sm bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:bg-slate-300 disabled:cursor-not-allowed transition-colors shadow-sm w-full sm:w-auto sm:min-w-[90px]"
                 >
                   {processing ? (
                     <Loader className="w-4 h-4 mr-2 animate-spin" />
@@ -943,7 +957,7 @@ const BarcodeProcessor: React.FC = () => {
                 <button
                   onClick={downloadResults}
                   disabled={completedCount === 0}
-                  className="flex items-center justify-center px-3 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-slate-300 disabled:cursor-not-allowed transition-colors shadow-sm min-w-[90px]"
+                  className="flex items-center justify-center px-3 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-slate-300 disabled:cursor-not-allowed transition-colors shadow-sm w-full sm:w-auto sm:min-w-[90px]"
                 >
                   <Download className="w-4 h-4 mr-2" />
                   {t('export_zip')}
@@ -951,7 +965,7 @@ const BarcodeProcessor: React.FC = () => {
                 <button
                   onClick={exportPDF}
                   disabled={completedCount === 0}
-                  className="flex items-center justify-center px-3 py-2 text-sm bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:bg-slate-300 disabled:cursor-not-allowed transition-colors shadow-sm min-w-[90px]"
+                  className="flex items-center justify-center px-3 py-2 text-sm bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:bg-slate-300 disabled:cursor-not-allowed transition-colors shadow-sm w-full sm:w-auto sm:min-w-[90px]"
                 >
                   <Download className="w-4 h-4 mr-2" />
                   {t('export_pdf')}
@@ -959,7 +973,7 @@ const BarcodeProcessor: React.FC = () => {
                 <button
                   onClick={clearItems}
                   disabled={items.length === 0}
-                  className="flex items-center justify-center px-3 py-2 text-sm bg-slate-600 text-white rounded-lg hover:bg-slate-700 disabled:bg-slate-300 disabled:cursor-not-allowed transition-colors shadow-sm min-w-[90px]"
+                  className="flex items-center justify-center px-3 py-2 text-sm bg-slate-600 text-white rounded-lg hover:bg-slate-700 disabled:bg-slate-300 disabled:cursor-not-allowed transition-colors shadow-sm w-full sm:w-auto sm:min-w-[90px]"
                 >
                   <Trash className="w-4 h-4 mr-2" />
                   {t('clear')}

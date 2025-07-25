@@ -12,14 +12,18 @@ import { ANALYTICS_CONFIG, isAnalyticsEnabled } from './config/analytics';
 import { useAnalytics } from './hooks/useAnalytics';
 import './App.css';
 import { useTranslation } from 'react-i18next';
+import QrCodeGenerator from './components/QrCodeGenerator';
+import QrCodeScanner from './components/QrCodeScanner';
 
-type TabType = 'generate' | 'scan';
+type TabType = 'generate' | 'scan' | 'qrcode-generate' | 'qrcode-scan';
+type ModeType = 'single' | 'batch';
 type RouteType = 'home' | 'privacy' | 'terms' | 'contact';
 
 function App() {
   const { t, i18n } = useTranslation();
   const { trackEvent, trackPageView } = useAnalytics();
   const [activeTab, setActiveTab] = useState<TabType>('generate');
+  const [mode, setMode] = useState<ModeType>('single');
   const [currentRoute, setCurrentRoute] = useState<RouteType>('home');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -27,7 +31,8 @@ function App() {
     const handleHashChange = () => {
       const hash = window.location.hash.slice(1);
       let newRoute: RouteType = 'home';
-      
+      let newTab: TabType | null = null;
+      let newMode: ModeType = 'single';
       switch (hash) {
         case 'privacy':
           newRoute = 'privacy';
@@ -38,12 +43,31 @@ function App() {
         case 'contact':
           newRoute = 'contact';
           break;
+        case 'generate-batch':
+          newTab = 'generate';
+          newMode = 'batch';
+          newRoute = 'home';
+          break;
+        case 'qrcode-generate-batch':
+          newTab = 'qrcode-generate';
+          newMode = 'batch';
+          newRoute = 'home';
+          break;
+        case 'generate':
+        case 'scan':
+        case 'qrcode-generate':
+        case 'qrcode-scan':
+          newTab = hash as TabType;
+          newMode = 'single';
+          newRoute = 'home';
+          break;
         default:
           newRoute = 'home';
           break;
       }
-      
       setCurrentRoute(newRoute);
+      if (newTab) setActiveTab(newTab);
+      setMode(newMode);
       trackPageView(window.location.pathname + window.location.hash);
     };
 
@@ -55,6 +79,8 @@ function App() {
   const tabs = [
     { id: 'generate' as TabType, label: t('generate'), icon: Package, description: t('generate_desc') },
     { id: 'scan' as TabType, label: t('scan'), icon: FileText, description: t('scan_desc') },
+    { id: 'qrcode-generate' as TabType, label: t('qrcode_generate', '二维码生成'), icon: Package, description: t('qrcode_generate_desc', '生成二维码') },
+    { id: 'qrcode-scan' as TabType, label: t('qrcode_scan', '二维码识别'), icon: FileText, description: t('qrcode_scan_desc', '识别二维码') },
   ];
 
   const changeLanguage = (lng: string) => {
@@ -88,14 +114,14 @@ function App() {
           <div className="flex items-center justify-between h-16">
             {/* Logo and Title */}
             <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-lg flex items-center justify-center" aria-hidden="true">
+              <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-lg flex items-center justify-center cursor-pointer" aria-hidden="true" onClick={() => { setActiveTab('generate'); window.location.hash = 'generate'; }}>
                 <Package className="w-4 h-4 text-white" />
               </div>
-              <div className="hidden sm:block">
+              <div className="hidden sm:block cursor-pointer" onClick={() => { setActiveTab('generate'); window.location.hash = 'generate'; }}>
                 <h1 className="text-xl font-semibold text-slate-900">{t('title')}</h1>
                 <p className="text-xs text-slate-500">{t('slogan')}</p>
               </div>
-              <div className="sm:hidden">
+              <div className="sm:hidden cursor-pointer" onClick={() => { setActiveTab('generate'); window.location.hash = 'generate'; }}>
                 <h1 className="text-lg font-semibold text-slate-900">{t('title')}</h1>
               </div>
             </div>
@@ -108,6 +134,8 @@ function App() {
                     key={tab.id}
                     onClick={() => {
                       setActiveTab(tab.id);
+                      setMode('single');
+                      window.location.hash = tab.id;
                       trackEvent({
                         action: 'tab_switch',
                         category: 'navigation',
@@ -181,6 +209,7 @@ function App() {
                     onClick={() => {
                       setActiveTab(tab.id);
                       setMobileMenuOpen(false);
+                      window.location.hash = tab.id;
                       trackEvent({
                         action: 'tab_switch',
                         category: 'navigation',
@@ -222,7 +251,7 @@ function App() {
                 aria-labelledby="generate-tab"
                 className={activeTab === 'generate' ? 'block' : 'hidden'}
               >
-                <BarcodeProcessor />
+                <BarcodeProcessor mode={mode} setMode={setMode} />
               </section>
               <section 
                 id="scan-panel" 
@@ -231,6 +260,23 @@ function App() {
                 className={activeTab === 'scan' ? 'block' : 'hidden'}
               >
                 <BarcodeScanner />
+              </section>
+              {/* 预留二维码功能入口 */}
+              <section
+                id="qrcode-generate-panel"
+                role="tabpanel"
+                aria-labelledby="qrcode-generate-tab"
+                className={activeTab === 'qrcode-generate' ? 'block' : 'hidden'}
+              >
+                <QrCodeGenerator mode={mode} setMode={setMode} />
+              </section>
+              <section
+                id="qrcode-scan-panel"
+                role="tabpanel"
+                aria-labelledby="qrcode-scan-tab"
+                className={activeTab === 'qrcode-scan' ? 'block' : 'hidden'}
+              >
+                <QrCodeScanner />
               </section>
             </>
           )}

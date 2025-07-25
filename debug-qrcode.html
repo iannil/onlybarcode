@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>二维码识别调试</title>
+    <script src="https://unpkg.com/@zxing/library@latest/umd/index.min.js"></script>
+</head>
+<body>
+    <h1>二维码识别调试</h1>
+    <p>这个页面用于测试ZXing库是否正常工作</p>
+    
+    <div>
+        <h2>测试1: 检查ZXing库是否加载</h2>
+        <div id="test1"></div>
+    </div>
+    
+    <div>
+        <h2>测试2: 创建BrowserMultiFormatReader实例</h2>
+        <div id="test2"></div>
+    </div>
+    
+    <div>
+        <h2>测试3: 文件上传测试</h2>
+        <input type="file" id="fileInput" accept="image/*">
+        <div id="test3"></div>
+    </div>
+
+    <script>
+        // 测试1: 检查ZXing库是否加载
+        const test1Div = document.getElementById('test1');
+        if (typeof ZXing !== 'undefined') {
+            test1Div.innerHTML = '<p style="color: green;">✓ ZXing库加载成功</p>';
+            console.log('ZXing库版本:', ZXing.version);
+        } else {
+            test1Div.innerHTML = '<p style="color: red;">✗ ZXing库加载失败</p>';
+        }
+        
+        // 测试2: 创建BrowserMultiFormatReader实例
+        const test2Div = document.getElementById('test2');
+        try {
+            const { BrowserMultiFormatReader } = ZXing;
+            const reader = new BrowserMultiFormatReader();
+            test2Div.innerHTML = '<p style="color: green;">✓ BrowserMultiFormatReader实例创建成功</p>';
+            console.log('Reader实例:', reader);
+        } catch (error) {
+            test2Div.innerHTML = `<p style="color: red;">✗ BrowserMultiFormatReader创建失败: ${error.message}</p>`;
+        }
+        
+        // 测试3: 文件上传测试
+        const test3Div = document.getElementById('test3');
+        document.getElementById('fileInput').addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            test3Div.innerHTML = '<p>正在处理文件...</p>';
+            
+            try {
+                const { BrowserMultiFormatReader } = ZXing;
+                const reader = new BrowserMultiFormatReader();
+                const imageUrl = URL.createObjectURL(file);
+                
+                console.log('开始识别文件:', file.name);
+                const result = await reader.decodeFromImageUrl(imageUrl);
+                
+                test3Div.innerHTML = `
+                    <p style="color: green;">✓ 识别成功!</p>
+                    <p>文件: ${file.name}</p>
+                    <p>内容: ${result.getText()}</p>
+                    <p>格式: ${result.getBarcodeFormat()}</p>
+                    <img src="${imageUrl}" style="max-width: 200px; border: 1px solid #ccc;">
+                `;
+                
+                URL.revokeObjectURL(imageUrl);
+            } catch (error) {
+                test3Div.innerHTML = `
+                    <p style="color: red;">✗ 识别失败: ${error.message}</p>
+                    <p>文件: ${file.name}</p>
+                    <p>错误详情: ${error.toString()}</p>
+                `;
+                console.error('识别错误:', error);
+            }
+        });
+    </script>
+</body>
+</html> 

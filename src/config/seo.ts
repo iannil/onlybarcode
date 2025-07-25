@@ -59,6 +59,30 @@ export const seoConfig = {
         description: 'Scan and recognize barcodes online, supporting multiple image formats. Batch processing, results can be exported as CSV files.',
         keywords: 'barcode scanner,barcode recognition,QR code recognition,batch scanning,barcode recognition tool'
       }
+    },
+    'qrcode-generate': {
+      zh: {
+        title: '二维码生成器 - 654653',
+        description: '在线生成二维码，支持自定义尺寸、颜色、错误纠正级别。单个或批量生成，可导出PNG、PDF格式。',
+        keywords: '二维码生成,QR码制作,批量二维码生成,二维码导出,二维码设置'
+      },
+      en: {
+        title: 'QR Code Generator - 654653',
+        description: 'Generate QR codes online with customizable size, color, and error correction level. Single or batch generation, export to PNG, PDF formats.',
+        keywords: 'QR code generator,QR code maker,batch QR code generation,QR code export,QR code settings'
+      }
+    },
+    'qrcode-scan': {
+      zh: {
+        title: '二维码扫描器 - 654653',
+        description: '在线扫描识别二维码，支持多种图片格式。批量处理，结果可导出CSV文件。',
+        keywords: '二维码扫描,QR码识别,批量二维码扫描,二维码识别工具'
+      },
+      en: {
+        title: 'QR Code Scanner - 654653',
+        description: 'Scan and recognize QR codes online, supporting multiple image formats. Batch processing, results can be exported as CSV files.',
+        keywords: 'QR code scanner,QR code recognition,batch QR code scanning,QR code recognition tool'
+      }
     }
   },
   
