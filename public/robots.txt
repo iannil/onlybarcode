@@ -1,8 +1,41 @@
 User-agent: *
 Allow: /
 
-# Sitemap
+# 允许访问主要页面
+Allow: /index.html
+Allow: /manifest.json
+Allow: /sitemap.xml
+
+# 允许访问静态资源
+Allow: /src/
+Allow: /public/
+
+# 禁止访问开发文件
+Disallow: /node_modules/
+Disallow: /package.json
+Disallow: /package-lock.json
+Disallow: /tsconfig.json
+Disallow: /vite.config.ts
+Disallow: /tailwind.config.js
+Disallow: /postcss.config.js
+Disallow: /eslint.config.js
+
+# 禁止访问测试文件
+Disallow: /test/
+Disallow: /tests/
+Disallow: /__tests__/
+Disallow: /*.test.*
+Disallow: /*.spec.*
+
+# 禁止访问调试文件
+Disallow: /debug-*.html
+Disallow: /generate-test-*.html
+
+# 设置爬取延迟（秒）
+Crawl-delay: 1
+
+# 站点地图
 Sitemap: https://654653.com/sitemap.xml
 
-# Crawl-delay
-Crawl-delay: 1 
+# 主机
+Host: https://654653.com 

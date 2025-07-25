@@ -42,6 +42,17 @@ const QrCodeGenerator: React.FC<QrCodeGeneratorProps> = ({ mode, setMode }) => {
   }
   const [batchItems, setBatchItems] = useState<QrBatchItem[]>([]);
 
+  // 生成随机字符串
+  const generateRandomString = () => {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    const length = Math.floor(Math.random() * 10) + 10; // 10-19 characters
+    let result = '';
+    for (let i = 0; i < length; i++) {
+      result += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return result;
+  };
+
   // 单个生成
   const generateSingle = async () => {
     setError(null);
@@ -299,7 +310,12 @@ const QrCodeGenerator: React.FC<QrCodeGeneratorProps> = ({ mode, setMode }) => {
                       placeholder={t('text_content_placeholder', '输入内容') as string}
                     />
                     <button
-                      onClick={() => setSingleText('https://')}
+                      onClick={() => {
+                        const randomString = generateRandomString();
+                        setSingleText(randomString);
+                        // Generate QR code immediately after setting random text
+                        setTimeout(() => generateSingle(), 100);
+                      }}
                       className="px-3 py-2 bg-slate-100/80 hover:bg-slate-200/80 rounded-lg transition-colors backdrop-blur-sm sm:w-auto"
                       title={t('reset', '重置')}
                     >

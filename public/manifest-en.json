@@ -1,8 +1,8 @@
 {
-  "name": "654653工具箱 - 专业条形码和二维码生成器",
-  "short_name": "654653工具箱",
-  "description": "免费的在线条形码和二维码生成器、扫描器。支持多种格式，快速生成、批量处理、PDF导出功能。",
-  "start_url": "/",
+  "name": "654653 Toolbox - Professional Barcode & QR Code Generator",
+  "short_name": "654653 Toolbox",
+  "description": "Free online barcode and QR code generator and scanner. Supports multiple formats, fast generation, batch processing, PDF export.",
+  "start_url": "/en/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#3b82f6",
@@ -22,9 +22,9 @@
     }
   ],
   "categories": ["utilities", "productivity", "business"],
-  "lang": "zh-CN",
+  "lang": "en-US",
   "dir": "ltr",
-  "scope": "/",
+  "scope": "/en/",
   "prefer_related_applications": false,
   "related_applications": [],
   "screenshots": [
@@ -43,10 +43,10 @@
   ],
   "shortcuts": [
     {
-      "name": "生成条形码",
-      "short_name": "条码生成",
-      "description": "快速生成条形码",
-      "url": "/#generate",
+      "name": "Generate Barcode",
+      "short_name": "Barcode Gen",
+      "description": "Quickly generate barcodes",
+      "url": "/en/#generate",
       "icons": [
         {
           "src": "/icon-192x192.png",
@@ -55,10 +55,10 @@
       ]
     },
     {
-      "name": "扫描条形码",
-      "short_name": "条码扫描",
-      "description": "扫描识别条形码",
-      "url": "/#scan",
+      "name": "Scan Barcode",
+      "short_name": "Barcode Scan",
+      "description": "Scan and recognize barcodes",
+      "url": "/en/#scan",
       "icons": [
         {
           "src": "/icon-192x192.png",
@@ -67,10 +67,10 @@
       ]
     },
     {
-      "name": "生成二维码",
-      "short_name": "二维码生成",
-      "description": "快速生成二维码",
-      "url": "/#qrcode-generate",
+      "name": "Generate QR Code",
+      "short_name": "QR Code Gen",
+      "description": "Quickly generate QR codes",
+      "url": "/en/#qrcode-generate",
       "icons": [
         {
           "src": "/icon-192x192.png",
@@ -79,10 +79,10 @@
       ]
     },
     {
-      "name": "扫描二维码",
-      "short_name": "二维码扫描",
-      "description": "扫描识别二维码",
-      "url": "/#qrcode-scan",
+      "name": "Scan QR Code",
+      "short_name": "QR Code Scan",
+      "description": "Scan and recognize QR codes",
+      "url": "/en/#qrcode-scan",
       "icons": [
         {
           "src": "/icon-192x192.png",

@@ -5,13 +5,13 @@ import LanguageDetector from 'i18next-browser-languagedetector';
 const resources = {
   en: {
     translation: {
-      title: 'Barcode Tool',
+      title: '654653 Toolbox',
       slogan: 'Professional, Fast, Reliable',
       generate: 'Generate Barcode',
       scan: 'Scan Barcode',
       generate_desc: 'Generate single or batch barcodes',
       scan_desc: 'Recognize barcodes from images',
-      footer: 'Barcode Tool. Professional, fast, and reliable barcode processing tool.',
+      footer: '654653 Toolbox. Professional, fast, and reliable barcode processing tool.',
       settings: 'Settings',
       language: 'Language',
       chinese: 'Chinese',
@@ -70,8 +70,8 @@ const resources = {
       processing_failed_generic: 'Processing failed',
       
       // QR Code translations
-      qrcode_settings: 'QR Code Settings',
-      qrcode_preview: 'QR Code Preview',
+      qrcode_settings: 'Settings',
+      qrcode_preview: 'Preview',
       input_batch_content: 'Input content (one per line)',
       size: 'Size',
       foreground_color: 'Foreground Color',
@@ -192,13 +192,13 @@ const resources = {
   },
   zh: {
     translation: {
-      title: '条形码工具',
+      title: '654653工具箱',
       slogan: '专业、快速、可靠',
       generate: '条码生成',
       scan: '条码识别',
       generate_desc: '单个或批量生成条形码',
       scan_desc: '从图片中识别条形码',
-      footer: '条形码工具. 专业、快速、可靠的条形码处理工具.',
+      footer: '654653工具箱. 专业、快速、可靠的条形码处理工具.',
       settings: '设置',
       language: '语言',
       chinese: '中文',
@@ -257,8 +257,8 @@ const resources = {
       processing_failed_generic: '处理失败',
       
       // QR Code translations
-      qrcode_settings: '二维码设置',
-      qrcode_preview: '二维码预览',
+      qrcode_settings: '设置',
+      qrcode_preview: '预览',
       input_batch_content: '每行一个内容',
       size: '尺寸',
       foreground_color: '前景色',

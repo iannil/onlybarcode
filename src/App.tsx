@@ -104,6 +104,7 @@ function App() {
         title={seoConfig.title}
         description={seoConfig.description}
         keywords={seoConfig.keywords}
+        url={window.location.href}
         alternateLanguages={alternateLanguages}
       />
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50">
