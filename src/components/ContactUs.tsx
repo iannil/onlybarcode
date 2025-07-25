@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft, Mail, Send } from 'lucide-react';
+import { ArrowLeft, Mail } from 'lucide-react';
 import SEOHead from './SEOHead';
 
 interface FormData {
@@ -17,71 +17,9 @@ interface FormErrors {
 
 const ContactUs: React.FC = () => {
   const { t } = useTranslation();
-  const [formData, setFormData] = useState<FormData>({
-    email: '',
-    subject: '',
-    message: ''
-  });
-  const [errors, setErrors] = useState<FormErrors>({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
 
   const handleBackToHome = () => {
     window.location.hash = '';
-  };
-
-  const validateForm = (): boolean => {
-    const newErrors: FormErrors = {};
-
-    if (!formData.email.trim()) {
-      newErrors.email = t('contact_us_required');
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = t('contact_us_invalid_email');
-    }
-
-    if (!formData.subject.trim()) {
-      newErrors.subject = t('contact_us_required');
-    }
-
-    if (!formData.message.trim()) {
-      newErrors.message = t('contact_us_required');
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!validateForm()) {
-      return;
-    }
-
-    setIsSubmitting(true);
-    setSubmitStatus('idle');
-
-    try {
-      // Simulate form submission
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // In a real application, you would send the data to your server here
-      console.log('Form data:', formData);
-      
-      setSubmitStatus('success');
-      setFormData({ email: '', subject: '', message: '' });
-    } catch (error) {
-      setSubmitStatus('error');
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  const handleInputChange = (field: keyof FormData, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-    if (errors[field]) {
-      setErrors(prev => ({ ...prev, [field]: undefined }));
-    }
   };
 
   return (
@@ -125,99 +63,12 @@ const ContactUs: React.FC = () => {
                 {t('contact_us_intro')}
               </p>
             </div>
-
-            <form onSubmit={handleSubmit} className="max-w-2xl mx-auto">
-              <div className="space-y-6">
-                <div>
-                  <label htmlFor="email" className="block text-sm font-medium text-slate-700 mb-2">
-                    {t('contact_us_email')}
-                  </label>
-                  <input
-                    type="email"
-                    id="email"
-                    value={formData.email}
-                    onChange={(e) => handleInputChange('email', e.target.value)}
-                    placeholder={t('contact_us_email_placeholder')}
-                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
-                      errors.email ? 'border-red-300' : 'border-slate-300'
-                    }`}
-                  />
-                  {errors.email && (
-                    <p className="mt-1 text-sm text-red-600">{errors.email}</p>
-                  )}
-                </div>
-
-                <div>
-                  <label htmlFor="subject" className="block text-sm font-medium text-slate-700 mb-2">
-                    {t('contact_us_subject')}
-                  </label>
-                  <input
-                    type="text"
-                    id="subject"
-                    value={formData.subject}
-                    onChange={(e) => handleInputChange('subject', e.target.value)}
-                    placeholder={t('contact_us_subject_placeholder')}
-                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
-                      errors.subject ? 'border-red-300' : 'border-slate-300'
-                    }`}
-                  />
-                  {errors.subject && (
-                    <p className="mt-1 text-sm text-red-600">{errors.subject}</p>
-                  )}
-                </div>
-
-                <div>
-                  <label htmlFor="message" className="block text-sm font-medium text-slate-700 mb-2">
-                    {t('contact_us_message')}
-                  </label>
-                  <textarea
-                    id="message"
-                    rows={6}
-                    value={formData.message}
-                    onChange={(e) => handleInputChange('message', e.target.value)}
-                    placeholder={t('contact_us_message_placeholder')}
-                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors resize-none ${
-                      errors.message ? 'border-red-300' : 'border-slate-300'
-                    }`}
-                  />
-                  {errors.message && (
-                    <p className="mt-1 text-sm text-red-600">{errors.message}</p>
-                  )}
-                </div>
-
-                <div className="pt-4">
-                  <button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="w-full bg-blue-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
-                  >
-                    {isSubmitting ? (
-                      <>
-                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                        <span>{t('contact_us_sending')}</span>
-                      </>
-                    ) : (
-                      <>
-                        <Send className="w-4 h-4" />
-                        <span>{t('contact_us_send')}</span>
-                      </>
-                    )}
-                  </button>
-                </div>
-
-                {submitStatus === 'success' && (
-                  <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
-                    <p className="text-green-800 text-sm">{t('contact_us_sent')}</p>
-                  </div>
-                )}
-
-                {submitStatus === 'error' && (
-                  <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
-                    <p className="text-red-800 text-sm">{t('contact_us_error')}</p>
-                  </div>
-                )}
-              </div>
-            </form>
+            <div className="text-center py-12">
+              <p className="text-lg text-slate-700 font-medium">
+                {t('contact_us_email_instruction')}
+                <a href="mailto:hi@654653.com" className="text-blue-600 underline ml-2">hi@654653.com</a>
+              </p>
+            </div>
           </div>
         </main>
       </div>
