@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Package, FileText, Settings, Menu, X } from 'lucide-react';
+import { Barcode, ScanEye, QrCode, Image, Focus, Settings, Menu, X } from 'lucide-react';
 import BarcodeProcessor from './components/BatchProcessor';
 import BarcodeScanner from './components/BarcodeScanner';
 import PrivacyPolicy from './components/PrivacyPolicy';
@@ -77,10 +77,10 @@ function App() {
   }, [trackPageView]);
 
   const tabs = [
-    { id: 'generate' as TabType, label: t('generate'), icon: Package, description: t('generate_desc') },
-    { id: 'scan' as TabType, label: t('scan'), icon: FileText, description: t('scan_desc') },
-    { id: 'qrcode-generate' as TabType, label: t('qrcode_generate', '二维码生成'), icon: Package, description: t('qrcode_generate_desc', '生成二维码') },
-    { id: 'qrcode-scan' as TabType, label: t('qrcode_scan', '二维码识别'), icon: FileText, description: t('qrcode_scan_desc', '识别二维码') },
+    { id: 'generate' as TabType, label: t('generate'), icon: Barcode, description: t('generate_desc') },
+    { id: 'scan' as TabType, label: t('scan'), icon: ScanEye, description: t('scan_desc') },
+    { id: 'qrcode-generate' as TabType, label: t('qrcode_generate', '二维码生成'), icon: QrCode, description: t('qrcode_generate_desc', '生成二维码') },
+    { id: 'qrcode-scan' as TabType, label: t('qrcode_scan', '二维码识别'), icon: Focus, description: t('qrcode_scan_desc', '识别二维码') },
   ];
 
   const changeLanguage = (lng: string) => {
@@ -110,59 +110,56 @@ function App() {
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50">
       {/* Header with Navigation */}
       {currentRoute === 'home' && (
-        <header className="bg-white/90 backdrop-blur-md border-b border-slate-200/50 sticky top-0 z-50" role="banner">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            {/* Logo and Title */}
-            <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-lg flex items-center justify-center cursor-pointer" aria-hidden="true" onClick={() => { setActiveTab('generate'); window.location.hash = 'generate'; }}>
-                <Package className="w-4 h-4 text-white" />
+        <header className="bg-white/80 border-b border-slate-200 sticky top-0 z-50" role="banner">
+          <div className="max-w-6xl mx-auto px-2 sm:px-4 lg:px-6">
+            <div className="flex items-center justify-between h-14">
+              {/* Logo and Title */}
+              <div className="flex items-center gap-2">
+                <div className="w-7 h-7 bg-blue-600 rounded flex items-center justify-center cursor-pointer" aria-hidden="true" onClick={() => { setActiveTab('generate'); window.location.hash = 'generate'; }}>
+                  <Barcode className="w-4 h-4 text-white" />
+                </div>
+                <div className="hidden sm:block cursor-pointer" onClick={() => { setActiveTab('generate'); window.location.hash = 'generate'; }}>
+                  <h1 className="text-base font-semibold text-slate-900 leading-none">{t('title')}</h1>
+                  <p className="text-[10px] text-slate-400 leading-none">{t('slogan')}</p>
+                </div>
+                <div className="sm:hidden cursor-pointer" onClick={() => { setActiveTab('generate'); window.location.hash = 'generate'; }}>
+                  <h1 className="text-base font-semibold text-slate-900 leading-none">{t('title')}</h1>
+                </div>
               </div>
-              <div className="hidden sm:block cursor-pointer" onClick={() => { setActiveTab('generate'); window.location.hash = 'generate'; }}>
-                <h1 className="text-xl font-semibold text-slate-900">{t('title')}</h1>
-                <p className="text-xs text-slate-500">{t('slogan')}</p>
-              </div>
-              <div className="sm:hidden cursor-pointer" onClick={() => { setActiveTab('generate'); window.location.hash = 'generate'; }}>
-                <h1 className="text-lg font-semibold text-slate-900">{t('title')}</h1>
-              </div>
-            </div>
-            
-            {/* Desktop Navigation */}
-            <nav className="hidden md:flex items-center space-x-1" role="navigation" aria-label={t('main_navigation')}>
-              <div className="flex space-x-1 bg-slate-100/50 p-1 rounded-xl" role="tablist">
-                {tabs.map((tab) => (
-                  <button
-                    key={tab.id}
-                    onClick={() => {
-                      setActiveTab(tab.id);
-                      setMode('single');
-                      window.location.hash = tab.id;
-                      trackEvent({
-                        action: 'tab_switch',
-                        category: 'navigation',
-                        label: tab.id,
-                      });
-                    }}
-                    className={`flex items-center justify-center space-x-2 px-5 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${
-                      activeTab === tab.id
-                        ? 'bg-white text-blue-600 shadow-sm ring-1 ring-slate-200/50'
-                        : 'text-slate-600 hover:text-slate-900 hover:bg-white/50'
-                    }`}
-                    title={tab.description}
-                    role="tab"
-                    aria-selected={activeTab === tab.id}
-                    aria-controls={`${tab.id}-panel`}
-                  >
-                    <tab.icon className="w-4 h-4" aria-hidden="true" />
-                    <span>{tab.label}</span>
-                  </button>
-                ))}
-              </div>
-              <div className="ml-4">
-                <label htmlFor="language-select" className="sr-only">{t('language')}</label>
+              {/* Desktop Navigation */}
+              <nav className="hidden md:flex items-center gap-1" role="navigation" aria-label={t('main_navigation')}>
+                <div className="flex gap-1" role="tablist">
+                  {tabs.map((tab) => (
+                    <button
+                      key={tab.id}
+                      onClick={() => {
+                        setActiveTab(tab.id);
+                        setMode('single');
+                        window.location.hash = tab.id;
+                        trackEvent({
+                          action: 'tab_switch',
+                          category: 'navigation',
+                          label: tab.id,
+                        });
+                      }}
+                      className={`flex items-center gap-1 px-3 py-1.5 rounded text-xs font-medium transition-colors duration-150 border border-transparent ${
+                        activeTab === tab.id
+                          ? 'text-blue-600 border-blue-600 bg-white'
+                          : 'text-slate-600 hover:text-blue-600 hover:border-blue-200 bg-transparent'
+                      }`}
+                      title={tab.description}
+                      role="tab"
+                      aria-selected={activeTab === tab.id}
+                      aria-controls={`${tab.id}-panel`}
+                    >
+                      <tab.icon className="w-4 h-4" aria-hidden="true" />
+                      <span>{tab.label}</span>
+                    </button>
+                  ))}
+                </div>
                 <select
                   id="language-select"
-                  className="text-base border border-gray-300 rounded px-2 py-1 text-slate-700 bg-white"
+                  className="ml-2 text-xs border border-gray-200 rounded px-1.5 py-0.5 text-slate-700 bg-white focus:outline-none"
                   value={i18n.language}
                   onChange={e => changeLanguage(e.target.value)}
                   title={t('language')}
@@ -171,16 +168,12 @@ function App() {
                   <option value="zh">{t('chinese')}</option>
                   <option value="en">{t('english')}</option>
                 </select>
-              </div>
-            </nav>
-
-            {/* Mobile Menu Button */}
-            <div className="md:hidden flex items-center space-x-2">
-              <div className="mr-2">
-                <label htmlFor="mobile-language-select" className="sr-only">{t('language')}</label>
+              </nav>
+              {/* Mobile Menu Button */}
+              <div className="md:hidden flex items-center gap-1">
                 <select
                   id="mobile-language-select"
-                  className="text-base border border-gray-300 rounded px-2 py-1 text-slate-700 bg-white"
+                  className="text-xs border border-gray-200 rounded px-1.5 py-0.5 text-slate-700 bg-white focus:outline-none"
                   value={i18n.language}
                   onChange={e => changeLanguage(e.target.value)}
                   title={t('language')}
@@ -189,56 +182,51 @@ function App() {
                   <option value="zh">{t('chinese')}</option>
                   <option value="en">{t('english')}</option>
                 </select>
+                <button
+                  onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                  className="p-1 rounded text-slate-600 hover:text-blue-600 focus:outline-none"
+                  aria-label={mobileMenuOpen ? t('close_menu') : t('open_menu')}
+                >
+                  {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+                </button>
               </div>
-              <button
-                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="p-2 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-100/50"
-                aria-label={mobileMenuOpen ? t('close_menu') : t('open_menu')}
-              >
-                {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-              </button>
             </div>
+            {/* Mobile Navigation Menu */}
+            {mobileMenuOpen && (
+              <div className="md:hidden border-t border-slate-200 py-2 mt-1">
+                <div className="flex flex-col gap-1" role="tablist">
+                  {tabs.map((tab) => (
+                    <button
+                      key={tab.id}
+                      onClick={() => {
+                        setActiveTab(tab.id);
+                        setMobileMenuOpen(false);
+                        window.location.hash = tab.id;
+                        trackEvent({
+                          action: 'tab_switch',
+                          category: 'navigation',
+                          label: tab.id,
+                        });
+                      }}
+                      className={`w-full flex items-center gap-2 px-3 py-2 rounded text-sm font-medium transition-colors duration-150 border border-transparent ${
+                        activeTab === tab.id
+                          ? 'text-blue-600 border-blue-600 bg-white'
+                          : 'text-slate-600 hover:text-blue-600 hover:border-blue-200 bg-transparent'
+                      }`}
+                      title={tab.description}
+                      role="tab"
+                      aria-selected={activeTab === tab.id}
+                      aria-controls={`${tab.id}-panel`}
+                    >
+                      <tab.icon className="w-5 h-5" aria-hidden="true" />
+                      <span>{tab.label}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
-
-          {/* Mobile Navigation Menu */}
-          {mobileMenuOpen && (
-            <div className="md:hidden border-t border-slate-200/50 py-4">
-              <div className="flex flex-col gap-3" role="tablist">
-                {tabs.map((tab) => (
-                  <button
-                    key={tab.id}
-                    onClick={() => {
-                      setActiveTab(tab.id);
-                      setMobileMenuOpen(false);
-                      window.location.hash = tab.id;
-                      trackEvent({
-                        action: 'tab_switch',
-                        category: 'navigation',
-                        label: tab.id,
-                      });
-                    }}
-                    className={`w-full flex items-center gap-3 px-4 py-4 rounded-xl text-base font-medium transition-all duration-200 ${
-                      activeTab === tab.id
-                        ? 'bg-blue-50 text-blue-600 border border-blue-200'
-                        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
-                    }`}
-                    title={tab.description}
-                    role="tab"
-                    aria-selected={activeTab === tab.id}
-                    aria-controls={`${tab.id}-panel`}
-                  >
-                    <tab.icon className="w-5 h-5" aria-hidden="true" />
-                    <span>{tab.label}</span>
-                    {tab.description && (
-                      <span className="text-xs text-slate-500 ml-auto">{tab.description}</span>
-                    )}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
-      </header>
+        </header>
       )}
 
       {/* Main Content */}
