@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Barcode, ScanEye, QrCode, Image, Focus, Settings, Menu, X } from 'lucide-react';
+import { Barcode, QrCode, FileText, Menu, X } from 'lucide-react';
 import BarcodeProcessor from './components/BatchProcessor';
 import BarcodeScanner from './components/BarcodeScanner';
 import PrivacyPolicy from './components/PrivacyPolicy';
@@ -14,25 +14,31 @@ import './App.css';
 import { useTranslation } from 'react-i18next';
 import QrCodeGenerator from './components/QrCodeGenerator';
 import QrCodeScanner from './components/QrCodeScanner';
+import CsvJsonConverter from './components/CsvJsonConverter';
 
-type TabType = 'generate' | 'scan' | 'qrcode-generate' | 'qrcode-scan';
+type TabType = 'barcode' | 'qrcode' | 'csvjson';
+type BarcodeSubTab = 'generate' | 'scan';
 type ModeType = 'single' | 'batch';
 type RouteType = 'home' | 'privacy' | 'terms' | 'contact';
+type QrcodeSubTab = 'generate' | 'scan';
 
 function App() {
   const { t, i18n } = useTranslation();
   const { trackEvent, trackPageView } = useAnalytics();
-  const [activeTab, setActiveTab] = useState<TabType>('generate');
+  const [activeTab, setActiveTab] = useState<TabType>('barcode');
+  const [barcodeSubTab, setBarcodeSubTab] = useState<BarcodeSubTab>('generate');
   const [mode, setMode] = useState<ModeType>('single');
   const [currentRoute, setCurrentRoute] = useState<RouteType>('home');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [qrcodeSubTab, setQrcodeSubTab] = useState<QrcodeSubTab>('generate');
 
   useEffect(() => {
     const handleHashChange = () => {
       const hash = window.location.hash.slice(1);
       let newRoute: RouteType = 'home';
       let newTab: TabType | null = null;
-      let newMode: ModeType = 'single';
+      let newBarcodeSubTab: BarcodeSubTab = 'generate';
+      let newQrcodeSubTab: QrcodeSubTab = 'generate';
       switch (hash) {
         case 'privacy':
           newRoute = 'privacy';
@@ -43,31 +49,35 @@ function App() {
         case 'contact':
           newRoute = 'contact';
           break;
-        case 'generate-batch':
-          newTab = 'generate';
-          newMode = 'batch';
-          newRoute = 'home';
+        case 'barcode-scan':
+          newTab = 'barcode';
+          newBarcodeSubTab = 'scan';
           break;
-        case 'qrcode-generate-batch':
-          newTab = 'qrcode-generate';
-          newMode = 'batch';
-          newRoute = 'home';
+        case 'barcode-generate':
+        case 'barcode':
+          newTab = 'barcode';
+          newBarcodeSubTab = 'generate';
           break;
-        case 'generate':
-        case 'scan':
-        case 'qrcode-generate':
+        case 'csvjson':
+          newTab = 'csvjson';
+          break;
         case 'qrcode-scan':
-          newTab = hash as TabType;
-          newMode = 'single';
-          newRoute = 'home';
+          newTab = 'qrcode';
+          newQrcodeSubTab = 'scan';
+          break;
+        case 'qrcode-generate':
+        case 'qrcode':
+          newTab = 'qrcode';
+          newQrcodeSubTab = 'generate';
           break;
         default:
-          newRoute = 'home';
           break;
       }
       setCurrentRoute(newRoute);
       if (newTab) setActiveTab(newTab);
-      setMode(newMode);
+      setBarcodeSubTab(newBarcodeSubTab);
+      setMode('single');
+      setQrcodeSubTab(newQrcodeSubTab);
       trackPageView(window.location.pathname + window.location.hash);
     };
 
@@ -77,10 +87,9 @@ function App() {
   }, [trackPageView]);
 
   const tabs = [
-    { id: 'generate' as TabType, label: t('generate'), icon: Barcode, description: t('generate_desc') },
-    { id: 'scan' as TabType, label: t('scan'), icon: ScanEye, description: t('scan_desc') },
-    { id: 'qrcode-generate' as TabType, label: t('qrcode_generate', '二维码生成'), icon: QrCode, description: t('qrcode_generate_desc', '生成二维码') },
-    { id: 'qrcode-scan' as TabType, label: t('qrcode_scan', '二维码识别'), icon: Focus, description: t('qrcode_scan_desc', '识别二维码') },
+    { id: 'barcode' as TabType, label: t('barcode_tab', '条形码'), icon: Barcode, description: t('barcode_tab_desc', '条形码相关功能') },
+    { id: 'qrcode' as TabType, label: t('qrcode_tab', '二维码'), icon: QrCode, description: t('qrcode_tab_desc', '二维码相关功能') },
+    { id: 'csvjson' as TabType, label: 'CSV/JSON', icon: FileText, description: 'CSV/JSON互转' },
   ];
 
   const changeLanguage = (lng: string) => {
@@ -97,9 +106,7 @@ function App() {
 
   return (
     <>
-      {/* {isAnalyticsEnabled() && ( */}
-        <GoogleAnalytics measurementId={ANALYTICS_CONFIG.MEASUREMENT_ID} />
-      {/* )} */}
+      <GoogleAnalytics measurementId={ANALYTICS_CONFIG.MEASUREMENT_ID} />
       <SEOHead 
         title={seoConfig.title}
         description={seoConfig.description}
@@ -115,14 +122,14 @@ function App() {
             <div className="flex items-center justify-between h-14">
               {/* Logo and Title */}
               <div className="flex items-center gap-2">
-                <div className="w-7 h-7 bg-blue-600 rounded flex items-center justify-center cursor-pointer" aria-hidden="true" onClick={() => { setActiveTab('generate'); window.location.hash = 'generate'; }}>
+                <div className="w-7 h-7 bg-blue-600 rounded flex items-center justify-center cursor-pointer" aria-hidden="true" onClick={() => { setActiveTab('barcode'); window.location.hash = 'barcode'; }}>
                   <Barcode className="w-4 h-4 text-white" />
                 </div>
-                <div className="hidden sm:block cursor-pointer" onClick={() => { setActiveTab('generate'); window.location.hash = 'generate'; }}>
+                <div className="hidden sm:block cursor-pointer" onClick={() => { setActiveTab('barcode'); window.location.hash = 'barcode'; }}>
                   <h1 className="text-base font-semibold text-slate-900 leading-none">{t('title')}</h1>
                   <p className="text-[10px] text-slate-400 leading-none">{t('slogan')}</p>
                 </div>
-                <div className="sm:hidden cursor-pointer" onClick={() => { setActiveTab('generate'); window.location.hash = 'generate'; }}>
+                <div className="sm:hidden cursor-pointer" onClick={() => { setActiveTab('barcode'); window.location.hash = 'barcode'; }}>
                   <h1 className="text-base font-semibold text-slate-900 leading-none">{t('title')}</h1>
                 </div>
               </div>
@@ -234,39 +241,55 @@ function App() {
         <div className="transition-all duration-300">
           {currentRoute === 'home' && (
             <>
-              <section 
-                id="generate-panel" 
-                role="tabpanel" 
-                aria-labelledby="generate-tab"
-                className={activeTab === 'generate' ? 'block' : 'hidden'}
-              >
-                <BarcodeProcessor mode={mode} setMode={setMode} />
-              </section>
-              <section 
-                id="scan-panel" 
-                role="tabpanel" 
-                aria-labelledby="scan-tab"
-                className={activeTab === 'scan' ? 'block' : 'hidden'}
-              >
-                <BarcodeScanner />
-              </section>
-              {/* 预留二维码功能入口 */}
-              <section
-                id="qrcode-generate-panel"
-                role="tabpanel"
-                aria-labelledby="qrcode-generate-tab"
-                className={activeTab === 'qrcode-generate' ? 'block' : 'hidden'}
-              >
-                <QrCodeGenerator mode={mode} setMode={setMode} />
-              </section>
-              <section
-                id="qrcode-scan-panel"
-                role="tabpanel"
-                aria-labelledby="qrcode-scan-tab"
-                className={activeTab === 'qrcode-scan' ? 'block' : 'hidden'}
-              >
-                <QrCodeScanner />
-              </section>
+              {/* 条形码合并页面 */}
+              {activeTab === 'barcode' && (
+                <div className="w-full mx-auto px-2 sm:px-6 lg:px-8">
+                  <div className="flex gap-2 mb-4">
+                    <button
+                      className={`px-3 py-1.5 rounded border text-xs font-medium transition-colors duration-150 ${barcodeSubTab === 'generate' ? 'bg-blue-50 border-blue-500 text-blue-700' : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'}`}
+                      onClick={() => { setBarcodeSubTab('generate'); window.location.hash = 'barcode-generate'; }}
+                    >{t('generate')}</button>
+                    <button
+                      className={`px-3 py-1.5 rounded border text-xs font-medium transition-colors duration-150 ${barcodeSubTab === 'scan' ? 'bg-blue-50 border-blue-500 text-blue-700' : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'}`}
+                      onClick={() => { setBarcodeSubTab('scan'); window.location.hash = 'barcode-scan'; }}
+                    >{t('scan')}</button>
+                  </div>
+                  
+                    {barcodeSubTab === 'generate' && <BarcodeProcessor mode={mode} setMode={setMode} />}
+                    {barcodeSubTab === 'scan' && <BarcodeScanner />}
+                  
+                </div>
+              )}
+              {/* 二维码合并页面 */}
+              {activeTab === 'qrcode' && (
+                <div className="w-full mx-auto px-2 sm:px-6 lg:px-8">
+                  <div className="flex gap-2 mb-4">
+                    <button
+                      className={`px-3 py-1.5 rounded border text-xs font-medium transition-colors duration-150 ${qrcodeSubTab === 'generate' ? 'bg-blue-50 border-blue-500 text-blue-700' : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'}`}
+                      onClick={() => { setQrcodeSubTab('generate'); window.location.hash = 'qrcode-generate'; }}
+                    >{t('qrcode_generate', '二维码生成')}</button>
+                    <button
+                      className={`px-3 py-1.5 rounded border text-xs font-medium transition-colors duration-150 ${qrcodeSubTab === 'scan' ? 'bg-blue-50 border-blue-500 text-blue-700' : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'}`}
+                      onClick={() => { setQrcodeSubTab('scan'); window.location.hash = 'qrcode-scan'; }}
+                    >{t('qrcode_scan', '二维码识别')}</button>
+                  </div>
+                  
+                    {qrcodeSubTab === 'generate' && <QrCodeGenerator mode={mode} setMode={setMode} />}
+                    {qrcodeSubTab === 'scan' && <QrCodeScanner />}
+                  
+                </div>
+              )}
+              {/* CSV/JSON互转工具 */}
+              {activeTab === 'csvjson' && (
+                <section
+                  id="csvjson-panel"
+                  role="tabpanel"
+                  aria-labelledby="csvjson-tab"
+                  className="block"
+                >
+                  <CsvJsonConverter />
+                </section>
+              )}
             </>
           )}
           {currentRoute === 'privacy' && <PrivacyPolicy />}
