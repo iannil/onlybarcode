@@ -64,7 +64,7 @@ const resources = {
       barcode_repeat_count: 'Barcode Repeat Count',
       barcodes_per_row: 'Barcodes per Row',
       single_page_pdf: 'Print all on single PDF page',
-      no_preview: 'No barcode preview, please enter content and click "Start Processing"',
+      no_preview: 'No barcode preview, please enter content and click "Process"',
       barcode_generation_failed: 'Barcode generation failed',
       barcode_content_empty: 'Barcode content cannot be empty',
       processing_failed_generic: 'Processing failed',
