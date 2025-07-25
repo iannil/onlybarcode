@@ -53,14 +53,14 @@ const BarcodeProcessor: React.FC<BarcodeProcessorProps> = ({ mode, setMode }) =>
   const [singlePagePDF, setSinglePagePDF] = useState(false);
 
   const formats = [
-    { value: 'CODE128', label: 'Code 128' },
-    { value: 'EAN13', label: 'EAN-13' },
-    { value: 'EAN8', label: 'EAN-8' },
-    { value: 'CODE39', label: 'Code 39' },
-    { value: 'ITF14', label: 'ITF-14' },
-    { value: 'MSI', label: 'MSI' },
-    { value: 'pharmacode', label: 'Pharmacode' },
-    { value: 'codabar', label: 'Codabar' },
+    { value: 'CODE128', label: t('barcode_format_code128', 'Code 128') },
+    { value: 'EAN13', label: t('barcode_format_ean13', 'EAN-13') },
+    { value: 'EAN8', label: t('barcode_format_ean8', 'EAN-8') },
+    { value: 'CODE39', label: t('barcode_format_code39', 'Code 39') },
+    { value: 'ITF14', label: t('barcode_format_itf14', 'ITF-14') },
+    { value: 'MSI', label: t('barcode_format_msi', 'MSI') },
+    { value: 'pharmacode', label: t('barcode_format_pharmacode', 'Pharmacode') },
+    { value: 'codabar', label: t('barcode_format_codabar', 'Codabar') },
   ];
 
   const generateSingleBarcode = () => {
@@ -415,7 +415,7 @@ const BarcodeProcessor: React.FC<BarcodeProcessorProps> = ({ mode, setMode }) =>
       previewBarcodeElements.push(
         <div
           key={item.id}
-          className="flex flex-col items-center justify-center border-2 border-dashed border-blue-400 rounded-xl bg-white mx-auto px-2 my-4"
+          className="flex flex-col items-center justify-center border-2 border-dashed border-blue-400 rounded-xl bg-white mx-auto px-2 my-2 sm:my-4"
           style={{ minWidth: 0, minHeight: maxCellHeight + margin * 2 + 16, maxWidth: maxCellWidth + margin * 2, maxHeight: maxCellHeight + margin * 2 + 16 }}
         >
           {item.dataUrl && (
@@ -445,9 +445,9 @@ const BarcodeProcessor: React.FC<BarcodeProcessorProps> = ({ mode, setMode }) =>
   return (
     <div className="tab-content">
       {mode === 'single' ? (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-8">
-          <div className="flex flex-col min-h-[420px] h-full gap-4 sm:gap-6">
-            <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-slate-200/50 p-6 sm:p-6 flex-shrink-0">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-6 lg:gap-8">
+          <div className="flex flex-col gap-3 sm:gap-4 lg:gap-6">
+            <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-slate-200/50 p-4 sm:p-6">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 space-y-3 sm:space-y-0">
                 <h3 className="text-lg font-semibold text-slate-900 flex items-center">
                   <Settings className="w-5 h-5 mr-2 text-blue-600" />
@@ -460,10 +460,10 @@ const BarcodeProcessor: React.FC<BarcodeProcessorProps> = ({ mode, setMode }) =>
                     setMode('single');
                     window.location.hash = 'generate';
                   }}
-                  className={`flex-1 px-3 py-2 sm:py-1 rounded-xl text-base sm:text-xs font-medium transition-all duration-200 ${
-                    mode === 'single'
-                      ? 'bg-white text-blue-600 shadow-sm'
-                      : 'text-slate-600 hover:text-slate-900'
+                  className={`flex-1 h-9 px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
+                    mode === 'batch'
+                      ? 'text-slate-600 hover:text-slate-900'
+                      : 'bg-white text-blue-600 shadow-sm'
                   }`}
                 >
                   {t('single')}
@@ -473,10 +473,10 @@ const BarcodeProcessor: React.FC<BarcodeProcessorProps> = ({ mode, setMode }) =>
                     setMode('batch');
                     window.location.hash = 'generate-batch';
                   }}
-                  className={`flex-1 px-3 py-2 sm:py-1 rounded-xl text-base sm:text-xs font-medium transition-all duration-200 ${
-                    mode === 'batch'
-                      ? 'bg-white text-blue-600 shadow-sm'
-                      : 'text-slate-600 hover:text-slate-900'
+                  className={`flex-1 h-9 px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
+                    mode === 'single'
+                      ? 'text-slate-600 hover:text-slate-900'
+                      : 'bg-white text-blue-600 shadow-sm'
                   }`}
                 >
                   {t('batch')}
@@ -662,10 +662,9 @@ const BarcodeProcessor: React.FC<BarcodeProcessorProps> = ({ mode, setMode }) =>
                 )}
               </div>
             </div>
-            <div className="flex-grow" />
           </div>
-          <div className="space-y-4 sm:space-y-6">
-            <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-slate-200/50 p-6">
+          <div className="space-y-3 sm:space-y-4 lg:space-y-6">
+            <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-slate-200/50 p-4 sm:p-6">
               <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center">
                 <Package className="w-5 h-5 mr-2 text-blue-500" />
                 {t('barcode_preview')}
@@ -685,24 +684,24 @@ const BarcodeProcessor: React.FC<BarcodeProcessorProps> = ({ mode, setMode }) =>
                   </div>
                 )}
               </div>
-              <div className="mt-4 sm:mt-6 flex flex-col sm:flex-row flex-wrap gap-2">
+              <div className="mt-3 sm:mt-4 lg:mt-6 flex flex-col sm:flex-row flex-wrap gap-2">
                 <button
                   onClick={() => downloadSingleBarcode('png')}
-                  className="flex items-center justify-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-sm"
+                  className="flex items-center justify-center h-9 px-3 py-2 text-sm rounded-md bg-blue-600 text-white hover:bg-blue-700 transition-colors shadow-sm"
                 >
                   <Download className="w-4 h-4 mr-2" />
                   {t('download_png')}
                 </button>
                 <button
                   onClick={() => downloadSingleBarcode('svg')}
-                  className="flex items-center justify-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors shadow-sm"
+                  className="flex items-center justify-center h-9 px-3 py-2 text-sm rounded-md bg-green-600 text-white hover:bg-green-700 transition-colors shadow-sm"
                 >
                   <Download className="w-4 h-4 mr-2" />
                   {t('download_svg')}
                 </button>
                 <button
                   onClick={copySingleBarcodeData}
-                  className={`flex items-center justify-center px-4 py-2 rounded-lg transition-colors shadow-sm ${
+                  className={`flex items-center justify-center h-9 px-3 py-2 text-sm rounded-md transition-colors shadow-sm ${
                     copySuccess 
                       ? 'bg-green-100 text-green-700' 
                       : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
@@ -725,9 +724,9 @@ const BarcodeProcessor: React.FC<BarcodeProcessorProps> = ({ mode, setMode }) =>
           </div>
         </div>
       ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <div className="space-y-6">
-            <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-slate-200/50 p-6 sm:p-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-6 lg:gap-8">
+          <div className="space-y-3 sm:space-y-4 lg:space-y-6">
+            <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-slate-200/50 p-4 sm:p-6">
               <div className="flex items-center mb-4">
                 <h3 className="text-lg font-semibold text-slate-900 flex items-center">
                   <Settings className="w-5 h-5 mr-2 text-blue-600" />
@@ -740,10 +739,10 @@ const BarcodeProcessor: React.FC<BarcodeProcessorProps> = ({ mode, setMode }) =>
                     setMode('single');
                     window.location.hash = 'generate';
                   }}
-                  className={`flex-1 px-3 py-2 sm:py-1 rounded-xl text-base sm:text-xs font-medium transition-all duration-200 ${
-                    mode === 'single'
-                      ? 'bg-white text-blue-600 shadow-sm'
-                      : 'text-slate-600 hover:text-slate-900'
+                  className={`flex-1 h-9 px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
+                    mode === 'batch'
+                      ? 'text-slate-600 hover:text-slate-900'
+                      : 'bg-white text-blue-600 shadow-sm'
                   }`}
                 >
                   {t('single')}
@@ -753,10 +752,10 @@ const BarcodeProcessor: React.FC<BarcodeProcessorProps> = ({ mode, setMode }) =>
                     setMode('batch');
                     window.location.hash = 'generate-batch';
                   }}
-                  className={`flex-1 px-3 py-2 sm:py-1 rounded-xl text-base sm:text-xs font-medium transition-all duration-200 ${
-                    mode === 'batch'
-                      ? 'bg-white text-blue-600 shadow-sm'
-                      : 'text-slate-600 hover:text-slate-900'
+                  className={`flex-1 h-9 px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
+                    mode === 'single'
+                      ? 'text-slate-600 hover:text-slate-900'
+                      : 'bg-white text-blue-600 shadow-sm'
                   }`}
                 >
                   {t('batch')}
@@ -928,7 +927,7 @@ const BarcodeProcessor: React.FC<BarcodeProcessorProps> = ({ mode, setMode }) =>
                   </div>
                 )}
               </div>
-              <div className="mt-6">
+              <div className="mt-4 sm:mt-6">
                 <label className="block text-sm font-medium text-gray-700 mb-2">{t('text_input')}</label>
                 <textarea
                   ref={textInputRef}
@@ -940,12 +939,12 @@ const BarcodeProcessor: React.FC<BarcodeProcessorProps> = ({ mode, setMode }) =>
                 />
               </div>
             </div>
-            <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-slate-200/50 p-6">
-              <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-2 mt-4">
+            <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-slate-200/50 p-4 sm:p-6">
+              <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-2 mt-3 sm:mt-4">
                 <button
                   onClick={processItems}
                   disabled={processing || items.length === 0 || items.some(i => i.status === 'processing' || i.status === 'completed')}
-                  className="flex items-center justify-center px-3 py-2 text-sm bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:bg-slate-300 disabled:cursor-not-allowed transition-colors shadow-sm w-full sm:w-auto sm:min-w-[90px]"
+                  className="flex items-center justify-center h-9 px-3 py-2 text-sm rounded-md bg-green-600 text-white hover:bg-green-700 disabled:bg-slate-300 disabled:cursor-not-allowed transition-colors shadow-sm w-full sm:w-auto sm:min-w-[90px]"
                 >
                   {processing ? (
                     <Loader className="w-4 h-4 mr-2 animate-spin" />
@@ -957,7 +956,7 @@ const BarcodeProcessor: React.FC<BarcodeProcessorProps> = ({ mode, setMode }) =>
                 <button
                   onClick={downloadResults}
                   disabled={completedCount === 0}
-                  className="flex items-center justify-center px-3 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-slate-300 disabled:cursor-not-allowed transition-colors shadow-sm w-full sm:w-auto sm:min-w-[90px]"
+                  className="flex items-center justify-center h-9 px-3 py-2 text-sm rounded-md bg-blue-600 text-white hover:bg-blue-700 disabled:bg-slate-300 disabled:cursor-not-allowed transition-colors shadow-sm w-full sm:w-auto sm:min-w-[90px]"
                 >
                   <Download className="w-4 h-4 mr-2" />
                   {t('export_zip')}
@@ -965,7 +964,7 @@ const BarcodeProcessor: React.FC<BarcodeProcessorProps> = ({ mode, setMode }) =>
                 <button
                   onClick={exportPDF}
                   disabled={completedCount === 0}
-                  className="flex items-center justify-center px-3 py-2 text-sm bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:bg-slate-300 disabled:cursor-not-allowed transition-colors shadow-sm w-full sm:w-auto sm:min-w-[90px]"
+                  className="flex items-center justify-center h-9 px-3 py-2 text-sm rounded-md bg-purple-600 text-white hover:bg-purple-700 disabled:bg-slate-300 disabled:cursor-not-allowed transition-colors shadow-sm w-full sm:w-auto sm:min-w-[90px]"
                 >
                   <Download className="w-4 h-4 mr-2" />
                   {t('export_pdf')}
@@ -973,14 +972,14 @@ const BarcodeProcessor: React.FC<BarcodeProcessorProps> = ({ mode, setMode }) =>
                 <button
                   onClick={clearItems}
                   disabled={items.length === 0}
-                  className="flex items-center justify-center px-3 py-2 text-sm bg-slate-600 text-white rounded-lg hover:bg-slate-700 disabled:bg-slate-300 disabled:cursor-not-allowed transition-colors shadow-sm w-full sm:w-auto sm:min-w-[90px]"
+                  className="flex items-center justify-center h-9 px-3 py-2 text-sm rounded-md bg-slate-600 text-white hover:bg-slate-700 disabled:bg-slate-300 disabled:cursor-not-allowed transition-colors shadow-sm w-full sm:w-auto sm:min-w-[90px]"
                 >
                   <Trash className="w-4 h-4 mr-2" />
                   {t('clear')}
                 </button>
               </div>
               {processing && processingCount > 0 && (
-                <div className="mt-4">
+                <div className="mt-3 sm:mt-4">
                   <div className="flex items-center justify-between text-sm text-gray-600 mb-2">
                     <span>{t('processing_progress')}</span>
                     <span>{Math.round((completedCount + errorCount) / items.length * 100)}%</span>
@@ -993,7 +992,7 @@ const BarcodeProcessor: React.FC<BarcodeProcessorProps> = ({ mode, setMode }) =>
                   </div>
                 </div>
               )}
-              <div className="mt-6">
+              <div className="mt-4 sm:mt-6">
                 <h4 className="text-sm font-semibold text-gray-500 mb-2">{t('processing_list')}</h4>
                 <div className="space-y-1 max-h-40 overflow-y-auto">
                   {items.length === 0 ? (
@@ -1050,15 +1049,15 @@ const BarcodeProcessor: React.FC<BarcodeProcessorProps> = ({ mode, setMode }) =>
               </div>
             </div>
           </div>
-          <div className="space-y-6">
-            <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-slate-200/50 p-6 min-h-[220px] flex flex-col">
+          <div className="space-y-3 sm:space-y-4 lg:space-y-6">
+            <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-slate-200/50 p-4 sm:p-6 min-h-[220px] flex flex-col">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-semibold text-slate-900 flex items-center">
                   <Package className="w-5 h-5 mr-2 text-blue-500" />
                   {t('barcode_preview')}
                 </h3>
               </div>
-              <div className="mb-4 flex items-center space-x-4">
+              <div className="mb-3 sm:mb-4 flex items-center space-x-4">
                 <label className="text-sm text-gray-700 font-medium">{t('barcodes_per_row')}</label>
                 <input
                   type="range"
@@ -1084,7 +1083,7 @@ const BarcodeProcessor: React.FC<BarcodeProcessorProps> = ({ mode, setMode }) =>
                 <div
                   className={
                     barcodesPerRow > 1
-                      ? `grid gap-4 pb-2 grid-cols-${barcodesPerRow}`
+                      ? `grid gap-2 sm:gap-4 pb-2 grid-cols-${barcodesPerRow}`
                       : 'flex flex-col items-center pb-2'
                   }
                   style={

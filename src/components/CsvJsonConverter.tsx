@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { csvToJson, jsonToCsv, detectDelimiter } from '../utils/csvJson';
-import { FileText, Shuffle, Trash2, Copy, Download, Upload, ListFilter, AlignJustify, Compass } from 'lucide-react';
+import { FileText, Shuffle, Trash2, Copy, Download, Upload, ListFilter, AlignJustify, Compass, Braces } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 const CsvJsonConverter: React.FC = () => {
@@ -151,16 +151,22 @@ const CsvJsonConverter: React.FC = () => {
       <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4 gap-2">
         <div className="flex gap-2">
           <button
-            className={`px-3 py-1.5 rounded border text-xs font-medium transition-colors duration-150 ${mode === 'csv2json' ? 'bg-blue-50 border-blue-500 text-blue-700' : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'}`}
+            className={`h-9 px-3 py-2 rounded-md border text-sm font-medium transition-colors duration-150 ${mode === 'csv2json' ? 'bg-blue-50 border-blue-500 text-blue-700' : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'}`}
             onClick={() => setMode('csv2json')}
-          >CSV → JSON</button>
+          >
+            <Braces className="w-4 h-4 mr-1 inline-block align-text-bottom" />
+            {t('csv_to_json', 'CSV → JSON')}
+          </button>
           <button
-            className={`px-3 py-1.5 rounded border text-xs font-medium transition-colors duration-150 ${mode === 'json2csv' ? 'bg-blue-50 border-blue-500 text-blue-700' : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'}`}
+            className={`h-9 px-3 py-2 rounded-md border text-sm font-medium transition-colors duration-150 ${mode === 'json2csv' ? 'bg-blue-50 border-blue-500 text-blue-700' : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'}`}
             onClick={() => setMode('json2csv')}
-          >JSON → CSV</button>
+          >
+            <FileText className="w-4 h-4 mr-1 inline-block align-text-bottom" />
+            {t('json_to_csv', 'JSON → CSV')}
+          </button>
         </div>
         <button
-          className="px-3 py-1.5 rounded border border-blue-600 bg-blue-600 text-white text-xs font-medium flex items-center gap-2 hover:bg-blue-700 transition-colors"
+          className="h-9 px-3 py-2 rounded-md border border-blue-600 bg-blue-600 text-white text-sm font-medium flex items-center gap-2 hover:bg-blue-700 transition-colors"
           style={{ minHeight: '32px' }}
           onClick={handleConvert}
         >
@@ -177,8 +183,8 @@ const CsvJsonConverter: React.FC = () => {
             </h3>
             <div className="flex gap-1">
               <input type="file" accept={mode==='csv2json'?'.csv':'.json'} className="hidden" id="file-input" onChange={handleFileImport} />
-              <label htmlFor="file-input" className="cursor-pointer text-xs flex items-center gap-1 px-2 py-1 border rounded bg-slate-50 hover:bg-blue-50"><Download className="w-4 h-4" />{t('import')}</label>
-              <button onClick={handleClear} className="text-xs flex items-center gap-1 px-2 py-1 border rounded bg-slate-50 hover:bg-blue-50"><Trash2 className="w-4 h-4" />{t('clear')}</button>
+              <label htmlFor="file-input" className="cursor-pointer text-xs flex items-center justify-center gap-1 px-2 py-1 border rounded bg-slate-50 hover:bg-blue-50"><Download className="w-4 h-4" />{t('import')}</label>
+              <button onClick={handleClear} className="text-xs h-7 px-2 py-1 rounded-md border font-medium transition-colors duration-150 bg-slate-50 hover:bg-blue-50 flex items-center justify-center gap-1"><Trash2 className="w-4 h-4" />{t('clear')}</button>
               {mode === 'json2csv' && (
                 <button
                   onClick={() => {
@@ -187,7 +193,7 @@ const CsvJsonConverter: React.FC = () => {
                       setInput(JSON.stringify(obj, null, 2));
                     } catch {}
                   }}
-                  className="text-xs flex items-center gap-1 px-2 py-1 border rounded bg-slate-50 hover:bg-blue-50"
+                  className="text-xs h-7 px-2 py-1 rounded-md border font-medium transition-colors duration-150 bg-slate-50 hover:bg-blue-50 flex items-center justify-center gap-1"
                 >
                   <Compass className="w-4 h-4" />{t('format_json', '格式化JSON')}
                 </button>
@@ -207,7 +213,7 @@ const CsvJsonConverter: React.FC = () => {
             }}
             style={{ minHeight: 320 }}
           />
-          {getErrorLine() && <div className="text-red-500 text-xs mt-1">疑似错误行: {getErrorLine()}</div>}
+          {getErrorLine() && <div className="text-red-500 text-xs mt-1">{t('error_line_indicator', '疑似错误行')}: {getErrorLine()}</div>}
           {mode === 'csv2json' && (
             <div className="flex items-center gap-4 mt-3">
               <label className="text-xs text-slate-600 flex items-center gap-1"><AlignJustify className="w-4 h-4" />{t('delimiter')}
@@ -231,9 +237,9 @@ const CsvJsonConverter: React.FC = () => {
               <FileText className="w-5 h-5 mr-2 text-blue-500" />{mode === 'csv2json' ? t('json_output_title', 'JSON输出') : t('csv_output_title', 'CSV输出')}
             </h3>
             <div className="flex gap-1">
-              <button onClick={handleFileExport} className="text-xs flex items-center gap-1 px-2 py-1 border rounded bg-slate-50 hover:bg-blue-50"><Upload className="w-4 h-4" />{t('export')}</button>
-              <button onClick={handleCopy} className="text-xs flex items-center gap-1 px-2 py-1 border rounded bg-slate-50 hover:bg-blue-50"><Copy className="w-4 h-4" />{t('copy')}</button>
-              {mode === 'csv2json' && <button onClick={handleJsonFormat} className="text-xs flex items-center gap-1 px-2 py-1 border rounded bg-slate-50 hover:bg-blue-50"><Compass className="w-4 h-4" />{jsonPretty ? t('compress_json', '压缩JSON') : t('beautify_json', '美化JSON')}</button>}
+              <button onClick={handleFileExport} className="text-xs h-7 px-2 py-1 rounded-md border font-medium transition-colors duration-150 bg-slate-50 hover:bg-blue-50 flex items-center justify-center gap-1"><Upload className="w-4 h-4" />{t('export')}</button>
+              <button onClick={handleCopy} className="text-xs h-7 px-2 py-1 rounded-md border font-medium transition-colors duration-150 bg-slate-50 hover:bg-blue-50 flex items-center justify-center gap-1"><Copy className="w-4 h-4" />{t('copy')}</button>
+              {mode === 'csv2json' && <button onClick={handleJsonFormat} className="text-xs h-7 px-2 py-1 rounded-md border font-medium transition-colors duration-150 bg-slate-50 hover:bg-blue-50 flex items-center justify-center gap-1"><Compass className="w-4 h-4" />{jsonPretty ? t('compress_json', '压缩JSON') : t('beautify_json', '美化JSON')}</button>}
             </div>
           </div>
           <textarea

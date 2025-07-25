@@ -260,8 +260,8 @@ const QrCodeGenerator: React.FC<QrCodeGeneratorProps> = ({ mode, setMode }) => {
     <div className="tab-content">
       {mode === 'single' ? (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-8">
-          <div className="flex flex-col min-h-[420px] h-full gap-4 sm:gap-6">
-            <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-slate-200/50 p-6 sm:p-6 flex-shrink-0">
+          <div className="flex flex-col gap-4 sm:gap-6">
+            <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-slate-200/50 p-6 sm:p-6">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 space-y-3 sm:space-y-0">
                 <h3 className="text-lg font-semibold text-slate-900 flex items-center">
                   <Settings className="w-5 h-5 mr-2 text-blue-600" />
@@ -274,7 +274,7 @@ const QrCodeGenerator: React.FC<QrCodeGeneratorProps> = ({ mode, setMode }) => {
                     setMode('single');
                     window.location.hash = 'qrcode-generate';
                   }}
-                  className={`flex-1 px-3 py-2 sm:py-1 rounded-xl text-base sm:text-xs font-medium transition-all duration-200 ${
+                  className={`flex-1 h-9 px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
                     mode === 'single'
                       ? 'bg-white text-blue-600 shadow-sm'
                       : 'text-slate-600 hover:text-slate-900'
@@ -287,10 +287,10 @@ const QrCodeGenerator: React.FC<QrCodeGeneratorProps> = ({ mode, setMode }) => {
                     setMode('batch');
                     window.location.hash = 'qrcode-generate-batch';
                   }}
-                  className={`flex-1 px-3 py-2 sm:py-1 rounded-xl text-base sm:text-xs font-medium transition-all duration-200 ${
-                    mode === 'single'
-                      ? 'text-slate-600 hover:text-slate-900'
-                      : 'bg-white text-blue-600 shadow-sm'
+                  className={`flex-1 h-9 px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
+                    mode === 'batch'
+                      ? 'bg-white text-blue-600 shadow-sm'
+                      : 'text-slate-600 hover:text-slate-900'
                   }`}
                 >
                   {t('batch', '批量')}
@@ -402,14 +402,13 @@ const QrCodeGenerator: React.FC<QrCodeGeneratorProps> = ({ mode, setMode }) => {
                   </div>
                 )}
                 <button
-                  className="w-full bg-blue-600 text-white py-2 rounded mb-2"
+                  className="w-full bg-blue-600 text-white h-9 py-2 rounded mb-2 flex items-center justify-center"
                   onClick={generateSingle}
                 >
                   {t('generate_qrcode', '生成二维码')}
                 </button>
               </div>
             </div>
-            <div className="flex-grow" />
           </div>
           <div className="space-y-4 sm:space-y-6">
             <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-slate-200/50 p-6">
@@ -434,14 +433,14 @@ const QrCodeGenerator: React.FC<QrCodeGeneratorProps> = ({ mode, setMode }) => {
               <div className="mt-4 sm:mt-6 flex flex-col sm:flex-row flex-wrap gap-2">
                 <button
                   onClick={downloadSingle}
-                  className="flex items-center justify-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-sm"
+                  className="flex items-center justify-center px-4 h-9 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-sm"
                 >
                   <Download className="w-4 h-4 mr-2" />
                   {t('download_png', '下载PNG')}
                 </button>
                 <button
                   onClick={copySingle}
-                  className={`flex items-center justify-center px-4 py-2 rounded-lg transition-colors shadow-sm ${
+                  className={`flex items-center justify-center px-4 h-9 py-2 rounded-lg transition-colors shadow-sm ${
                     copySuccess 
                       ? 'bg-green-100 text-green-700' 
                       : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
@@ -479,7 +478,7 @@ const QrCodeGenerator: React.FC<QrCodeGeneratorProps> = ({ mode, setMode }) => {
                     setMode('single');
                     window.location.hash = 'qrcode-generate';
                   }}
-                  className={`flex-1 px-3 py-2 sm:py-1 rounded-xl text-base sm:text-xs font-medium transition-all duration-200 ${
+                  className={`flex-1 h-9 px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
                     mode === 'batch'
                       ? 'text-slate-600 hover:text-slate-900'
                       : 'bg-white text-blue-600 shadow-sm'
@@ -492,7 +491,7 @@ const QrCodeGenerator: React.FC<QrCodeGeneratorProps> = ({ mode, setMode }) => {
                     setMode('batch');
                     window.location.hash = 'qrcode-generate-batch';
                   }}
-                  className={`flex-1 px-3 py-2 sm:py-1 rounded-xl text-base sm:text-xs font-medium transition-all duration-200 ${
+                  className={`flex-1 h-9 px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
                     mode === 'batch'
                       ? 'bg-white text-blue-600 shadow-sm'
                       : 'text-slate-600 hover:text-slate-900'
@@ -616,7 +615,7 @@ const QrCodeGenerator: React.FC<QrCodeGeneratorProps> = ({ mode, setMode }) => {
                 <button
                   onClick={generateBatch}
                   disabled={processing || !batchText.trim()}
-                  className="flex items-center justify-center px-3 py-2 text-sm bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:bg-slate-300 disabled:cursor-not-allowed transition-colors shadow-sm w-full sm:w-auto sm:min-w-[90px]"
+                  className="flex items-center justify-center h-9 px-3 py-2 text-sm rounded-md bg-green-600 text-white hover:bg-green-700 disabled:bg-slate-300 disabled:cursor-not-allowed transition-colors shadow-sm w-full sm:w-auto sm:min-w-[90px]"
                 >
                   {processing ? (
                     <Loader className="w-4 h-4 mr-2 animate-spin" />
@@ -628,7 +627,7 @@ const QrCodeGenerator: React.FC<QrCodeGeneratorProps> = ({ mode, setMode }) => {
                 <button
                   onClick={downloadResults}
                   disabled={results.length === 0}
-                  className="flex items-center justify-center px-3 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-slate-300 disabled:cursor-not-allowed transition-colors shadow-sm w-full sm:w-auto sm:min-w-[90px]"
+                  className="flex items-center justify-center h-9 px-3 py-2 text-sm rounded-md bg-blue-600 text-white hover:bg-blue-700 disabled:bg-slate-300 disabled:cursor-not-allowed transition-colors shadow-sm w-full sm:w-auto sm:min-w-[90px]"
                 >
                   <Download className="w-4 h-4 mr-2" />
                   {t('export_zip', '导出ZIP')}
@@ -636,7 +635,7 @@ const QrCodeGenerator: React.FC<QrCodeGeneratorProps> = ({ mode, setMode }) => {
                 <button
                   onClick={exportPDF}
                   disabled={results.length === 0}
-                  className="flex items-center justify-center px-3 py-2 text-sm bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:bg-slate-300 disabled:cursor-not-allowed transition-colors shadow-sm w-full sm:w-auto sm:min-w-[90px]"
+                  className="flex items-center justify-center h-9 px-3 py-2 text-sm rounded-md bg-purple-600 text-white hover:bg-purple-700 disabled:bg-slate-300 disabled:cursor-not-allowed transition-colors shadow-sm w-full sm:w-auto sm:min-w-[90px]"
                 >
                   <Download className="w-4 h-4 mr-2" />
                   {t('export_pdf', '导出PDF')}
@@ -644,7 +643,7 @@ const QrCodeGenerator: React.FC<QrCodeGeneratorProps> = ({ mode, setMode }) => {
                 <button
                   onClick={clearResults}
                   disabled={results.length === 0 && !batchText.trim() && batchItems.length === 0}
-                  className="flex items-center justify-center px-3 py-2 text-sm bg-slate-600 text-white rounded-lg hover:bg-slate-700 disabled:bg-slate-300 disabled:cursor-not-allowed transition-colors shadow-sm w-full sm:w-auto sm:min-w-[90px]"
+                  className="flex items-center justify-center h-9 px-3 py-2 text-sm rounded-md bg-slate-600 text-white hover:bg-slate-700 disabled:bg-slate-300 disabled:cursor-not-allowed transition-colors shadow-sm w-full sm:w-auto sm:min-w-[90px]"
                 >
                   <Trash className="w-4 h-4 mr-2" />
                   {t('clear', '清空')}

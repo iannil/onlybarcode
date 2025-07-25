@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Barcode, QrCode, FileText, Menu, X } from 'lucide-react';
+import { Barcode, QrCode, FileText, Menu, X, ScanLine, ScanEye } from 'lucide-react';
 import BarcodeProcessor from './components/BatchProcessor';
 import BarcodeScanner from './components/BarcodeScanner';
 import PrivacyPolicy from './components/PrivacyPolicy';
@@ -39,6 +39,7 @@ function App() {
       let newTab: TabType | null = null;
       let newBarcodeSubTab: BarcodeSubTab = 'generate';
       let newQrcodeSubTab: QrcodeSubTab = 'generate';
+      let shouldResetMode = false;
       switch (hash) {
         case 'privacy':
           newRoute = 'privacy';
@@ -57,6 +58,7 @@ function App() {
         case 'barcode':
           newTab = 'barcode';
           newBarcodeSubTab = 'generate';
+          shouldResetMode = true;
           break;
         case 'csvjson':
           newTab = 'csvjson';
@@ -76,7 +78,7 @@ function App() {
       setCurrentRoute(newRoute);
       if (newTab) setActiveTab(newTab);
       setBarcodeSubTab(newBarcodeSubTab);
-      setMode('single');
+      if (shouldResetMode) setMode('single');
       setQrcodeSubTab(newQrcodeSubTab);
       trackPageView(window.location.pathname + window.location.hash);
     };
@@ -89,7 +91,7 @@ function App() {
   const tabs = [
     { id: 'barcode' as TabType, label: t('barcode_tab', '条形码'), icon: Barcode, description: t('barcode_tab_desc', '条形码相关功能') },
     { id: 'qrcode' as TabType, label: t('qrcode_tab', '二维码'), icon: QrCode, description: t('qrcode_tab_desc', '二维码相关功能') },
-    { id: 'csvjson' as TabType, label: 'CSV/JSON', icon: FileText, description: 'CSV/JSON互转' },
+    { id: 'csvjson' as TabType, label: t('csvjson_tab', 'CSV/JSON'), icon: FileText, description: t('csvjson_tab_desc', 'CSV/JSON互转') },
   ];
 
   const changeLanguage = (lng: string) => {
@@ -149,7 +151,7 @@ function App() {
                           label: tab.id,
                         });
                       }}
-                      className={`flex items-center gap-1 px-3 py-1.5 rounded text-xs font-medium transition-colors duration-150 border border-transparent ${
+                      className={`flex items-center gap-1 px-3 py-1.5 rounded text-sm font-medium transition-colors duration-150 border border-transparent ${
                         activeTab === tab.id
                           ? 'text-blue-600 border-blue-600 bg-white'
                           : 'text-slate-600 hover:text-blue-600 hover:border-blue-200 bg-transparent'
@@ -166,7 +168,7 @@ function App() {
                 </div>
                 <select
                   id="language-select"
-                  className="ml-2 text-xs border border-gray-200 rounded px-1.5 py-0.5 text-slate-700 bg-white focus:outline-none"
+                  className="ml-2 text-sm border border-gray-200 rounded px-1.5 py-0.5 text-slate-700 bg-white focus:outline-none"
                   value={i18n.language}
                   onChange={e => changeLanguage(e.target.value)}
                   title={t('language')}
@@ -180,7 +182,7 @@ function App() {
               <div className="md:hidden flex items-center gap-1">
                 <select
                   id="mobile-language-select"
-                  className="text-xs border border-gray-200 rounded px-1.5 py-0.5 text-slate-700 bg-white focus:outline-none"
+                  className="text-sm border border-gray-200 rounded px-1.5 py-0.5 text-slate-700 bg-white focus:outline-none"
                   value={i18n.language}
                   onChange={e => changeLanguage(e.target.value)}
                   title={t('language')}
@@ -246,13 +248,19 @@ function App() {
                 <div className="w-full mx-auto px-2 sm:px-6 lg:px-8">
                   <div className="flex gap-2 mb-4">
                     <button
-                      className={`px-3 py-1.5 rounded border text-xs font-medium transition-colors duration-150 ${barcodeSubTab === 'generate' ? 'bg-blue-50 border-blue-500 text-blue-700' : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'}`}
+                      className={`h-9 px-3 py-2 rounded-md border text-sm font-medium transition-colors duration-150 ${barcodeSubTab === 'generate' ? 'bg-blue-50 border-blue-500 text-blue-700' : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'}`}
                       onClick={() => { setBarcodeSubTab('generate'); window.location.hash = 'barcode-generate'; }}
-                    >{t('generate')}</button>
+                    >
+                      <Barcode className="w-4 h-4 mr-1 inline-block align-text-bottom" />
+                      {t('generate')}
+                    </button>
                     <button
-                      className={`px-3 py-1.5 rounded border text-xs font-medium transition-colors duration-150 ${barcodeSubTab === 'scan' ? 'bg-blue-50 border-blue-500 text-blue-700' : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'}`}
+                      className={`h-9 px-3 py-2 rounded-md border text-sm font-medium transition-colors duration-150 ${barcodeSubTab === 'scan' ? 'bg-blue-50 border-blue-500 text-blue-700' : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'}`}
                       onClick={() => { setBarcodeSubTab('scan'); window.location.hash = 'barcode-scan'; }}
-                    >{t('scan')}</button>
+                    >
+                      <ScanLine className="w-4 h-4 mr-1 inline-block align-text-bottom" />
+                      {t('scan')}
+                    </button>
                   </div>
                   
                     {barcodeSubTab === 'generate' && <BarcodeProcessor mode={mode} setMode={setMode} />}
@@ -265,13 +273,19 @@ function App() {
                 <div className="w-full mx-auto px-2 sm:px-6 lg:px-8">
                   <div className="flex gap-2 mb-4">
                     <button
-                      className={`px-3 py-1.5 rounded border text-xs font-medium transition-colors duration-150 ${qrcodeSubTab === 'generate' ? 'bg-blue-50 border-blue-500 text-blue-700' : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'}`}
+                      className={`h-9 px-3 py-2 rounded-md border text-sm font-medium transition-colors duration-150 ${qrcodeSubTab === 'generate' ? 'bg-blue-50 border-blue-500 text-blue-700' : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'}`}
                       onClick={() => { setQrcodeSubTab('generate'); window.location.hash = 'qrcode-generate'; }}
-                    >{t('qrcode_generate', '二维码生成')}</button>
+                    >
+                      <QrCode className="w-4 h-4 mr-1 inline-block align-text-bottom" />
+                      {t('qrcode_generate', '二维码生成')}
+                    </button>
                     <button
-                      className={`px-3 py-1.5 rounded border text-xs font-medium transition-colors duration-150 ${qrcodeSubTab === 'scan' ? 'bg-blue-50 border-blue-500 text-blue-700' : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'}`}
+                      className={`h-9 px-3 py-2 rounded-md border text-sm font-medium transition-colors duration-150 ${qrcodeSubTab === 'scan' ? 'bg-blue-50 border-blue-500 text-blue-700' : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'}`}
                       onClick={() => { setQrcodeSubTab('scan'); window.location.hash = 'qrcode-scan'; }}
-                    >{t('qrcode_scan', '二维码识别')}</button>
+                    >
+                      <ScanEye className="w-4 h-4 mr-1 inline-block align-text-bottom" />
+                      {t('qrcode_scan', '二维码识别')}
+                    </button>
                   </div>
                   
                     {qrcodeSubTab === 'generate' && <QrCodeGenerator mode={mode} setMode={setMode} />}
