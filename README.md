@@ -1,4 +1,4 @@
-# BarHub - 条形码生成器 | Barcode Generator
+# 654653 - 条形码生成器 | Barcode Generator
 
 A modern, multilingual barcode generator and scanner web application built with React, TypeScript, and Tailwind CSS.
 
@@ -26,7 +26,7 @@ A modern, multilingual barcode generator and scanner web application built with 
 
 ```bash
 git clone <repository-url>
-cd barhub
+cd 654653
 ```
 
 2. Install dependencies:

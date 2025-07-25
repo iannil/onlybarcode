@@ -17,7 +17,7 @@ export const seoConfig = {
       name: 'Chinese',
       nativeName: '中文',
       url: 'https://654653.com/',
-      title: 'BarHub - 条形码生成器',
+      title: '654653 - 条形码生成器',
       description: '免费的在线条形码生成器和扫描器。支持多种条形码格式，包括Code128、EAN13、QR码等。快速生成、批量处理、PDF导出功能。',
       keywords: '条形码生成器,条形码扫描器,二维码生成器,在线条形码工具,批量条形码处理,PDF条形码,条码识别,条码制作',
       locale: 'zh_CN'
@@ -27,7 +27,7 @@ export const seoConfig = {
       name: 'English',
       nativeName: 'English',
       url: 'https://654653.com/en/',
-      title: 'BarHub - Barcode Generator',
+      title: '654653 - Barcode Generator',
       description: 'Free online barcode generator and scanner. Supports multiple barcode formats including Code128, EAN13, QR codes. Fast generation, batch processing, PDF export.',
       keywords: 'barcode generator,barcode scanner,QR code generator,online barcode tool,batch barcode processing,PDF barcode,barcode recognition,barcode maker',
       locale: 'en_US'
@@ -38,24 +38,24 @@ export const seoConfig = {
   pages: {
     generate: {
       zh: {
-        title: '条形码生成器 - BarHub',
+        title: '条形码生成器 - 654653',
         description: '在线生成条形码，支持Code128、EAN13、QR码等多种格式。单个或批量生成，可导出PNG、SVG、PDF格式。',
         keywords: '条形码生成,条码制作,二维码生成,批量条码生成,条码导出'
       },
       en: {
-        title: 'Barcode Generator - BarHub',
+        title: 'Barcode Generator - 654653',
         description: 'Generate barcodes online, supporting Code128, EAN13, QR codes and more formats. Single or batch generation, export to PNG, SVG, PDF formats.',
         keywords: 'barcode generation,barcode maker,QR code generator,batch barcode generation,barcode export'
       }
     },
     scan: {
       zh: {
-        title: '条形码扫描器 - BarHub',
+        title: '条形码扫描器 - 654653',
         description: '在线扫描识别条形码，支持多种图片格式。批量处理，结果可导出CSV文件。',
         keywords: '条形码扫描,条码识别,二维码识别,批量扫描,条码识别工具'
       },
       en: {
-        title: 'Barcode Scanner - BarHub',
+        title: 'Barcode Scanner - 654653',
         description: 'Scan and recognize barcodes online, supporting multiple image formats. Batch processing, results can be exported as CSV files.',
         keywords: 'barcode scanner,barcode recognition,QR code recognition,batch scanning,barcode recognition tool'
       }
@@ -64,7 +64,7 @@ export const seoConfig = {
   
   // 结构化数据配置
   structuredData: {
-    applicationName: 'BarHub',
+    applicationName: '654653',
     applicationCategory: '工具软件',
     operatingSystem: 'Web Browser',
     price: '0',

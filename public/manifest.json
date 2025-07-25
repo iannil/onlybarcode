@@ -1,6 +1,6 @@
 {
-  "name": "BarHub - 条形码生成器",
-  "short_name": "BarHub",
+  "name": "654653 - 条形码生成器",
+  "short_name": "654653",
   "description": "免费的在线条形码生成器和扫描器。支持多种条形码格式，包括Code128、EAN13、QR码等。",
   "start_url": "/",
   "display": "standalone",
