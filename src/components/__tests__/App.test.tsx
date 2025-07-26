@@ -1,5 +1,4 @@
-import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import App from '../../App';
 import { I18nextProvider } from 'react-i18next';
@@ -214,7 +213,9 @@ describe('App Component', () => {
     
     // Simulate hash change
     window.location.hash = '#qrcode';
-    window.dispatchEvent(new HashChangeEvent('hashchange'));
+    act(() => {
+      window.dispatchEvent(new HashChangeEvent('hashchange'));
+    });
     
     await waitFor(() => {
       expect(screen.getByTestId('qr-code-generator')).toBeInTheDocument();

@@ -1,4 +1,3 @@
-import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { I18nextProvider } from 'react-i18next';
@@ -145,8 +144,6 @@ describe('JsonXmlConverter Component', () => {
   });
 
   it('downloads result as file', async () => {
-    const { saveAs } = require('file-saver');
-    
     const { jsonToXml } = await import('../../utils/jsonXml');
     (jsonToXml as any).mockReturnValue('<person><name>John</name><age>25</age></person>');
 

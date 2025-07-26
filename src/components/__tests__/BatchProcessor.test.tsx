@@ -1,4 +1,3 @@
-import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { I18nextProvider } from 'react-i18next';
@@ -318,8 +317,6 @@ describe('BatchProcessor Component', () => {
   });
 
   it('downloads single barcode as PNG', () => {
-    const { saveAs } = require('file-saver');
-    
     renderBatchProcessor();
     const downloadButton = screen.getByText(/下载PNG|Download PNG/);
     
@@ -330,8 +327,6 @@ describe('BatchProcessor Component', () => {
   });
 
   it('downloads single barcode as SVG', () => {
-    const { saveAs } = require('file-saver');
-    
     renderBatchProcessor();
     const downloadButton = screen.getByText(/下载SVG|Download SVG/);
     
@@ -341,9 +336,7 @@ describe('BatchProcessor Component', () => {
     expect(downloadButton).toBeInTheDocument();
   });
 
-  it('exports batch barcodes as ZIP', async () => {
-    const { saveAs } = require('file-saver');
-    
+  it('exports batch barcodes as ZIP', async () => {    
     renderBatchProcessor({ mode: 'batch' });
     const exportButton = screen.getByText(/导出ZIP|Export ZIP/);
     
@@ -353,9 +346,7 @@ describe('BatchProcessor Component', () => {
     expect(exportButton).toBeInTheDocument();
   });
 
-  it('exports batch barcodes as PDF', async () => {
-    const { saveAs } = require('file-saver');
-    
+  it('exports batch barcodes as PDF', async () => {  
     renderBatchProcessor({ mode: 'batch' });
     const exportButton = screen.getByText(/导出PDF|Export PDF/);
     

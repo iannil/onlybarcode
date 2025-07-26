@@ -142,6 +142,9 @@ describe('useAnalytics Hook', () => {
 
     // Should not throw error
     expect(result.current.trackEvent).toBeDefined();
+    
+    // Verify that gtag was not called (since it doesn't exist)
+    expect(mockGtag).not.toHaveBeenCalled();
   });
 
   it('handles gtag errors gracefully', () => {
@@ -149,6 +152,9 @@ describe('useAnalytics Hook', () => {
       throw new Error('gtag error');
     });
     (global as any).gtag = mockGtagWithError;
+
+    // Mock console.error to suppress error output during test
+    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
     const { result } = renderHook(() => useAnalytics());
 
@@ -161,6 +167,12 @@ describe('useAnalytics Hook', () => {
 
     // Should not throw error
     expect(result.current.trackEvent).toBeDefined();
+    
+    // Verify that console.error was called with the error
+    expect(consoleSpy).toHaveBeenCalledWith('Analytics error:', expect.any(Error));
+    
+    // Restore console.error
+    consoleSpy.mockRestore();
   });
 
   it('tracks multiple events', () => {

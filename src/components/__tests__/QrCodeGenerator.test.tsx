@@ -1,4 +1,3 @@
-import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { I18nextProvider } from 'react-i18next';
@@ -274,8 +273,6 @@ describe('QrCodeGenerator Component', () => {
   });
 
   it('downloads single QR code', () => {
-    const { saveAs } = require('file-saver');
-    
     renderQrCodeGenerator();
     const downloadButton = screen.getByText(/Download PNG|下载PNG/);
     
@@ -286,8 +283,6 @@ describe('QrCodeGenerator Component', () => {
   });
 
   it('downloads batch QR codes as ZIP', async () => {
-    const { saveAs } = require('file-saver');
-    
     renderQrCodeGenerator({ mode: 'batch' });
     const downloadButton = screen.getByText(/Export ZIP|导出ZIP/);
     
@@ -298,8 +293,6 @@ describe('QrCodeGenerator Component', () => {
   });
 
   it('exports batch QR codes as PDF', async () => {
-    const { saveAs } = require('file-saver');
-    
     renderQrCodeGenerator({ mode: 'batch' });
     const exportButton = screen.getByText(/Export PDF|导出PDF/);
     

@@ -56,7 +56,13 @@ const ContactUs: React.FC = () => {
             <div className="text-center py-12">
               <p className="text-lg text-slate-700 font-medium">
                 {t('contact_us_email_instruction')}
-                <a href="mailto:hi@654653.com" className="text-blue-600 underline ml-2">hi@654653.com</a>
+                <a 
+                  href="mailto:hi@654653.com" 
+                  className="text-blue-600 underline ml-2 hover:text-blue-800 transition-colors"
+                  aria-label="Send email to hi@654653.com"
+                >
+                  hi@654653.com
+                </a>
               </p>
             </div>
           </div>

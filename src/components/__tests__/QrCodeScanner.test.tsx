@@ -1,4 +1,3 @@
-import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { I18nextProvider } from 'react-i18next';
@@ -16,7 +15,11 @@ vi.mock('../../hooks/useAnalytics', () => ({
 // Mock @zxing/library
 vi.mock('@zxing/library', () => ({
   BrowserMultiFormatReader: vi.fn().mockImplementation(() => ({
-    decodeFromImageUrl: vi.fn(),
+    decodeFromImageUrl: vi.fn().mockResolvedValue({
+      getText: () => 'test-qr-text',
+      getBarcodeFormat: () => ({ toString: () => 'QR_CODE' }),
+    }),
+    reset: vi.fn(),
   })),
 }));
 
@@ -118,6 +121,7 @@ describe('QrCodeScanner Component', () => {
     const mockReader = BrowserMultiFormatReader as any;
     mockReader.mockImplementation(() => ({
       decodeFromImageUrl: vi.fn().mockRejectedValue(new Error('Scan failed')),
+      reset: vi.fn(),
     }));
 
     const fileInput = screen.getByLabelText(/选择文件|Choose file/);
@@ -143,6 +147,7 @@ describe('QrCodeScanner Component', () => {
     };
     mockReader.mockImplementation(() => ({
       decodeFromImageUrl: vi.fn().mockResolvedValue(mockResult),
+      reset: vi.fn(),
     }));
 
     const fileInput = screen.getByLabelText(/选择文件|Choose file/);
@@ -187,8 +192,12 @@ describe('QrCodeScanner Component', () => {
     const mockReader = BrowserMultiFormatReader as any;
     mockReader.mockImplementation(() => ({
       decodeFromImageUrl: vi.fn().mockImplementation(() => 
-        new Promise(resolve => setTimeout(resolve, 100))
+        new Promise(resolve => setTimeout(() => resolve({
+          getText: () => 'test-qr-text',
+          getBarcodeFormat: () => ({ toString: () => 'QR_CODE' }),
+        }), 100))
       ),
+      reset: vi.fn(),
     }));
 
     const fileInput = screen.getByLabelText(/选择文件|Choose file/);
@@ -248,6 +257,7 @@ describe('QrCodeScanner Component', () => {
     };
     mockReader.mockImplementation(() => ({
       decodeFromImageUrl: vi.fn().mockResolvedValue(mockResult),
+      reset: vi.fn(),
     }));
 
     const fileInput = screen.getByLabelText(/选择文件|Choose file/);
@@ -273,6 +283,7 @@ describe('QrCodeScanner Component', () => {
     };
     mockReader.mockImplementation(() => ({
       decodeFromImageUrl: vi.fn().mockResolvedValue(mockResult),
+      reset: vi.fn(),
     }));
 
     const fileInput = screen.getByLabelText(/选择文件|Choose file/);
