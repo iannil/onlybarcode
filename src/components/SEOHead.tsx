@@ -128,10 +128,10 @@ const SEOHead: React.FC<SEOHeadProps> = ({
     updatePropertyTag('og:site_name', i18n.language === 'zh' ? '654653工具箱' : '654653 Toolbox');
 
     // 更新Twitter Card标签
-    updatePropertyTag('twitter:card', 'summary_large_image');
-    updatePropertyTag('twitter:title', title || (i18n.language === 'zh' ? '654653工具箱' : '654653 Toolbox'));
-    updatePropertyTag('twitter:description', description || (i18n.language === 'zh' ? '专业的在线条形码和二维码处理工具' : 'Professional online barcode and QR code processing tool'));
-    updatePropertyTag('twitter:image', image);
+    updateMetaTag('twitter:card', 'summary_large_image');
+    updateMetaTag('twitter:title', title || (i18n.language === 'zh' ? '654653工具箱' : '654653 Toolbox'));
+    updateMetaTag('twitter:description', description || (i18n.language === 'zh' ? '专业的在线条形码和二维码处理工具' : 'Professional online barcode and QR code processing tool'));
+    updateMetaTag('twitter:image', image);
 
     // 更新canonical URL
     let canonical = document.querySelector('link[rel="canonical"]') as HTMLLinkElement;

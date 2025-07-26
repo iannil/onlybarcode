@@ -7,7 +7,13 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "test:run": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "pre-commit": "npm run lint && npm run test:run",
+    "prepare": "husky"
   },
   "dependencies": {
     "@zxing/browser": "^0.1.5",
@@ -43,6 +49,14 @@
     "tailwindcss": "^3.4.1",
     "typescript": "^5.5.3",
     "typescript-eslint": "^8.3.0",
-    "vite": "^5.4.2"
+    "vite": "^5.4.2",
+    "@testing-library/react": "^14.2.1",
+    "@testing-library/jest-dom": "^6.4.2",
+    "@testing-library/user-event": "^14.5.2",
+    "jsdom": "^24.0.0",
+    "vitest": "^1.3.1",
+    "@vitest/ui": "^1.3.1",
+    "@vitest/coverage-v8": "^1.3.1",
+    "husky": "^9.0.11"
   }
 }

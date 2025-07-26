@@ -27,7 +27,13 @@ const QrCodeScanner: React.FC = () => {
   useEffect(() => {
     const currentReader = reader.current;
     return () => {
-      currentReader.reset();
+      try {
+        if (currentReader && typeof currentReader.reset === 'function') {
+          currentReader.reset();
+        }
+      } catch (error) {
+        console.error('Error resetting reader:', error);
+      }
     };
   }, []);
 
@@ -206,6 +212,7 @@ const QrCodeScanner: React.FC = () => {
               accept="image/*"
               multiple
               className="hidden"
+              aria-label={t('qrcode_choose_file')}
             />
 
             {scanning && (

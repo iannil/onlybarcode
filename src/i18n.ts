@@ -122,6 +122,7 @@ const resources = {
       qrcode_format: 'Format',
       qrcode_time: 'Time',
       qrcode_recognition_failed: 'Recognition failed',
+      qrcode_choose_file: 'Choose file',
       
       // BarcodeScanner translations
       image_upload: 'Image Upload',
@@ -378,6 +379,7 @@ const resources = {
       qrcode_format: '格式',
       qrcode_time: '时间',
       qrcode_recognition_failed: '识别失败',
+      qrcode_choose_file: '选择文件',
       
       // BarcodeScanner translations
       image_upload: '图片上传',
