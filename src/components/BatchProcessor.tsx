@@ -280,15 +280,15 @@ const BarcodeProcessor: React.FC<BarcodeProcessorProps> = ({ mode, setMode }) =>
     const completedItems = items.filter(item => item.status === 'completed' && item.dataUrl);
     if (completedItems.length === 0) return;
     const pdfDoc = await PDFDocument.create();
-    const pageMargin = 20;
+    
     if (singlePagePDF) {
       // All barcodes on one page
       const pageWidth = 595.28; // A4 width pt
       const pageHeight = 841.89; // A4 height pt
       const page = pdfDoc.addPage([pageWidth, pageHeight]);
-      const x = pageMargin;
-      const y = pageHeight - pageMargin;
-      const maxWidth = pageWidth - 2 * pageMargin;
+      const x = 20;
+      const y = pageHeight - 20;
+      const maxWidth = pageWidth - 2 * 20;
       const barcodeHeight = 80;
       const barcodeMargin = 10;
       let row = 0;
@@ -314,16 +314,56 @@ const BarcodeProcessor: React.FC<BarcodeProcessorProps> = ({ mode, setMode }) =>
         col++;
       });
     } else {
-      // One barcode per page (existing logic)
+      // One barcode per page with dynamic page size
       for (const item of completedItems) {
         if (!item.dataUrl) continue;
-        const page = pdfDoc.addPage([300, 140]);
+        
+        // Get the actual barcode image dimensions (includes barcode + text)
+        const imgInfo = imgSizes[item.id] || { width: 240, height: height || 100 };
+        const barcodeWidth = imgInfo.width;
+        const barcodeHeight = imgInfo.height; // This includes barcode + text height
+        
+        // Convert to PDF points (1px ≈ 0.75pt)
+        const barcodeWidthPt = barcodeWidth * 0.75;
+        const barcodeHeightPt = barcodeHeight * 0.75;
+        const marginPt = margin * 0.75;
+        
+        // Calculate page dimensions based on margin setting
+        let finalPageWidth: number;
+        let finalPageHeight: number;
+        
+        if (margin === 0) {
+          // When margin is 0, page size equals barcode size exactly
+          finalPageWidth = barcodeWidthPt;
+          finalPageHeight = barcodeHeightPt;
+        } else {
+          // When margin > 0, page size = barcode size + margin
+          finalPageWidth = barcodeWidthPt + marginPt * 2;
+          finalPageHeight = barcodeHeightPt + marginPt * 2;
+        }
+        
+        const page = pdfDoc.addPage([finalPageWidth, finalPageHeight]);
         const pngImage = await pdfDoc.embedPng(item.dataUrl);
+        
+        // Position the barcode
+        let imgX: number;
+        let imgY: number;
+        
+        if (margin === 0) {
+          // When margin is 0, place at (0,0) for exact fit
+          imgX = 0;
+          imgY = 0;
+        } else {
+          // When margin > 0, center the barcode on the page
+          imgX = marginPt;
+          imgY = marginPt;
+        }
+        
         page.drawImage(pngImage, {
-          x: 20,
-          y: 40,
-          width: 260,
-          height: 80,
+          x: imgX,
+          y: imgY,
+          width: barcodeWidthPt,
+          height: barcodeHeightPt,
         });
       }
     }
@@ -388,20 +428,26 @@ const BarcodeProcessor: React.FC<BarcodeProcessorProps> = ({ mode, setMode }) =>
 
   const previewBarcodeElements: JSX.Element[] = [];
   previewRows.forEach((row) => {
-    const margin = 16;
-    const maxImgHeight = Math.max(...row.map(item => (imgSizes[item.id]?.height || (height ? height : 100))));
+    // 动态计算上下外边距和容器额外高度，条码越多空白越小
+    // 5个时无空白，1-4递减
+    const dynamicMarginY = barcodesPerRow === 5 ? 0 : 8 - barcodesPerRow * 2; // 1:8, 2:6, 3:4, 4:2, 5:0
+    const dynamicExtraHeight = barcodesPerRow === 5 ? 0 : 8 - barcodesPerRow * 2;
     row.forEach(item => {
       const imgInfo = imgSizes[item.id] || { width: 240, height: height ? height : 100 };
       const imgWidth = imgInfo.width;
       const imgHeight = imgInfo.height;
-      const maxCellWidth = 240;
-      const maxCellHeight = maxImgHeight;
-      const scale = Math.min(maxCellWidth / imgWidth, maxCellHeight / imgHeight, 1);
       previewBarcodeElements.push(
         <div
           key={item.id}
-          className="flex flex-col items-center justify-center border-2 border-dashed border-blue-400 rounded-xl bg-white mx-auto px-2 my-2 sm:my-4"
-          style={{ minWidth: 0, minHeight: maxCellHeight + margin * 2 + 16, maxWidth: maxCellWidth + margin * 2, maxHeight: maxCellHeight + margin * 2 + 16 }}
+          className="flex flex-col items-center justify-center border-2 border-gray-400 rounded-xl bg-white mx-auto px-2 my-0"
+          style={{
+            minWidth: 0,
+            minHeight: imgHeight + dynamicExtraHeight,
+            maxWidth: imgWidth,
+            maxHeight: imgHeight + dynamicExtraHeight,
+            marginTop: dynamicMarginY,
+            marginBottom: dynamicMarginY
+          }}
         >
           {item.dataUrl && (
             <img
@@ -411,11 +457,10 @@ const BarcodeProcessor: React.FC<BarcodeProcessorProps> = ({ mode, setMode }) =>
               style={{
                 display: 'block',
                 maxWidth: '100%',
-                maxHeight: maxCellHeight,
-                width: imgWidth * scale,
-                height: imgHeight * scale,
-                marginTop: margin,
-                marginBottom: 8,
+                width: imgWidth,
+                height: imgHeight,
+                marginTop: 0,
+                marginBottom: 0,
                 marginLeft: 'auto',
                 marginRight: 'auto',
               }}
@@ -446,7 +491,7 @@ const BarcodeProcessor: React.FC<BarcodeProcessorProps> = ({ mode, setMode }) =>
                     window.location.hash = 'generate';
                   }}
                   className={`flex-1 h-9 px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
-                    mode === 'batch'
+                    (mode === 'batch' as any)
                       ? 'text-slate-600 hover:text-slate-900'
                       : 'bg-white text-blue-600 shadow-sm'
                   }`}
@@ -459,7 +504,7 @@ const BarcodeProcessor: React.FC<BarcodeProcessorProps> = ({ mode, setMode }) =>
                     window.location.hash = 'generate-batch';
                   }}
                   className={`flex-1 h-9 px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
-                    mode === 'single'
+                    (mode === 'single' as any)
                       ? 'text-slate-600 hover:text-slate-900'
                       : 'bg-white text-blue-600 shadow-sm'
                   }`}
@@ -725,7 +770,7 @@ const BarcodeProcessor: React.FC<BarcodeProcessorProps> = ({ mode, setMode }) =>
                     window.location.hash = 'generate';
                   }}
                   className={`flex-1 h-9 px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
-                    mode === 'batch'
+                    (mode === 'batch' as any)
                       ? 'text-slate-600 hover:text-slate-900'
                       : 'bg-white text-blue-600 shadow-sm'
                   }`}
@@ -738,7 +783,7 @@ const BarcodeProcessor: React.FC<BarcodeProcessorProps> = ({ mode, setMode }) =>
                     window.location.hash = 'generate-batch';
                   }}
                   className={`flex-1 h-9 px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
-                    mode === 'single'
+                    (mode === 'single' as any)
                       ? 'text-slate-600 hover:text-slate-900'
                       : 'bg-white text-blue-600 shadow-sm'
                   }`}
@@ -1075,7 +1120,7 @@ const BarcodeProcessor: React.FC<BarcodeProcessorProps> = ({ mode, setMode }) =>
                 <div
                   className={
                     barcodesPerRow > 1
-                      ? `grid gap-2 sm:gap-4 pb-2 grid-cols-${barcodesPerRow}`
+                      ? `grid gap-2 pb-2 grid-cols-${barcodesPerRow}`
                       : 'flex flex-col items-center pb-2'
                   }
                   style={
