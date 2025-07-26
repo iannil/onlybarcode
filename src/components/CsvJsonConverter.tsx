@@ -1,17 +1,28 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { csvToJson, jsonToCsv, detectDelimiter } from '../utils/csvJson';
-import { FileText, Shuffle, Trash2, Copy, Download, Upload, ListFilter, AlignJustify, Compass, Braces } from 'lucide-react';
+import { FileText, Trash2, Copy, Download, Upload, ListFilter, AlignJustify, Compass, Braces } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
-const CsvJsonConverter: React.FC = () => {
+interface CsvJsonConverterProps {
+  mode: 'csv2json' | 'json2csv';
+  clearTrigger: number;
+}
+
+const CsvJsonConverter: React.FC<CsvJsonConverterProps> = ({ mode, clearTrigger }) => {
   const { t } = useTranslation();
   const [input, setInput] = useState('');
   const [output, setOutput] = useState('');
-  const [mode, setMode] = useState<'csv2json' | 'json2csv'>('csv2json');
   const [error, setError] = useState<string | null>(null);
   const [delimiter, setDelimiter] = useState<string>(',');
   const [jsonPretty, setJsonPretty] = useState(true);
   const [csvHasHeader, setCsvHasHeader] = useState(true);
+
+  // Clear all content when clearTrigger changes
+  useEffect(() => {
+    setInput('');
+    setOutput('');
+    setError(null);
+  }, [clearTrigger]);
 
   // 错误定位（仅简单高亮）
   const getErrorLine = () => {
@@ -83,6 +94,18 @@ const CsvJsonConverter: React.FC = () => {
     }
   };
 
+  // Listen for external convert trigger
+  useEffect(() => {
+    const handleTriggerConvert = () => {
+      handleConvert();
+    };
+
+    window.addEventListener('triggerConvert', handleTriggerConvert);
+    return () => {
+      window.removeEventListener('triggerConvert', handleTriggerConvert);
+    };
+  }, [input, mode, delimiter, jsonPretty, csvHasHeader]);
+
   // 文件导入
   const handleFileImport = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -146,33 +169,7 @@ const CsvJsonConverter: React.FC = () => {
   };
 
   return (
-    <div className="w-full mx-auto px-2 sm:px-6 lg:px-8">
-      {/* 顶部：模式切换和转换按钮 */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4 gap-2">
-        <div className="flex gap-2">
-          <button
-            className={`h-9 px-3 py-2 rounded-md border text-sm font-medium transition-colors duration-150 ${mode === 'csv2json' ? 'bg-blue-50 border-blue-500 text-blue-700' : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'}`}
-            onClick={() => setMode('csv2json')}
-          >
-            <Braces className="w-4 h-4 mr-1 inline-block align-text-bottom" />
-            {t('csv_to_json', 'CSV → JSON')}
-          </button>
-          <button
-            className={`h-9 px-3 py-2 rounded-md border text-sm font-medium transition-colors duration-150 ${mode === 'json2csv' ? 'bg-blue-50 border-blue-500 text-blue-700' : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'}`}
-            onClick={() => setMode('json2csv')}
-          >
-            <FileText className="w-4 h-4 mr-1 inline-block align-text-bottom" />
-            {t('json_to_csv', 'JSON → CSV')}
-          </button>
-        </div>
-        <button
-          className="h-9 px-3 py-2 rounded-md border border-blue-600 bg-blue-600 text-white text-sm font-medium flex items-center gap-2 hover:bg-blue-700 transition-colors"
-          style={{ minHeight: '32px' }}
-          onClick={handleConvert}
-        >
-          <Shuffle className="w-4 h-4" />{t('convert')}
-        </button>
-      </div>
+    <div className="w-full">
       {/* 主体：左右布局 */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* 左侧：输入及相关配置 */}
@@ -203,7 +200,7 @@ const CsvJsonConverter: React.FC = () => {
           <textarea
             rows={18}
             className={`w-full rounded border border-slate-200 p-2 font-mono text-sm focus:outline-none focus:ring-2 focus:ring-blue-200 resize-none ${getErrorLine() ? 'border-red-400' : ''}`}
-            placeholder={mode === 'csv2json' ? t('csv_input_placeholder', '粘贴CSV内容') : t('json_input_placeholder', '粘贴JSON数组')}
+            placeholder={mode === 'csv2json' ? t('csv_input_placeholder', '粘贴CSV内容') : t('json_input_placeholder', '粘贴JSON数组或对象')}
             value={input}
             onChange={e => {
               setInput(e.target.value);

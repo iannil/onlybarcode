@@ -265,7 +265,7 @@ const QrCodeGenerator: React.FC<QrCodeGeneratorProps> = ({ mode, setMode }) => {
               <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 space-y-3 sm:space-y-0">
                 <h3 className="text-lg font-semibold text-slate-900 flex items-center">
                   <Settings className="w-5 h-5 mr-2 text-blue-600" />
-                  {t('qrcode_settings', '二维码设置')}
+                  {t('qrcode_settings_zh', '二维码设置')}
                 </h3>
               </div>
               <div className="flex space-x-1 bg-slate-100/50 p-1 rounded-lg mb-4">
@@ -299,7 +299,7 @@ const QrCodeGenerator: React.FC<QrCodeGeneratorProps> = ({ mode, setMode }) => {
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    {t('text_content', '内容')}
+                    {t('text_content_short', '内容')}
                   </label>
                   <div className="flex flex-row gap-2">
                     <input
@@ -363,7 +363,7 @@ const QrCodeGenerator: React.FC<QrCodeGeneratorProps> = ({ mode, setMode }) => {
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
-                          {t('background_color', '背景色')}
+                          {t('background_color_short', '背景色')}
                         </label>
                         <input
                           type="color"
@@ -414,7 +414,7 @@ const QrCodeGenerator: React.FC<QrCodeGeneratorProps> = ({ mode, setMode }) => {
             <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-slate-200/50 p-6">
               <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center">
                 <Package className="w-5 h-5 mr-2 text-blue-500" />
-                {t('qrcode_preview', '二维码预览')}
+                {t('qrcode_preview_zh', '二维码预览')}
               </h3>
               <div className="bg-gray-50 rounded-lg p-4 sm:p-6 text-center">
                 <canvas
@@ -454,7 +454,7 @@ const QrCodeGenerator: React.FC<QrCodeGeneratorProps> = ({ mode, setMode }) => {
                   ) : (
                     <>
                       <Copy className="w-4 h-4 mr-2" />
-                      {t('copy_data', '复制图片')}
+                      {t('copy_image', '复制图片')}
                     </>
                   )}
                 </button>
@@ -469,7 +469,7 @@ const QrCodeGenerator: React.FC<QrCodeGeneratorProps> = ({ mode, setMode }) => {
               <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 space-y-3 sm:space-y-0">
                 <h3 className="text-lg font-semibold text-slate-900 flex items-center">
                   <Settings className="w-5 h-5 mr-2 text-blue-600" />
-                  {t('qrcode_settings', '二维码设置')}
+                  {t('qrcode_settings_zh', '二维码设置')}
                 </h3>
               </div>
               <div className="flex space-x-1 bg-slate-100/50 p-1 rounded-lg mb-4">
@@ -553,7 +553,7 @@ const QrCodeGenerator: React.FC<QrCodeGeneratorProps> = ({ mode, setMode }) => {
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
-                          {t('background_color', '背景色')}
+                          {t('background_color_short', '背景色')}
                         </label>
                         <input
                           type="color"
@@ -708,7 +708,7 @@ const QrCodeGenerator: React.FC<QrCodeGeneratorProps> = ({ mode, setMode }) => {
             <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-slate-200/50 p-6">
               <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center">
                 <Package className="w-5 h-5 mr-2 text-blue-500" />
-                {t('qrcode_preview', '二维码预览')}
+                {t('qrcode_preview_zh', '二维码预览')}
               </h3>
               <div className="mb-4 flex items-center justify-between">
                 <div className="flex items-center space-x-4">

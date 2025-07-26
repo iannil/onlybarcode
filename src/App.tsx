@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Barcode, QrCode, FileText, Menu, X, ScanLine, ScanEye } from 'lucide-react';
+import { Barcode, QrCode, FileText, Menu, X, ScanLine, ScanEye, Shuffle } from 'lucide-react';
 import BarcodeProcessor from './components/BatchProcessor';
 import BarcodeScanner from './components/BarcodeScanner';
 import PrivacyPolicy from './components/PrivacyPolicy';
@@ -14,7 +14,7 @@ import './App.css';
 import { useTranslation } from 'react-i18next';
 import QrCodeGenerator from './components/QrCodeGenerator';
 import QrCodeScanner from './components/QrCodeScanner';
-import CsvJsonConverter from './components/CsvJsonConverter';
+import DataConverter from './components/DataConverter';
 
 type TabType = 'barcode' | 'qrcode' | 'csvjson';
 type BarcodeSubTab = 'generate' | 'scan';
@@ -91,7 +91,7 @@ function App() {
   const tabs = [
     { id: 'barcode' as TabType, label: t('barcode_tab', '条形码'), icon: Barcode, description: t('barcode_tab_desc', '条形码相关功能') },
     { id: 'qrcode' as TabType, label: t('qrcode_tab', '二维码'), icon: QrCode, description: t('qrcode_tab_desc', '二维码相关功能') },
-    { id: 'csvjson' as TabType, label: t('csvjson_tab', 'CSV/JSON'), icon: FileText, description: t('csvjson_tab_desc', 'CSV/JSON互转') },
+    { id: 'csvjson' as TabType, label: t('csvjson_tab', 'CSV/JSON'), icon: Shuffle, description: t('csvjson_tab_desc', 'CSV/JSON互转') },
   ];
 
   const changeLanguage = (lng: string) => {
@@ -293,7 +293,7 @@ function App() {
                   
                 </div>
               )}
-              {/* CSV/JSON互转工具 */}
+              {/* 数据转换工具 */}
               {activeTab === 'csvjson' && (
                 <section
                   id="csvjson-panel"
@@ -301,7 +301,7 @@ function App() {
                   aria-labelledby="csvjson-tab"
                   className="block"
                 >
-                  <CsvJsonConverter />
+                  <DataConverter />
                 </section>
               )}
             </>
