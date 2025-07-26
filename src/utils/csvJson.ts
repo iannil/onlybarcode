@@ -7,7 +7,7 @@
  * @param selectedFields 可选，指定要保留的字段数组
  * @param hasHeader 是否首行为表头，默认true
  */
-export function csvToJson(csv: string, delimiter = ',', selectedFields?: string[], hasHeader = true): any[] {
+export function csvToJson(csv: string, delimiter = ',', selectedFields?: string[], hasHeader = true): Record<string, string>[] {
   const lines = csv.trim().split(/\r?\n/);
   if (lines.length === 0) return [];
   if (hasHeader) {
@@ -15,7 +15,7 @@ export function csvToJson(csv: string, delimiter = ',', selectedFields?: string[
     const filteredHeaders = selectedFields && selectedFields.length > 0 ? headers.filter(h => selectedFields.includes(h)) : headers;
     return lines.slice(1).map(line => {
       const values = line.split(delimiter);
-      const obj: Record<string, any> = {};
+      const obj: Record<string, string> = {};
       headers.forEach((header, i) => {
         if (!selectedFields || selectedFields.includes(header)) {
           obj[header] = values[i] !== undefined ? values[i].trim() : '';
@@ -23,7 +23,7 @@ export function csvToJson(csv: string, delimiter = ',', selectedFields?: string[
       });
       // 只返回筛选后的字段
       if (selectedFields && selectedFields.length > 0) {
-        const filteredObj: Record<string, any> = {};
+        const filteredObj: Record<string, string> = {};
         filteredHeaders.forEach(h => { filteredObj[h] = obj[h]; });
         return filteredObj;
       }
@@ -35,7 +35,7 @@ export function csvToJson(csv: string, delimiter = ',', selectedFields?: string[
     const headers = Array.from({length: colCount}, (_, i) => `col${i+1}`);
     return lines.map(line => {
       const values = line.split(delimiter);
-      const obj: Record<string, any> = {};
+      const obj: Record<string, string> = {};
       headers.forEach((header, i) => {
         obj[header] = values[i] !== undefined ? values[i].trim() : '';
       });
@@ -50,7 +50,7 @@ export function csvToJson(csv: string, delimiter = ',', selectedFields?: string[
  * @param delimiter 分隔符，默认','
  * @param selectedFields 可选，指定要导出的字段数组
  */
-export function jsonToCsv(json: any[], delimiter = ',', selectedFields?: string[]): string {
+export function jsonToCsv(json: Record<string, unknown>[], delimiter = ',', selectedFields?: string[]): string {
   if (!Array.isArray(json) || json.length === 0) return '';
   const headers = selectedFields && selectedFields.length > 0 ? selectedFields : Object.keys(json[0]);
   const csvRows = [headers.join(delimiter)];

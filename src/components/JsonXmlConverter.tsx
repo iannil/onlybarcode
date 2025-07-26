@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { jsonToXml, xmlToJson, isValidXml, isValidJson } from '../utils/jsonXml';
-import { FileText, Trash2, Copy, Download, Upload, Compass, Braces, Code } from 'lucide-react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { jsonToXml, xmlToJson, isValidXml } from '../utils/jsonXml';
+import { FileText, Trash2, Copy, Download, Upload, Compass } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 interface JsonXmlConverterProps {
@@ -17,33 +17,34 @@ const JsonXmlConverter: React.FC<JsonXmlConverterProps> = ({ mode, clearTrigger 
   const [xmlPretty, setXmlPretty] = useState(true);
   const [rootName, setRootName] = useState('root');
 
-  // Clear all content when clearTrigger changes
+  // Clear input/output when clearTrigger changes
   useEffect(() => {
     setInput('');
     setOutput('');
     setError(null);
   }, [clearTrigger]);
 
-  const validateJson = (jsonStr: string): string | null => {
+  const validateJson = useCallback((jsonStr: string): string | null => {
     try {
       const obj = JSON.parse(jsonStr);
       if (!Array.isArray(obj) && typeof obj !== 'object') {
         return t('json_must_be_object_or_array', 'JSON内容必须为对象或对象数组');
       }
       return null;
-    } catch (e: any) {
-      return t('json_format_error', 'JSON格式错误') + ': ' + (e.message || '');
+    } catch (e: unknown) {
+      const error = e as Error;
+      return t('json_format_error', 'JSON格式错误') + ': ' + (error.message || '');
     }
-  };
+  }, [t]);
 
-  const validateXml = (xmlStr: string): string | null => {
+  const validateXml = useCallback((xmlStr: string): string | null => {
     if (!isValidXml(xmlStr)) {
       return t('xml_format_error', 'XML格式错误');
     }
     return null;
-  };
+  }, [t]);
 
-  const handleConvert = () => {
+  const handleConvert = useCallback(() => {
     setError(null);
     try {
       if (mode === 'json2xml') {
@@ -59,11 +60,12 @@ const JsonXmlConverter: React.FC<JsonXmlConverterProps> = ({ mode, clearTrigger 
         const jsonStr = jsonPretty ? JSON.stringify(json, null, 2) : JSON.stringify(json);
         setOutput(jsonStr);
       }
-    } catch (e: any) {
+    } catch (e: unknown) {
+      const error = e as Error;
       setOutput('');
-      setError(t('format_error', '格式错误或转换失败') + ': ' + (e.message || ''));
+      setError(t('format_error', '格式错误或转换失败') + ': ' + (error.message || ''));
     }
-  };
+  }, [input, mode, jsonPretty, xmlPretty, rootName, t, validateJson, validateXml]);
 
   // Listen for external convert trigger
   useEffect(() => {
@@ -75,7 +77,7 @@ const JsonXmlConverter: React.FC<JsonXmlConverterProps> = ({ mode, clearTrigger 
     return () => {
       window.removeEventListener('triggerConvert', handleTriggerConvert);
     };
-  }, [input, mode, jsonPretty, xmlPretty, rootName]);
+  }, [handleConvert]);
 
   // Format XML with proper indentation
   const formatXml = (xml: string): string => {
@@ -99,7 +101,7 @@ const JsonXmlConverter: React.FC<JsonXmlConverterProps> = ({ mode, clearTrigger 
 
   // File export
   const handleFileExport = () => {
-    let data = output;
+    const data = output;
     let type = 'application/xml';
     let filename = 'output.xml';
     if (mode === 'xml2json') {
@@ -137,7 +139,9 @@ const JsonXmlConverter: React.FC<JsonXmlConverterProps> = ({ mode, clearTrigger 
         const obj = JSON.parse(output);
         setOutput(jsonPretty ? JSON.stringify(obj) : JSON.stringify(obj, null, 2));
         setJsonPretty(!jsonPretty);
-      } catch {}
+      } catch {
+        // Ignore JSON parsing errors in formatting
+      }
     }
   };
 
@@ -178,7 +182,9 @@ const JsonXmlConverter: React.FC<JsonXmlConverterProps> = ({ mode, clearTrigger 
                     try {
                       const formatted = formatXml(input);
                       setInput(formatted);
-                    } catch {}
+                    } catch {
+                      // Ignore XML formatting errors
+                    }
                   }}
                   className="text-xs h-7 px-2 py-1 rounded-md border font-medium transition-colors duration-150 bg-slate-50 hover:bg-blue-50 flex items-center justify-center gap-1"
                 >
@@ -191,7 +197,9 @@ const JsonXmlConverter: React.FC<JsonXmlConverterProps> = ({ mode, clearTrigger 
                     try {
                       const obj = JSON.parse(input);
                       setInput(JSON.stringify(obj, null, 2));
-                    } catch {}
+                    } catch {
+                      // Ignore JSON parsing errors in formatting
+                    }
                   }}
                   className="text-xs h-7 px-2 py-1 rounded-md border font-medium transition-colors duration-150 bg-slate-50 hover:bg-blue-50 flex items-center justify-center gap-1"
                 >
@@ -212,7 +220,7 @@ const JsonXmlConverter: React.FC<JsonXmlConverterProps> = ({ mode, clearTrigger 
           {mode === 'json2xml' && (
             <div className="flex items-center gap-4 mt-3">
               <label className="text-xs text-slate-600 flex items-center gap-1">
-                <Code className="w-4 h-4" />
+                <Compass className="w-4 h-4" />
                 {t('xml_root_name', 'XML根节点名称')}:
                 <input
                   type="text"

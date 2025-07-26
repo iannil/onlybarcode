@@ -3,8 +3,8 @@ import { useTranslation } from 'react-i18next';
 import JsBarcode from 'jsbarcode';
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
-import { Upload, Download, FileText, Package, X, CheckCircle, AlertCircle, Loader, Settings, RefreshCw, Copy, Play, Trash, Info } from 'lucide-react';
-import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
+import { Download, Package, X, CheckCircle, AlertCircle, Loader, Settings, RefreshCw, Copy, Play, Trash, Info } from 'lucide-react';
+import { PDFDocument } from 'pdf-lib';
 import { useAnalytics } from '../hooks/useAnalytics';
 
 interface BarcodeItem {
@@ -37,15 +37,11 @@ const BarcodeProcessor: React.FC<BarcodeProcessorProps> = ({ mode, setMode }) =>
   const [lineColor, setLineColor] = useState('#000000');
   const [showSettings, setShowSettings] = useState(false);
   const [copySuccess, setCopySuccess] = useState(false);
-  const [dragOver, setDragOver] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const textInputRef = useRef<HTMLTextAreaElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const svgRef = useRef<SVGSVGElement>(null);
   const [barcodesPerRow, setBarcodesPerRow] = useState(1);
   const [batchText, setBatchText] = useState('');
-  const [pageWidth, setPageWidth] = useState<string | number>('');
-  const [pageHeight, setPageHeight] = useState(140);
   const [imgSizes, setImgSizes] = useState<Record<string, { width: number; height: number }>>({});
   const [repeatCount, setRepeatCount] = useState<number>(1);
   const [showUsageTips, setShowUsageTips] = useState(false);
@@ -63,7 +59,7 @@ const BarcodeProcessor: React.FC<BarcodeProcessorProps> = ({ mode, setMode }) =>
     { value: 'codabar', label: t('barcode_format_codabar', 'Codabar') },
   ];
 
-  const generateSingleBarcode = () => {
+  const generateSingleBarcode = useCallback(() => {
     if (canvasRef.current && singleText.trim()) {
       try {
         JsBarcode(canvasRef.current, singleText, {
@@ -108,11 +104,11 @@ const BarcodeProcessor: React.FC<BarcodeProcessorProps> = ({ mode, setMode }) =>
         ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
       }
     }
-  };
+  }, [singleText, format, width, height, displayValue, fontSize, margin, backgroundColor, lineColor, t, trackEvent]);
 
   useEffect(() => {
     if (mode === 'single') generateSingleBarcode();
-  }, [singleText, format, width, height, displayValue, fontSize, margin, backgroundColor, lineColor, mode, t]);
+  }, [mode, generateSingleBarcode]);
 
   const downloadSingleBarcode = (type: 'png' | 'svg') => {
     if (type === 'png' && canvasRef.current) {
@@ -155,7 +151,9 @@ const BarcodeProcessor: React.FC<BarcodeProcessorProps> = ({ mode, setMode }) =>
             category: 'barcode',
             label: 'svg',
           });
-        } catch (error) {}
+        } catch (error) {
+          console.error('Failed to download SVG barcode:', error);
+        }
       }
     }
   };
@@ -167,7 +165,9 @@ const BarcodeProcessor: React.FC<BarcodeProcessorProps> = ({ mode, setMode }) =>
         await navigator.clipboard.writeText(dataURL);
         setCopySuccess(true);
         setTimeout(() => setCopySuccess(false), 2000);
-      } catch (error) {}
+      } catch (error) {
+        console.error('Failed to copy barcode data:', error);
+      }
     }
   };
 
@@ -181,9 +181,9 @@ const BarcodeProcessor: React.FC<BarcodeProcessorProps> = ({ mode, setMode }) =>
     }
   };
 
-  const handleTextImport = (text: string) => {
+  const handleTextImport = useCallback((text: string) => {
     const lines = text.split('\n').filter(line => line.trim());
-    let newItems: BarcodeItem[] = [];
+    const newItems: BarcodeItem[] = [];
     lines.forEach((line, index) => {
       for (let i = 0; i < repeatCount; i++) {
         newItems.push({
@@ -194,35 +194,7 @@ const BarcodeProcessor: React.FC<BarcodeProcessorProps> = ({ mode, setMode }) =>
       }
     });
     setItems(newItems);
-  };
-
-  const handleFileImport = async (files: File[]) => {
-    for (const file of files) {
-      if (file.type === 'text/plain') {
-        const text = await file.text();
-        handleTextImport(text);
-      }
-    }
-  };
-
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-    setDragOver(true);
-  };
-  const handleDragLeave = (e: React.DragEvent) => {
-    e.preventDefault();
-    setDragOver(false);
-  };
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    setDragOver(false);
-    const files = Array.from(e.dataTransfer.files);
-    handleFileImport(files);
-  };
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || []);
-    handleFileImport(files);
-  };
+  }, [repeatCount]);
 
   const generateBarcode = async (text: string): Promise<string> => {
     return new Promise((resolve, reject) => {
@@ -292,6 +264,7 @@ const BarcodeProcessor: React.FC<BarcodeProcessorProps> = ({ mode, setMode }) =>
   };
 
   const exportPDF = async () => {
+    const completedItems = items.filter(item => item.status === 'completed' && item.dataUrl);
     if (completedItems.length === 0) return;
     const pdfDoc = await PDFDocument.create();
     const pageMargin = 20;
@@ -300,17 +273,16 @@ const BarcodeProcessor: React.FC<BarcodeProcessorProps> = ({ mode, setMode }) =>
       const pageWidth = 595.28; // A4 width pt
       const pageHeight = 841.89; // A4 height pt
       const page = pdfDoc.addPage([pageWidth, pageHeight]);
-      let x = pageMargin;
-      let y = pageHeight - pageMargin;
+      const x = pageMargin;
+      const y = pageHeight - pageMargin;
       const maxWidth = pageWidth - 2 * pageMargin;
-      const maxHeight = pageHeight - 2 * pageMargin;
       const barcodeHeight = 80;
       const barcodeMargin = 10;
       let row = 0;
       let col = 0;
       const perRow = barcodesPerRow;
       const cellWidth = maxWidth / perRow;
-      completedItems.forEach((item, idx) => {
+      completedItems.forEach((item) => {
         if (!item.dataUrl) return;
         if (col >= perRow) {
           col = 0;
@@ -382,13 +354,13 @@ const BarcodeProcessor: React.FC<BarcodeProcessorProps> = ({ mode, setMode }) =>
     } else {
       setItems([]);
     }
-  }, [batchText, repeatCount]);
+  }, [batchText, handleTextImport]);
 
   useEffect(() => {
     if (mode === 'batch' && items.length > 0 && items.some(i => i.status === 'completed')) {
       setItems(prev => prev.map(i => i.status === 'completed' ? { ...i, status: 'pending', dataUrl: undefined, error: undefined } : i));
     }
-  }, [width, height, format, displayValue, fontSize, margin, backgroundColor, lineColor, mode]);
+  }, [width, height, format, displayValue, fontSize, margin, backgroundColor, lineColor, mode, items]);
 
   const handleImgLoad = useCallback((id: string, e: React.SyntheticEvent<HTMLImageElement>) => {
     const { naturalWidth, naturalHeight } = e.currentTarget;
@@ -402,7 +374,7 @@ const BarcodeProcessor: React.FC<BarcodeProcessorProps> = ({ mode, setMode }) =>
   }
 
   const previewBarcodeElements: JSX.Element[] = [];
-  previewRows.forEach((row, rowIdx) => {
+  previewRows.forEach((row) => {
     const margin = 16;
     const maxImgHeight = Math.max(...row.map(item => (imgSizes[item.id]?.height || (height ? height : 100))));
     row.forEach(item => {

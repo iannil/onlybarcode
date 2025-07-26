@@ -126,20 +126,8 @@ export const seoConfig = {
   }
 };
 
-export const getSeoConfig = (language: string, page?: string) => {
+export const getSeoConfig = (language: string) => {
   const langConfig = seoConfig.languages[language as keyof typeof seoConfig.languages] || seoConfig.languages.zh;
-  
-  if (page && seoConfig.pages[page as keyof typeof seoConfig.pages]) {
-    const pageConfig = seoConfig.pages[page as keyof typeof seoConfig.pages];
-    const pageLangConfig = pageConfig[language as keyof typeof pageConfig] || pageConfig.zh;
-    
-    return {
-      ...langConfig,
-      title: pageLangConfig.title,
-      description: pageLangConfig.description,
-      keywords: pageLangConfig.keywords
-    };
-  }
   
   return langConfig;
 };
@@ -152,7 +140,7 @@ export const getAlternateLanguages = () => {
 };
 
 // 生成结构化数据JSON-LD
-export const generateStructuredData = (language: string, page?: string) => {
+export const generateStructuredData = (language: string) => {
   const isZh = language === 'zh';
   const baseUrl = isZh ? 'https://654653.com' : 'https://654653.com/en';
   

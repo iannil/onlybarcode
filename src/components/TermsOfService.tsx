@@ -4,7 +4,7 @@ import { ArrowLeft } from 'lucide-react';
 import SEOHead from './SEOHead';
 
 const TermsOfService: React.FC = () => {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
 
   const handleBackToHome = () => {
     window.location.hash = '';

@@ -46,19 +46,6 @@ const DataConverter: React.FC = () => {
     }
   };
 
-  const getConverterProps = () => {
-    switch (activeMode) {
-      case 'csv2json':
-      case 'json2csv':
-        return { mode: activeMode, clearTrigger };
-      case 'json2xml':
-      case 'xml2json':
-        return { mode: activeMode, clearTrigger };
-      default:
-        return { mode: 'csv2json', clearTrigger };
-    }
-  };
-
   return (
     <div className="w-full mx-auto px-2 sm:px-6 lg:px-8">
       {/* Conversion mode tabs and convert button in same row */}

@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import QRCode from 'qrcode';
 import JSZip from 'jszip';
+import { saveAs } from 'file-saver';
 import { PDFDocument } from 'pdf-lib';
 import { Settings, Package, RefreshCw, Download, CheckCircle, Copy, AlertCircle, Loader, Trash, Play, X } from 'lucide-react';
 
@@ -16,7 +17,7 @@ const QrCodeGenerator: React.FC<QrCodeGeneratorProps> = ({ mode, setMode }) => {
   const [batchText, setBatchText] = useState('');
   const [results, setResults] = useState<string[]>([]);
   const [processing, setProcessing] = useState(false);
-  const [processingCount, setProcessingCount] = useState(0);
+
   const [completedCount, setCompletedCount] = useState(0);
   const [errorCount, setErrorCount] = useState(0);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -56,13 +57,9 @@ const QrCodeGenerator: React.FC<QrCodeGeneratorProps> = ({ mode, setMode }) => {
   // 单个生成
   const generateSingle = async () => {
     setError(null);
-    if (!singleText.trim()) {
-      setError(t('qrcode_content_empty', '二维码内容不能为空'));
-      return;
-    }
     try {
-      if (canvasRef.current) {
-        await QRCode.toCanvas(canvasRef.current, singleText, { 
+      if (canvasRef.current && singleText.trim()) {
+        await QRCode.toCanvas(canvasRef.current, singleText, {
           width: size,
           margin: margin,
           color: {
@@ -72,7 +69,7 @@ const QrCodeGenerator: React.FC<QrCodeGeneratorProps> = ({ mode, setMode }) => {
           errorCorrectionLevel: errorCorrectionLevel
         });
       }
-    } catch (err) {
+    } catch {
       setError(t('qrcode_generation_failed', '二维码生成失败'));
     }
   };
@@ -82,7 +79,7 @@ const QrCodeGenerator: React.FC<QrCodeGeneratorProps> = ({ mode, setMode }) => {
     setError(null);
     setProcessing(true);
     const lines = batchText.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
-    let items: QrBatchItem[] = [];
+    const items: QrBatchItem[] = [];
     lines.forEach((text, lineIdx) => {
       for (let i = 0; i < repeatCount; i++) {
         items.push({
@@ -111,7 +108,7 @@ const QrCodeGenerator: React.FC<QrCodeGeneratorProps> = ({ mode, setMode }) => {
         imgs.push(dataUrl);
         setBatchItems(prev => prev.map((item, i) => i === idx ? { ...item, status: 'completed', dataUrl } : item));
         completed++;
-      } catch (e) {
+      } catch {
         imgs.push('');
         setBatchItems(prev => prev.map((item, i) => i === idx ? { ...item, status: 'error', error: t('qrcode_generation_failed', '二维码生成失败') } : item));
         failed++;
@@ -140,7 +137,9 @@ const QrCodeGenerator: React.FC<QrCodeGeneratorProps> = ({ mode, setMode }) => {
         await navigator.clipboard.writeText(dataURL);
         setCopySuccess(true);
         setTimeout(() => setCopySuccess(false), 2000);
-      } catch (error) {}
+      } catch {
+        // Ignore clipboard errors
+      }
     }
   };
 
@@ -155,7 +154,7 @@ const QrCodeGenerator: React.FC<QrCodeGeneratorProps> = ({ mode, setMode }) => {
   // 清空结果
   const clearResults = () => {
     setResults([]);
-    setProcessingCount(0);
+
     setCompletedCount(0);
     setErrorCount(0);
     setBatchItems([]);
@@ -173,42 +172,34 @@ const QrCodeGenerator: React.FC<QrCodeGeneratorProps> = ({ mode, setMode }) => {
       }
     });
     const content = await zip.generateAsync({ type: 'blob' });
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(content);
-    a.download = `qrcodes-${new Date().toISOString().split('T')[0]}.zip`;
-    a.click();
-    URL.revokeObjectURL(a.href);
+    saveAs(content, `qrcodes-${new Date().toISOString().split('T')[0]}.zip`);
   };
 
   // 导出PDF
   const exportPDF = async () => {
     if (!results.length) return;
     const pdfDoc = await PDFDocument.create();
-    const size = Math.min(180, 600 / qrcodesPerRow - 8);
+    const pageWidth = 595.28; // A4 width pt
+    const pageHeight = 841.89; // A4 height pt
+    const pageMargin = 20;
+    const cellSize = 80;
+    const perRow = Math.floor((pageWidth - 2 * pageMargin) / (cellSize + 10));
     
     if (printAllOnOnePage) {
-      // 单页模式：所有二维码打印在一页
-      const pageMargin = 20;
-      const pageWidth = 595.28; // A4 width pt
-      const pageHeight = 841.89; // A4 height pt
-      const cellSize = 120;
-      const perRow = qrcodesPerRow;
+      // 单页模式：所有二维码在一页
       let x = pageMargin;
       let y = pageHeight - pageMargin;
-      let row = 0;
       let col = 0;
       let page = pdfDoc.addPage([pageWidth, pageHeight]);
       
       for (let i = 0; i < results.length; i++) {
         if (col >= perRow) {
           col = 0;
-          row++;
           x = pageMargin;
           y -= cellSize + 20;
           if (y < pageMargin + cellSize) {
             page = pdfDoc.addPage([pageWidth, pageHeight]);
             y = pageHeight - pageMargin;
-            row = 0;
           }
         }
         const imgData = results[i];

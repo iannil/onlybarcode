@@ -3,17 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { ArrowLeft, Mail } from 'lucide-react';
 import SEOHead from './SEOHead';
 
-interface FormData {
-  email: string;
-  subject: string;
-  message: string;
-}
 
-interface FormErrors {
-  email?: string;
-  subject?: string;
-  message?: string;
-}
 
 const ContactUs: React.FC = () => {
   const { t } = useTranslation();

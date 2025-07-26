@@ -1,6 +1,6 @@
 // JSON to XML conversion
-export const jsonToXml = (obj: any, rootName: string = 'root'): string => {
-  const convertValue = (value: any, name: string): string => {
+export const jsonToXml = (obj: unknown, rootName: string = 'root'): string => {
+  const convertValue = (value: unknown, name: string): string => {
     if (value === null || value === undefined) {
       return `<${name}/>`;
     }
@@ -17,7 +17,7 @@ export const jsonToXml = (obj: any, rootName: string = 'root'): string => {
       return value.map(item => convertValue(item, name)).join('\n');
     }
     
-    if (typeof value === 'object') {
+    if (typeof value === 'object' && value !== null) {
       const attributes: string[] = [];
       const children: string[] = [];
       
@@ -47,7 +47,7 @@ export const jsonToXml = (obj: any, rootName: string = 'root'): string => {
 };
 
 // XML to JSON conversion
-export const xmlToJson = (xmlString: string): any => {
+export const xmlToJson = (xmlString: string): unknown => {
   const parser = new DOMParser();
   const xmlDoc = parser.parseFromString(xmlString, 'text/xml');
   
@@ -55,8 +55,8 @@ export const xmlToJson = (xmlString: string): any => {
     throw new Error('Invalid XML format');
   }
   
-  const convertNode = (node: Element): any => {
-    const result: any = {};
+  const convertNode = (node: Element): unknown => {
+    const result: Record<string, unknown> = {};
     
     // Handle attributes
     if (node.attributes.length > 0) {
@@ -87,7 +87,7 @@ export const xmlToJson = (xmlString: string): any => {
       if (result[childName] === undefined) {
         result[childName] = childValue;
       } else if (Array.isArray(result[childName])) {
-        result[childName].push(childValue);
+        (result[childName] as unknown[]).push(childValue);
       } else {
         result[childName] = [result[childName], childValue];
       }

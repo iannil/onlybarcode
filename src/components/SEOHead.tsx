@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { generateStructuredData } from '../config/seo';
 
@@ -29,132 +29,7 @@ const SEOHead: React.FC<SEOHeadProps> = ({
 }) => {
   const { t, i18n } = useTranslation();
 
-  useEffect(() => {
-    // 更新页面标题
-    const pageTitle = title || t('title');
-    document.title = pageTitle;
-    
-    // 更新HTML lang属性
-    document.documentElement.lang = i18n.language === 'zh' ? 'zh-CN' : 'en-US';
-    
-    // 更新meta标签
-    const updateMetaTag = (name: string, content: string) => {
-      let meta = document.querySelector(`meta[name="${name}"]`) as HTMLMetaElement;
-      if (!meta) {
-        meta = document.createElement('meta');
-        meta.name = name;
-        document.head.appendChild(meta);
-      }
-      meta.content = content;
-    };
-
-    const updatePropertyTag = (property: string, content: string) => {
-      let meta = document.querySelector(`meta[property="${property}"]`) as HTMLMetaElement;
-      if (!meta) {
-        meta = document.createElement('meta');
-        meta.setAttribute('property', property);
-        document.head.appendChild(meta);
-      }
-      meta.content = content;
-    };
-
-    // 语言特定的关键词和描述
-    const getLanguageSpecificContent = () => {
-      if (i18n.language === 'zh') {
-        return {
-          description: description || '免费的在线条形码和二维码生成器、扫描器。支持Code128、EAN13、QR码等多种格式。快速生成、批量处理、PDF导出功能。专业、快速、可靠的条码处理工具。',
-          keywords: keywords || '条形码生成器,二维码生成器,条形码扫描器,二维码扫描器,在线条码工具,批量条码处理,PDF条码,条码识别,条码制作,QR码生成,条码工具,654653',
-          locale: 'zh_CN',
-          localeAlternate: 'en_US'
-        };
-      } else {
-        return {
-          description: description || 'Free online barcode and QR code generator and scanner. Supports multiple formats including Code128, EAN13, QR codes. Fast generation, batch processing, PDF export. Professional, fast, and reliable barcode processing tool.',
-          keywords: keywords || 'barcode generator,QR code generator,barcode scanner,QR code scanner,online barcode tool,batch barcode processing,PDF barcode,barcode recognition,barcode maker,QR code maker,barcode tool,654653',
-          locale: 'en_US',
-          localeAlternate: 'zh_CN'
-        };
-      }
-    };
-
-    const langContent = getLanguageSpecificContent();
-
-    // 更新基本meta标签
-    updateMetaTag('description', langContent.description);
-    updateMetaTag('keywords', langContent.keywords);
-    updateMetaTag('language', i18n.language === 'zh' ? 'zh-CN' : 'en-US');
-    updateMetaTag('author', '654653工具箱');
-    updateMetaTag('robots', 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1');
-    updateMetaTag('googlebot', 'index, follow');
-    updateMetaTag('viewport', 'width=device-width, initial-scale=1, shrink-to-fit=no');
-    updateMetaTag('theme-color', '#3b82f6');
-    updateMetaTag('msapplication-TileColor', '#3b82f6');
-    updateMetaTag('apple-mobile-web-app-capable', 'yes');
-    updateMetaTag('apple-mobile-web-app-status-bar-style', 'default');
-    updateMetaTag('apple-mobile-web-app-title', pageTitle);
-    
-    // 更新Open Graph标签
-    updatePropertyTag('og:title', pageTitle);
-    updatePropertyTag('og:description', langContent.description);
-    updatePropertyTag('og:image', image);
-    updatePropertyTag('og:url', url);
-    updatePropertyTag('og:type', type);
-    updatePropertyTag('og:locale', langContent.locale);
-    updatePropertyTag('og:locale:alternate', langContent.localeAlternate);
-    updatePropertyTag('og:site_name', i18n.language === 'zh' ? '654653工具箱' : '654653 Toolbox');
-    updatePropertyTag('og:image:width', '1200');
-    updatePropertyTag('og:image:height', '630');
-    updatePropertyTag('og:image:type', 'image/png');
-    
-    // 更新Twitter Card标签
-    updatePropertyTag('twitter:card', 'summary_large_image');
-    updatePropertyTag('twitter:title', pageTitle);
-    updatePropertyTag('twitter:description', langContent.description);
-    updatePropertyTag('twitter:image', image);
-    updatePropertyTag('twitter:url', url);
-    updatePropertyTag('twitter:site', '@654653');
-    updatePropertyTag('twitter:creator', '@654653');
-    
-    // 更新canonical URL
-    let canonical = document.querySelector('link[rel="canonical"]') as HTMLLinkElement;
-    if (!canonical) {
-      canonical = document.createElement('link');
-      canonical.rel = 'canonical';
-      document.head.appendChild(canonical);
-    }
-    canonical.href = url;
-
-    // 更新hreflang标签
-    updateHreflangTags(alternateLanguages);
-
-    // 添加结构化数据
-    addStructuredData();
-
-  }, [title, description, keywords, image, url, type, t, i18n.language, alternateLanguages]);
-
-  const updateHreflangTags = (languages: Array<{ lang: string; url: string }>) => {
-    // 移除现有的hreflang标签
-    const existingHreflangs = document.querySelectorAll('link[rel="alternate"][hreflang]');
-    existingHreflangs.forEach(tag => tag.remove());
-
-    // 添加新的hreflang标签
-    languages.forEach(({ lang, url }) => {
-      const link = document.createElement('link');
-      link.rel = 'alternate';
-      link.hreflang = lang;
-      link.href = url;
-      document.head.appendChild(link);
-    });
-
-    // 添加x-default hreflang
-    const xDefault = document.createElement('link');
-    xDefault.rel = 'alternate';
-    xDefault.hreflang = 'x-default';
-    xDefault.href = languages[0]?.url || 'https://654653.com/';
-    document.head.appendChild(xDefault);
-  };
-
-  const addStructuredData = () => {
+  const addStructuredData = useCallback(() => {
     // 移除现有的结构化数据
     const existingScripts = document.querySelectorAll('script[type="application/ld+json"]');
     existingScripts.forEach(script => script.remove());
@@ -209,6 +84,92 @@ const SEOHead: React.FC<SEOHeadProps> = ({
     organizationScript.type = 'application/ld+json';
     organizationScript.textContent = JSON.stringify(organizationData);
     document.head.appendChild(organizationScript);
+  }, [i18n.language]);
+
+  useEffect(() => {
+    // 更新页面标题
+    document.title = title || (i18n.language === 'zh' ? '654653工具箱 - 专业的在线条形码和二维码处理工具' : '654653 Toolbox - Professional Online Barcode and QR Code Processing Tool');
+
+    // Helper functions
+    const updateMetaTag = (name: string, content: string) => {
+      let meta = document.querySelector(`meta[name="${name}"]`) as HTMLMetaElement;
+      if (!meta) {
+        meta = document.createElement('meta');
+        meta.name = name;
+        document.head.appendChild(meta);
+      }
+      meta.content = content;
+    };
+
+    const updatePropertyTag = (property: string, content: string) => {
+      let meta = document.querySelector(`meta[property="${property}"]`) as HTMLMetaElement;
+      if (!meta) {
+        meta = document.createElement('meta');
+        meta.setAttribute('property', property);
+        document.head.appendChild(meta);
+      }
+      meta.content = content;
+    };
+
+    // 更新meta标签
+    updateMetaTag('description', description || (i18n.language === 'zh' ? '专业的在线条形码和二维码处理工具，支持多种格式转换和批量处理' : 'Professional online barcode and QR code processing tool with multiple format conversion and batch processing'));
+    updateMetaTag('keywords', keywords || (i18n.language === 'zh' ? '条形码,二维码,条码生成,二维码生成,条码扫描,二维码扫描,条码转换,二维码转换' : 'barcode,qr code,barcode generator,qr code generator,barcode scanner,qr code scanner,barcode converter,qr code converter'));
+    updateMetaTag('author', '654653 Toolbox');
+    updateMetaTag('robots', 'index, follow');
+    updateMetaTag('viewport', 'width=device-width, initial-scale=1.0');
+
+    // 更新Open Graph标签
+    updatePropertyTag('og:title', title || (i18n.language === 'zh' ? '654653工具箱' : '654653 Toolbox'));
+    updatePropertyTag('og:description', description || (i18n.language === 'zh' ? '专业的在线条形码和二维码处理工具' : 'Professional online barcode and QR code processing tool'));
+    updatePropertyTag('og:image', image);
+    updatePropertyTag('og:url', url);
+    updatePropertyTag('og:type', type);
+    updatePropertyTag('og:locale', i18n.language === 'zh' ? 'zh_CN' : 'en_US');
+    updatePropertyTag('og:site_name', i18n.language === 'zh' ? '654653工具箱' : '654653 Toolbox');
+
+    // 更新Twitter Card标签
+    updatePropertyTag('twitter:card', 'summary_large_image');
+    updatePropertyTag('twitter:title', title || (i18n.language === 'zh' ? '654653工具箱' : '654653 Toolbox'));
+    updatePropertyTag('twitter:description', description || (i18n.language === 'zh' ? '专业的在线条形码和二维码处理工具' : 'Professional online barcode and QR code processing tool'));
+    updatePropertyTag('twitter:image', image);
+
+    // 更新canonical URL
+    let canonical = document.querySelector('link[rel="canonical"]') as HTMLLinkElement;
+    if (!canonical) {
+      canonical = document.createElement('link');
+      canonical.rel = 'canonical';
+      document.head.appendChild(canonical);
+    }
+    canonical.href = url;
+
+    // 更新hreflang标签
+    updateHreflangTags(alternateLanguages);
+
+    // 添加结构化数据
+    addStructuredData();
+
+  }, [title, description, keywords, image, url, type, t, i18n.language, alternateLanguages, addStructuredData]);
+
+  const updateHreflangTags = (languages: Array<{ lang: string; url: string }>) => {
+    // 移除现有的hreflang标签
+    const existingHreflangs = document.querySelectorAll('link[rel="alternate"][hreflang]');
+    existingHreflangs.forEach(tag => tag.remove());
+
+    // 添加新的hreflang标签
+    languages.forEach(({ lang, url }) => {
+      const link = document.createElement('link');
+      link.rel = 'alternate';
+      link.hreflang = lang;
+      link.href = url;
+      document.head.appendChild(link);
+    });
+
+    // 添加x-default hreflang
+    const xDefault = document.createElement('link');
+    xDefault.rel = 'alternate';
+    xDefault.hreflang = 'x-default';
+    xDefault.href = languages[0]?.url || 'https://654653.com/';
+    document.head.appendChild(xDefault);
   };
 
   return null;

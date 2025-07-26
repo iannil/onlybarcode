@@ -26,7 +26,7 @@ export const useAnalytics = () => {
     }
   }, []);
 
-  const trackCustomEvent = useCallback((eventName: string, parameters?: Record<string, any>) => {
+  const trackCustomEvent = useCallback((eventName: string, parameters?: Record<string, unknown>) => {
     if (typeof window !== 'undefined' && window.gtag) {
       window.gtag('event', eventName, parameters);
     }

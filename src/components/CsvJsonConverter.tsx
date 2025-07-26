@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { csvToJson, jsonToCsv, detectDelimiter } from '../utils/csvJson';
-import { FileText, Trash2, Copy, Download, Upload, ListFilter, AlignJustify, Compass, Braces } from 'lucide-react';
+import { FileText, Trash2, Copy, Download, Upload, AlignJustify, Compass } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 interface CsvJsonConverterProps {
@@ -26,7 +26,6 @@ const CsvJsonConverter: React.FC<CsvJsonConverterProps> = ({ mode, clearTrigger 
 
   // 错误定位（仅简单高亮）
   const getErrorLine = () => {
-    if (!error || !input) return null;
     if (mode === 'csv2json') {
       const lines = input.split(/\r?\n/);
       return lines.findIndex(l => l.includes(',')) + 1;
@@ -34,8 +33,9 @@ const CsvJsonConverter: React.FC<CsvJsonConverterProps> = ({ mode, clearTrigger 
       try {
         JSON.parse(input);
         return null;
-      } catch (e:any) {
-        const m = /at position (\d+)/.exec(e.message);
+      } catch (e: unknown) {
+        const error = e as Error;
+        const m = /at position (\d+)/.exec(error.message);
         if (m) {
           const pos = parseInt(m[1],10);
           const before = input.slice(0,pos);
@@ -46,7 +46,7 @@ const CsvJsonConverter: React.FC<CsvJsonConverterProps> = ({ mode, clearTrigger 
     return null;
   };
 
-  const validateCsv = (csv: string, delimiter: string): string | null => {
+  const validateCsv = useCallback((csv: string, delimiter: string): string | null => {
     const lines = csv.trim().split(/\r?\n/);
     if (lines.length < 2) return t('csv_too_few_lines', 'CSV内容不足两行');
     const headerCount = lines[0].split(delimiter).length;
@@ -57,21 +57,22 @@ const CsvJsonConverter: React.FC<CsvJsonConverterProps> = ({ mode, clearTrigger 
       }
     }
     return null;
-  };
+  }, [t]);
 
-  const validateJson = (jsonStr: string): string | null => {
+  const validateJson = useCallback((jsonStr: string): string | null => {
     try {
       const obj = JSON.parse(jsonStr);
       if (!Array.isArray(obj) && typeof obj !== 'object') {
         return t('json_must_be_object_or_array', 'JSON内容必须为对象或对象数组');
       }
       return null;
-    } catch (e: any) {
-      return t('json_format_error', 'JSON格式错误') + ': ' + (e.message || '');
+    } catch (e: unknown) {
+      const error = e as Error;
+      return t('json_format_error', 'JSON格式错误') + ': ' + (error.message || '');
     }
-  };
+  }, [t]);
 
-  const handleConvert = () => {
+  const handleConvert = useCallback(() => {
     setError(null);
     try {
       if (mode === 'csv2json') {
@@ -88,11 +89,12 @@ const CsvJsonConverter: React.FC<CsvJsonConverterProps> = ({ mode, clearTrigger 
         const csv = jsonToCsv(arr, delimiter);
         setOutput(csv);
       }
-    } catch (e:any) {
+    } catch (e: unknown) {
+      const error = e as Error;
       setOutput('');
-      setError(t('format_error', '格式错误或转换失败') + ': ' + (e.message || ''));
+      setError(t('format_error', '格式错误或转换失败') + ': ' + (error.message || ''));
     }
-  };
+  }, [input, mode, delimiter, jsonPretty, csvHasHeader, t, validateCsv, validateJson]);
 
   // Listen for external convert trigger
   useEffect(() => {
@@ -104,7 +106,7 @@ const CsvJsonConverter: React.FC<CsvJsonConverterProps> = ({ mode, clearTrigger 
     return () => {
       window.removeEventListener('triggerConvert', handleTriggerConvert);
     };
-  }, [input, mode, delimiter, jsonPretty, csvHasHeader]);
+  }, [handleConvert]);
 
   // 文件导入
   const handleFileImport = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -164,7 +166,9 @@ const CsvJsonConverter: React.FC<CsvJsonConverterProps> = ({ mode, clearTrigger 
         const obj = JSON.parse(output);
         setOutput(jsonPretty ? JSON.stringify(obj) : JSON.stringify(obj, null, 2));
         setJsonPretty(!jsonPretty);
-      } catch {}
+      } catch (error) {
+        console.error('Failed to format JSON:', error);
+      }
     }
   };
 
@@ -188,7 +192,9 @@ const CsvJsonConverter: React.FC<CsvJsonConverterProps> = ({ mode, clearTrigger 
                     try {
                       const obj = JSON.parse(input);
                       setInput(JSON.stringify(obj, null, 2));
-                    } catch {}
+                    } catch (error) {
+          console.error('Failed to format JSON:', error);
+        }
                   }}
                   className="text-xs h-7 px-2 py-1 rounded-md border font-medium transition-colors duration-150 bg-slate-50 hover:bg-blue-50 flex items-center justify-center gap-1"
                 >

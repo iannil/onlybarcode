@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Barcode, QrCode, FileText, Menu, X, ScanLine, ScanEye, Shuffle } from 'lucide-react';
+import { Barcode, QrCode, Menu, X, ScanLine, ScanEye, Shuffle } from 'lucide-react';
 import BarcodeProcessor from './components/BatchProcessor';
 import BarcodeScanner from './components/BarcodeScanner';
 import PrivacyPolicy from './components/PrivacyPolicy';
@@ -8,7 +8,7 @@ import ContactUs from './components/ContactUs';
 import SEOHead from './components/SEOHead';
 import GoogleAnalytics from './components/GoogleAnalytics';
 import { getSeoConfig, getAlternateLanguages } from './config/seo';
-import { ANALYTICS_CONFIG, isAnalyticsEnabled } from './config/analytics';
+import { ANALYTICS_CONFIG } from './config/analytics';
 import { useAnalytics } from './hooks/useAnalytics';
 import './App.css';
 import { useTranslation } from 'react-i18next';
