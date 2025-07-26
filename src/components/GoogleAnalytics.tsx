@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { isAnalyticsEnabled } from '../config/analytics';
 
 declare global {
   interface Window {
@@ -13,6 +14,12 @@ interface GoogleAnalyticsProps {
 
 const GoogleAnalytics: React.FC<GoogleAnalyticsProps> = ({ measurementId }) => {
   useEffect(() => {
+    // Only load Google Analytics if it's enabled
+    if (!isAnalyticsEnabled()) {
+      console.log('Google Analytics disabled for localhost/development environment');
+      return;
+    }
+
     // Load Google Analytics script
     const script1 = document.createElement('script');
     script1.async = true;
