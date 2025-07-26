@@ -439,14 +439,16 @@ const BarcodeProcessor: React.FC<BarcodeProcessorProps> = ({ mode, setMode }) =>
       previewBarcodeElements.push(
         <div
           key={item.id}
-          className="flex flex-col items-center justify-center border-2 border-gray-400 rounded-xl bg-white mx-auto px-2 my-0"
+          className="flex flex-col items-center justify-center border border-gray-400 rounded-xl bg-white mx-auto px-2 my-0"
           style={{
             minWidth: 0,
             minHeight: imgHeight + dynamicExtraHeight,
             maxWidth: imgWidth,
             maxHeight: imgHeight + dynamicExtraHeight,
             marginTop: dynamicMarginY,
-            marginBottom: dynamicMarginY
+            marginBottom: dynamicMarginY,
+            borderStyle: 'dashed',
+            borderWidth: '1px'
           }}
         >
           {item.dataUrl && (
