@@ -2,11 +2,14 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { ArrowLeft, Mail } from 'lucide-react';
 import SEOHead from './SEOHead';
-
-
+import { seoConfig, getAlternateLanguages } from '../config/seo';
 
 const ContactUs: React.FC = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  
+  // SEO配置
+  const seoData = seoConfig.pages.contact[i18n.language as keyof typeof seoConfig.pages.contact] || seoConfig.pages.contact.zh;
+  const alternateLanguages = getAlternateLanguages();
 
   const handleBackToHome = () => {
     window.location.hash = '';
@@ -15,13 +18,10 @@ const ContactUs: React.FC = () => {
   return (
     <>
       <SEOHead 
-        title={t('contact_us_title')}
-        description={t('contact_us_intro')}
-        keywords="contact, support, barcode tool"
-        alternateLanguages={[
-          { lang: 'en', url: '/contact' },
-          { lang: 'zh', url: '/contact' }
-        ]}
+        title={seoData.title}
+        description={seoData.description}
+        keywords={seoData.keywords}
+        alternateLanguages={alternateLanguages}
       />
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50">
         {/* Header */}

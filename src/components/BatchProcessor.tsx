@@ -6,6 +6,8 @@ import { saveAs } from 'file-saver';
 import { Download, Package, X, CheckCircle, AlertCircle, Loader, Settings, RefreshCw, Copy, Play, Trash, Info } from 'lucide-react';
 import { PDFDocument } from 'pdf-lib';
 import { useAnalytics } from '../hooks/useAnalytics';
+import SEOHead from './SEOHead';
+import { seoConfig, getAlternateLanguages } from '../config/seo';
 
 interface BarcodeItem {
   id: string;
@@ -22,8 +24,12 @@ interface BarcodeProcessorProps {
 }
 
 const BarcodeProcessor: React.FC<BarcodeProcessorProps> = ({ mode, setMode }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { trackEvent, trackCustomEvent } = useAnalytics();
+  
+  // SEO配置
+  const seoData = seoConfig.pages.generate[i18n.language as keyof typeof seoConfig.pages.generate] || seoConfig.pages.generate.zh;
+  const alternateLanguages = getAlternateLanguages();
   const [singleText, setSingleText] = useState('123456789012');
   const [items, setItems] = useState<BarcodeItem[]>([]);
   const [processing, setProcessing] = useState(false);
@@ -476,6 +482,12 @@ const BarcodeProcessor: React.FC<BarcodeProcessorProps> = ({ mode, setMode }) =>
 
   return (
     <div className="tab-content">
+      <SEOHead
+        title={seoData.title}
+        description={seoData.description}
+        keywords={seoData.keywords}
+        alternateLanguages={alternateLanguages}
+      />
       {mode === 'single' ? (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-6 lg:gap-8">
           <div className="flex flex-col gap-3 sm:gap-4 lg:gap-6">

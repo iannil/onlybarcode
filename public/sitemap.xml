@@ -101,6 +101,26 @@
     <xhtml:link rel="alternate" hreflang="zh" href="https://654653.com/#qrcode-scan"/>
   </url>
   
+  <!-- 中文数据转换页面 -->
+  <url>
+    <loc>https://654653.com/#csvjson</loc>
+    <lastmod>2025-01-27</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://654653.com/en/#csvjson"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://654653.com/#csvjson"/>
+  </url>
+  
+  <!-- 英文数据转换页面 -->
+  <url>
+    <loc>https://654653.com/en/#csvjson</loc>
+    <lastmod>2025-01-27</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://654653.com/en/#csvjson"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://654653.com/#csvjson"/>
+  </url>
+  
   <!-- 中文批量生成页面 -->
   <url>
     <loc>https://654653.com/#generate-batch</loc>
@@ -139,5 +159,105 @@
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://654653.com/en/#qrcode-generate-batch"/>
     <xhtml:link rel="alternate" hreflang="zh" href="https://654653.com/#qrcode-generate-batch"/>
+  </url>
+  
+  <!-- 中文联系我们页面 -->
+  <url>
+    <loc>https://654653.com/#contact</loc>
+    <lastmod>2025-01-27</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://654653.com/en/#contact"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://654653.com/#contact"/>
+  </url>
+  
+  <!-- 英文联系我们页面 -->
+  <url>
+    <loc>https://654653.com/en/#contact</loc>
+    <lastmod>2025-01-27</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://654653.com/en/#contact"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://654653.com/#contact"/>
+  </url>
+  
+  <!-- 中文隐私政策页面 -->
+  <url>
+    <loc>https://654653.com/#privacy</loc>
+    <lastmod>2025-01-27</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.5</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://654653.com/en/#privacy"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://654653.com/#privacy"/>
+  </url>
+  
+  <!-- 英文隐私政策页面 -->
+  <url>
+    <loc>https://654653.com/en/#privacy</loc>
+    <lastmod>2025-01-27</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.5</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://654653.com/en/#privacy"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://654653.com/#privacy"/>
+  </url>
+  
+  <!-- 中文服务条款页面 -->
+  <url>
+    <loc>https://654653.com/#terms</loc>
+    <lastmod>2025-01-27</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.5</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://654653.com/en/#terms"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://654653.com/#terms"/>
+  </url>
+
+  <!-- 英文服务条款页面 -->
+  <url>
+    <loc>https://654653.com/en/#terms</loc>
+    <lastmod>2025-01-27</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.5</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://654653.com/en/#terms"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://654653.com/#terms"/>
+  </url>
+
+  <!-- 中文使用教程页面 -->
+  <url>
+    <loc>https://654653.com/#tutorial</loc>
+    <lastmod>2025-01-27</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://654653.com/en/#tutorial"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://654653.com/#tutorial"/>
+  </url>
+
+  <!-- 英文使用教程页面 -->
+  <url>
+    <loc>https://654653.com/en/#tutorial</loc>
+    <lastmod>2025-01-27</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://654653.com/en/#tutorial"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://654653.com/#tutorial"/>
+  </url>
+
+  <!-- 中文常见问题页面 -->
+  <url>
+    <loc>https://654653.com/#faq</loc>
+    <lastmod>2025-01-27</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://654653.com/en/#faq"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://654653.com/#faq"/>
+  </url>
+
+  <!-- 英文常见问题页面 -->
+  <url>
+    <loc>https://654653.com/en/#faq</loc>
+    <lastmod>2025-01-27</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://654653.com/en/#faq"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://654653.com/#faq"/>
   </url>
 </urlset> 

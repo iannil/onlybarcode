@@ -2,9 +2,14 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { ArrowLeft } from 'lucide-react';
 import SEOHead from './SEOHead';
+import { seoConfig, getAlternateLanguages } from '../config/seo';
 
 const TermsOfService: React.FC = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  
+  // SEO配置
+  const seoData = seoConfig.pages.terms[i18n.language as keyof typeof seoConfig.pages.terms] || seoConfig.pages.terms.zh;
+  const alternateLanguages = getAlternateLanguages();
 
   const handleBackToHome = () => {
     window.location.hash = '';
@@ -13,13 +18,10 @@ const TermsOfService: React.FC = () => {
   return (
     <>
       <SEOHead 
-        title={t('terms_of_service_title')}
-        description={t('terms_of_service_intro')}
-        keywords="terms of service, legal, barcode tool"
-        alternateLanguages={[
-          { lang: 'en', url: '/terms' },
-          { lang: 'zh', url: '/terms' }
-        ]}
+        title={seoData.title}
+        description={seoData.description}
+        keywords={seoData.keywords}
+        alternateLanguages={alternateLanguages}
       />
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50">
         {/* Header */}

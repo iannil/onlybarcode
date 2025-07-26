@@ -111,12 +111,19 @@ const SEOHead: React.FC<SEOHeadProps> = ({
       meta.content = content;
     };
 
-    // 更新meta标签
+    // 更新基础meta标签
     updateMetaTag('description', description || (i18n.language === 'zh' ? '专业的在线条形码和二维码处理工具，支持多种格式转换和批量处理' : 'Professional online barcode and QR code processing tool with multiple format conversion and batch processing'));
     updateMetaTag('keywords', keywords || (i18n.language === 'zh' ? '条形码,二维码,条码生成,二维码生成,条码扫描,二维码扫描,条码转换,二维码转换' : 'barcode,qr code,barcode generator,qr code generator,barcode scanner,qr code scanner,barcode converter,qr code converter'));
     updateMetaTag('author', '654653 Toolbox');
-    updateMetaTag('robots', 'index, follow');
+    updateMetaTag('robots', 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1');
+    updateMetaTag('googlebot', 'index, follow');
     updateMetaTag('viewport', 'width=device-width, initial-scale=1.0');
+    updateMetaTag('theme-color', '#2563eb');
+    updateMetaTag('msapplication-TileColor', '#2563eb');
+    updateMetaTag('apple-mobile-web-app-capable', 'yes');
+    updateMetaTag('apple-mobile-web-app-status-bar-style', 'default');
+    updateMetaTag('apple-mobile-web-app-title', i18n.language === 'zh' ? '654653工具箱' : '654653 Toolbox');
+    updateMetaTag('format-detection', 'telephone=no');
 
     // 更新Open Graph标签
     updatePropertyTag('og:title', title || (i18n.language === 'zh' ? '654653工具箱' : '654653 Toolbox'));
@@ -126,12 +133,18 @@ const SEOHead: React.FC<SEOHeadProps> = ({
     updatePropertyTag('og:type', type);
     updatePropertyTag('og:locale', i18n.language === 'zh' ? 'zh_CN' : 'en_US');
     updatePropertyTag('og:site_name', i18n.language === 'zh' ? '654653工具箱' : '654653 Toolbox');
+    updatePropertyTag('og:image:width', '1200');
+    updatePropertyTag('og:image:height', '630');
+    updatePropertyTag('og:image:alt', title || (i18n.language === 'zh' ? '654653工具箱' : '654653 Toolbox'));
 
     // 更新Twitter Card标签
     updateMetaTag('twitter:card', 'summary_large_image');
     updateMetaTag('twitter:title', title || (i18n.language === 'zh' ? '654653工具箱' : '654653 Toolbox'));
     updateMetaTag('twitter:description', description || (i18n.language === 'zh' ? '专业的在线条形码和二维码处理工具' : 'Professional online barcode and QR code processing tool'));
     updateMetaTag('twitter:image', image);
+    updateMetaTag('twitter:image:alt', title || (i18n.language === 'zh' ? '654653工具箱' : '654653 Toolbox'));
+    updateMetaTag('twitter:site', '@654653toolbox');
+    updateMetaTag('twitter:creator', '@654653toolbox');
 
     // 更新canonical URL
     let canonical = document.querySelector('link[rel="canonical"]') as HTMLLinkElement;

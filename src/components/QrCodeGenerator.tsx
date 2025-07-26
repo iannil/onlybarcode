@@ -5,6 +5,8 @@ import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
 import { PDFDocument } from 'pdf-lib';
 import { Settings, Package, RefreshCw, Download, CheckCircle, Copy, AlertCircle, Loader, Trash, Play, X } from 'lucide-react';
+import SEOHead from './SEOHead';
+import { seoConfig, getAlternateLanguages } from '../config/seo';
 
 interface QrCodeGeneratorProps {
   mode: 'single' | 'batch';
@@ -12,7 +14,12 @@ interface QrCodeGeneratorProps {
 }
 
 const QrCodeGenerator: React.FC<QrCodeGeneratorProps> = ({ mode, setMode }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  
+  // SEO配置
+  const seoData = seoConfig.pages['qrcode-generate'][i18n.language as keyof typeof seoConfig.pages['qrcode-generate']] || seoConfig.pages['qrcode-generate'].zh;
+  const alternateLanguages = getAlternateLanguages();
+  
   const [singleText, setSingleText] = useState('https://654653.com');
   const [batchText, setBatchText] = useState('');
   const [results, setResults] = useState<string[]>([]);
@@ -249,6 +256,12 @@ const QrCodeGenerator: React.FC<QrCodeGeneratorProps> = ({ mode, setMode }) => {
 
   return (
     <div className="tab-content">
+      <SEOHead
+        title={seoData.title}
+        description={seoData.description}
+        keywords={seoData.keywords}
+        alternateLanguages={alternateLanguages}
+      />
       {mode === 'single' ? (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-8">
           <div className="flex flex-col gap-4 sm:gap-6">

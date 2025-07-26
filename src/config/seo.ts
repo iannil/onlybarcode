@@ -83,6 +83,90 @@ export const seoConfig = {
         description: 'Scan and recognize QR codes online, supporting JPG, PNG, GIF and other image formats. Batch processing, results can be exported as CSV files. Fast and accurate QR code recognition tool.',
         keywords: 'QR code scanner,QR code recognition,online QR code scanner,batch QR code scanning,QR code recognition tool,QR code reader,QR code decoder'
       }
+    },
+    'batch-process': {
+      zh: {
+        title: '批量条码处理 - 批量生成条形码 | 654653工具箱',
+        description: '批量生成条形码，支持多种格式和自定义设置。可导出PNG、SVG、PDF格式，支持多行文本处理。高效的批量条码制作工具。',
+        keywords: '批量条码生成,批量处理,条码批量制作,批量导出,条码工具,批量条码'
+      },
+      en: {
+        title: 'Batch Barcode Processing - Generate Barcodes in Batch | 654653 Toolbox',
+        description: 'Generate barcodes in batch with multiple formats and custom settings. Export to PNG, SVG, PDF formats, support multi-line text processing. Efficient batch barcode creation tool.',
+        keywords: 'batch barcode generation,batch processing,barcode batch maker,batch export,barcode tool,batch barcode'
+      }
+    },
+    'data-converter': {
+      zh: {
+        title: '数据转换工具 - CSV/JSON/XML转换 | 654653工具箱',
+        description: '在线数据格式转换工具，支持CSV、JSON、XML格式互转。批量处理，自定义分隔符，数据验证功能。专业的数据转换服务。',
+        keywords: '数据转换,CSV转换,JSON转换,XML转换,格式转换,在线转换工具,批量转换'
+      },
+      en: {
+        title: 'Data Converter - CSV/JSON/XML Conversion | 654653 Toolbox',
+        description: 'Online data format conversion tool supporting CSV, JSON, XML format conversion. Batch processing, custom delimiters, data validation. Professional data conversion service.',
+        keywords: 'data conversion,CSV converter,JSON converter,XML converter,format conversion,online converter tool,batch conversion'
+      }
+    },
+    'contact': {
+      zh: {
+        title: '联系我们 - 654653工具箱',
+        description: '联系654653工具箱团队，获取技术支持、功能建议或合作机会。我们提供专业的技术支持和客户服务。',
+        keywords: '联系我们,技术支持,客户服务,654653工具箱,联系团队'
+      },
+      en: {
+        title: 'Contact Us - 654653 Toolbox',
+        description: 'Contact the 654653 Toolbox team for technical support, feature suggestions, or partnership opportunities. We provide professional technical support and customer service.',
+        keywords: 'contact us,technical support,customer service,654653 toolbox,contact team'
+      }
+    },
+    'privacy': {
+      zh: {
+        title: '隐私政策 - 654653工具箱',
+        description: '654653工具箱隐私政策，详细说明我们如何收集、使用和保护您的个人信息。保护用户隐私是我们的首要任务。',
+        keywords: '隐私政策,数据保护,个人信息,隐私保护,654653工具箱'
+      },
+      en: {
+        title: 'Privacy Policy - 654653 Toolbox',
+        description: '654653 Toolbox privacy policy detailing how we collect, use, and protect your personal information. Protecting user privacy is our top priority.',
+        keywords: 'privacy policy,data protection,personal information,privacy protection,654653 toolbox'
+      }
+    },
+    'terms': {
+      zh: {
+        title: '服务条款 - 654653工具箱',
+        description: '654653工具箱服务条款，明确用户使用我们服务的权利和义务。请仔细阅读并遵守相关条款。',
+        keywords: '服务条款,使用条款,法律条款,654653工具箱,用户协议'
+      },
+      en: {
+        title: 'Terms of Service - 654653 Toolbox',
+        description: '654653 Toolbox terms of service clarifying user rights and obligations when using our services. Please read and comply with relevant terms.',
+        keywords: 'terms of service,usage terms,legal terms,654653 toolbox,user agreement'
+      }
+    },
+    'tutorial': {
+      zh: {
+        title: '使用教程 - 654653工具箱',
+        description: '详细的条形码和二维码生成使用教程，包含步骤说明和操作指南。快速掌握条码制作和扫描技巧。',
+        keywords: '条形码教程,二维码教程,使用指南,操作说明,条码制作教程,扫描教程,批量处理教程'
+      },
+      en: {
+        title: 'Tutorial - 654653 Toolbox',
+        description: 'Detailed tutorials for barcode and QR code generation with step-by-step instructions. Quickly master barcode creation and scanning techniques.',
+        keywords: 'barcode tutorial,qr code tutorial,usage guide,operation manual,barcode making tutorial,scanning tutorial,batch processing tutorial'
+      }
+    },
+    'faq': {
+      zh: {
+        title: '常见问题 - 654653工具箱',
+        description: '654653工具箱常见问题解答，包含条形码生成、二维码制作、扫描识别等功能的详细说明。',
+        keywords: '常见问题,FAQ,问题解答,条形码问题,二维码问题,使用帮助'
+      },
+      en: {
+        title: 'FAQ - 654653 Toolbox',
+        description: 'Frequently asked questions about 654653 Toolbox, including detailed explanations of barcode generation, QR code creation, scanning recognition and other features.',
+        keywords: 'frequently asked questions,FAQ,help,barcode questions,qr code questions,usage help'
+      }
     }
   },
   
@@ -94,8 +178,8 @@ export const seoConfig = {
     price: '0',
     priceCurrency: 'CNY',
     features: {
-      zh: ['条形码生成', '二维码生成', '条形码扫描', '二维码扫描', '批量处理', 'PDF导出', '多种格式支持', '在线工具'],
-      en: ['Barcode Generation', 'QR Code Generation', 'Barcode Scanning', 'QR Code Scanning', 'Batch Processing', 'PDF Export', 'Multiple Format Support', 'Online Tool']
+      zh: ['条形码生成', '二维码生成', '条形码扫描', '二维码扫描', '批量处理', 'PDF导出', '多种格式支持', '在线工具', '数据转换'],
+      en: ['Barcode Generation', 'QR Code Generation', 'Barcode Scanning', 'QR Code Scanning', 'Batch Processing', 'PDF Export', 'Multiple Format Support', 'Online Tool', 'Data Conversion']
     },
     // 添加更多结构化数据
     organization: {

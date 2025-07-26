@@ -2,9 +2,14 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { ArrowLeft } from 'lucide-react';
 import SEOHead from './SEOHead';
+import { seoConfig, getAlternateLanguages } from '../config/seo';
 
 const PrivacyPolicy: React.FC = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  
+  // SEO配置
+  const seoData = seoConfig.pages.privacy[i18n.language as keyof typeof seoConfig.pages.privacy] || seoConfig.pages.privacy.zh;
+  const alternateLanguages = getAlternateLanguages();
 
   const handleBackToHome = () => {
     window.location.hash = '';
@@ -13,13 +18,10 @@ const PrivacyPolicy: React.FC = () => {
   return (
     <>
       <SEOHead 
-        title={t('privacy_policy_title')}
-        description={t('privacy_policy_intro')}
-        keywords="privacy policy, data protection, barcode tool"
-        alternateLanguages={[
-          { lang: 'en', url: '/privacy' },
-          { lang: 'zh', url: '/privacy' }
-        ]}
+        title={seoData.title}
+        description={seoData.description}
+        keywords={seoData.keywords}
+        alternateLanguages={alternateLanguages}
       />
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50">
         {/* Header */}

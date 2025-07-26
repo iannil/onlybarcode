@@ -5,6 +5,8 @@ import BarcodeScanner from './components/BarcodeScanner';
 import PrivacyPolicy from './components/PrivacyPolicy';
 import TermsOfService from './components/TermsOfService';
 import ContactUs from './components/ContactUs';
+import Tutorial from './components/Tutorial';
+import FAQ from './components/FAQ';
 import SEOHead from './components/SEOHead';
 import GoogleAnalytics from './components/GoogleAnalytics';
 import { getSeoConfig, getAlternateLanguages } from './config/seo';
@@ -19,7 +21,7 @@ import DataConverter from './components/DataConverter';
 type TabType = 'barcode' | 'qrcode' | 'csvjson';
 type BarcodeSubTab = 'generate' | 'scan';
 type ModeType = 'single' | 'batch';
-type RouteType = 'home' | 'privacy' | 'terms' | 'contact';
+type RouteType = 'home' | 'privacy' | 'terms' | 'contact' | 'tutorial' | 'faq';
 type QrcodeSubTab = 'generate' | 'scan';
 
 function App() {
@@ -72,6 +74,12 @@ function App() {
           newTab = 'qrcode';
           newQrcodeSubTab = 'generate';
           break;
+        case 'tutorial':
+          newRoute = 'tutorial';
+          break;
+        case 'faq':
+          newRoute = 'faq';
+          break;
         default:
           break;
       }
@@ -103,7 +111,7 @@ function App() {
     });
   };
 
-  const seoConfig = getSeoConfig(i18n.language, activeTab);
+  const seoConfig = getSeoConfig(i18n.language);
   const alternateLanguages = getAlternateLanguages();
 
   return (
@@ -309,6 +317,8 @@ function App() {
           {currentRoute === 'privacy' && <PrivacyPolicy />}
           {currentRoute === 'terms' && <TermsOfService />}
           {currentRoute === 'contact' && <ContactUs />}
+          {currentRoute === 'tutorial' && <Tutorial />}
+          {currentRoute === 'faq' && <FAQ />}
         </div>
       </main>
 

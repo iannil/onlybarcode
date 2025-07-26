@@ -3,11 +3,18 @@ import CsvJsonConverter from './CsvJsonConverter';
 import JsonXmlConverter from './JsonXmlConverter';
 import { FileText, Code, Braces, Shuffle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import SEOHead from './SEOHead';
+import { seoConfig, getAlternateLanguages } from '../config/seo';
 
 type ConversionMode = 'csv2json' | 'json2csv' | 'json2xml' | 'xml2json';
 
 const DataConverter: React.FC = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  
+  // SEO配置
+  const seoData = seoConfig.pages['data-converter'][i18n.language as keyof typeof seoConfig.pages['data-converter']] || seoConfig.pages['data-converter'].zh;
+  const alternateLanguages = getAlternateLanguages();
+  
   const [activeMode, setActiveMode] = useState<ConversionMode>('csv2json');
   const [clearTrigger, setClearTrigger] = useState(0);
 
@@ -47,47 +54,55 @@ const DataConverter: React.FC = () => {
   };
 
   return (
-    <div className="w-full mx-auto px-2 sm:px-6 lg:px-8">
-      {/* Conversion mode tabs and convert button in same row */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-2">
-        <div className="flex flex-wrap gap-2">
-          {conversionModes.map((mode) => (
-            <button
-              key={mode.id}
-              className={`h-9 px-3 py-2 rounded-md border text-sm font-medium transition-colors duration-150 ${
-                activeMode === mode.id 
-                  ? 'bg-blue-50 border-blue-500 text-blue-700' 
-                  : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'
-              }`}
-              onClick={() => handleModeChange(mode.id)}
-              title={mode.description}
-            >
-              <mode.icon className="w-4 h-4 mr-1 inline-block align-text-bottom" />
-              {mode.label}
-            </button>
-          ))}
+    <>
+      <SEOHead
+        title={seoData.title}
+        description={seoData.description}
+        keywords={seoData.keywords}
+        alternateLanguages={alternateLanguages}
+      />
+      <div className="w-full mx-auto px-2 sm:px-6 lg:px-8">
+        {/* Conversion mode tabs and convert button in same row */}
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-2">
+          <div className="flex flex-wrap gap-2">
+            {conversionModes.map((mode) => (
+              <button
+                key={mode.id}
+                className={`h-9 px-3 py-2 rounded-md border text-sm font-medium transition-colors duration-150 ${
+                  activeMode === mode.id 
+                    ? 'bg-blue-50 border-blue-500 text-blue-700' 
+                    : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'
+                }`}
+                onClick={() => handleModeChange(mode.id)}
+                title={mode.description}
+              >
+                <mode.icon className="w-4 h-4 mr-1 inline-block align-text-bottom" />
+                {mode.label}
+              </button>
+            ))}
+          </div>
+          <button
+            className="h-9 px-3 py-2 rounded-md border border-blue-600 bg-blue-600 text-white text-sm font-medium flex items-center gap-2 hover:bg-blue-700 transition-colors"
+            style={{ minHeight: '32px' }}
+            onClick={() => {
+              // Trigger convert in the active converter
+              const event = new CustomEvent('triggerConvert');
+              window.dispatchEvent(event);
+            }}
+          >
+            <Shuffle className="w-4 h-4" />{t('convert')}
+          </button>
         </div>
-        <button
-          className="h-9 px-3 py-2 rounded-md border border-blue-600 bg-blue-600 text-white text-sm font-medium flex items-center gap-2 hover:bg-blue-700 transition-colors"
-          style={{ minHeight: '32px' }}
-          onClick={() => {
-            // Trigger convert in the active converter
-            const event = new CustomEvent('triggerConvert');
-            window.dispatchEvent(event);
-          }}
-        >
-          <Shuffle className="w-4 h-4" />{t('convert')}
-        </button>
+        
+        {/* Converter content */}
+        {(activeMode === 'csv2json' || activeMode === 'json2csv') && (
+          <CsvJsonConverter mode={activeMode} clearTrigger={clearTrigger} />
+        )}
+        {(activeMode === 'json2xml' || activeMode === 'xml2json') && (
+          <JsonXmlConverter mode={activeMode} clearTrigger={clearTrigger} />
+        )}
       </div>
-      
-      {/* Converter content */}
-      {(activeMode === 'csv2json' || activeMode === 'json2csv') && (
-        <CsvJsonConverter mode={activeMode} clearTrigger={clearTrigger} />
-      )}
-      {(activeMode === 'json2xml' || activeMode === 'xml2json') && (
-        <JsonXmlConverter mode={activeMode} clearTrigger={clearTrigger} />
-      )}
-    </div>
+    </>
   );
 };
 

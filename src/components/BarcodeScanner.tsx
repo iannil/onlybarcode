@@ -3,6 +3,8 @@ import { useTranslation } from 'react-i18next';
 import { BrowserMultiFormatReader } from '@zxing/library';
 import { Upload, Image, X, CheckCircle, Copy, AlertCircle } from 'lucide-react';
 import { useAnalytics } from '../hooks/useAnalytics';
+import SEOHead from './SEOHead';
+import { seoConfig, getAlternateLanguages } from '../config/seo';
 
 interface ScanResult {
   id: string;
@@ -16,6 +18,11 @@ interface ScanResult {
 const BarcodeScanner: React.FC = () => {
   const { t, i18n } = useTranslation();
   const { trackEvent, trackCustomEvent } = useAnalytics();
+  
+  // SEO配置
+  const seoData = seoConfig.pages.scan[i18n.language as keyof typeof seoConfig.pages.scan] || seoConfig.pages.scan.zh;
+  const alternateLanguages = getAlternateLanguages();
+
   const [dragOver, setDragOver] = useState(false);
   const [scanning, setScanning] = useState(false);
   const [results, setResults] = useState<ScanResult[]>([]);
@@ -149,6 +156,12 @@ const BarcodeScanner: React.FC = () => {
 
   return (
     <div className="tab-content">
+      <SEOHead
+        title={seoData.title}
+        description={seoData.description}
+        keywords={seoData.keywords}
+        alternateLanguages={alternateLanguages}
+      />
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-8">
         {/* Upload Section */}
         <div className="space-y-4 sm:space-y-6">
