@@ -182,7 +182,9 @@ const BarcodeProcessor: React.FC<BarcodeProcessorProps> = ({ mode, setMode }) =>
   };
 
   const handleTextImport = useCallback((text: string) => {
+    console.log('handleTextImport called with text:', text);
     const lines = text.split('\n').filter(line => line.trim());
+    console.log('Filtered lines:', lines);
     const newItems: BarcodeItem[] = [];
     lines.forEach((line, index) => {
       for (let i = 0; i < repeatCount; i++) {
@@ -193,6 +195,7 @@ const BarcodeProcessor: React.FC<BarcodeProcessorProps> = ({ mode, setMode }) =>
         });
       }
     });
+    console.log('Created newItems:', newItems);
     setItems(newItems);
   }, [repeatCount]);
 
@@ -222,14 +225,22 @@ const BarcodeProcessor: React.FC<BarcodeProcessorProps> = ({ mode, setMode }) =>
   };
 
   const processItems = async () => {
+    console.log('processItems called, items:', items);
+    console.log('processing state:', processing);
+    console.log('items length:', items.length);
+    console.log('pending items:', items.filter(item => item.status === 'pending').length);
+    
     setProcessing(true);
     for (const item of items) {
       if (item.status === 'pending') {
+        console.log('Processing item:', item.text);
         setItems(prev => prev.map(i => i.id === item.id ? { ...i, status: 'processing' } : i));
         try {
           const dataUrl = await generateBarcode(item.text);
           setItems(prev => prev.map(i => i.id === item.id ? { ...i, status: 'completed', dataUrl } : i));
+          console.log('Successfully processed:', item.text);
         } catch (error) {
+          console.error('Error processing item:', item.text, error);
           setItems(prev => prev.map(i => i.id === item.id ? { ...i, status: 'error', error: error instanceof Error ? error.message : t('processing_failed_generic') } : i));
         }
         await new Promise(resolve => setTimeout(resolve, 100));
@@ -240,6 +251,8 @@ const BarcodeProcessor: React.FC<BarcodeProcessorProps> = ({ mode, setMode }) =>
     // Track batch processing completion
     const completedCount = items.filter(item => item.status === 'completed').length;
     const errorCount = items.filter(item => item.status === 'error').length;
+    
+    console.log('Processing completed. Completed:', completedCount, 'Errors:', errorCount);
     
     trackCustomEvent('batch_processed', {
       total_items: items.length,
@@ -360,7 +373,7 @@ const BarcodeProcessor: React.FC<BarcodeProcessorProps> = ({ mode, setMode }) =>
     if (mode === 'batch' && items.length > 0 && items.some(i => i.status === 'completed')) {
       setItems(prev => prev.map(i => i.status === 'completed' ? { ...i, status: 'pending', dataUrl: undefined, error: undefined } : i));
     }
-  }, [width, height, format, displayValue, fontSize, margin, backgroundColor, lineColor, mode, items]);
+  }, [width, height, format, displayValue, fontSize, margin, backgroundColor, lineColor, mode]);
 
   const handleImgLoad = useCallback((id: string, e: React.SyntheticEvent<HTMLImageElement>) => {
     const { naturalWidth, naturalHeight } = e.currentTarget;
@@ -914,8 +927,15 @@ const BarcodeProcessor: React.FC<BarcodeProcessorProps> = ({ mode, setMode }) =>
             <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-slate-200/50 p-4 sm:p-6">
               <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-2 mt-3 sm:mt-4">
                 <button
-                  onClick={processItems}
-                  disabled={processing || items.length === 0 || items.some(i => i.status === 'processing' || i.status === 'completed')}
+                  onClick={() => {
+                    console.log('Button clicked!');
+                    console.log('Button disabled state:', processing || items.length === 0 || items.some(i => i.status === 'processing'));
+                    console.log('processing:', processing);
+                    console.log('items.length:', items.length);
+                    console.log('items with processing status:', items.filter(i => i.status === 'processing'));
+                    processItems();
+                  }}
+                  disabled={processing || items.length === 0 || items.some(i => i.status === 'processing')}
                   className="flex items-center justify-center h-9 px-3 py-2 text-sm rounded-md bg-green-600 text-white hover:bg-green-700 disabled:bg-slate-300 disabled:cursor-not-allowed transition-colors shadow-sm w-full sm:w-auto sm:min-w-[90px]"
                 >
                   {processing ? (
