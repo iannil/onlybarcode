@@ -56,5 +56,5 @@ export const isAnalyticsEnabled = (): boolean => {
   }
   
   // Check if measurement ID is valid
-  return !!ANALYTICS_CONFIG.MEASUREMENT_ID && ANALYTICS_CONFIG.MEASUREMENT_ID !== 'G-T4S5FKSFWD';
+  return !!ANALYTICS_CONFIG.MEASUREMENT_ID;
 }; 
