@@ -2,7 +2,7 @@
 
 ## 概述
 
-本文档提供了654653工具箱项目SEO优化的具体实施步骤和技术实现方案，包括代码示例、配置说明和最佳实践。
+本文档提供了OnlyBarcode项目SEO优化的具体实施步骤和技术实现方案，包括代码示例、配置说明和最佳实践。
 
 ## 第一阶段：内容优化实施
 
@@ -43,7 +43,7 @@ const Tutorial: React.FC = () => {
         title={t('tutorial.pageTitle')}
         description={t('tutorial.pageDescription')}
         keywords={t('tutorial.pageKeywords')}
-        url="https://654653.com/tutorial"
+        url="https://onlybarcode.com/tutorial"
       />
       
       <h1 className="text-3xl font-bold mb-8">{t('tutorial.title')}</h1>
@@ -96,7 +96,7 @@ import Tutorial from './components/Tutorial';
 // src/locales/zh.json
 {
   "tutorial": {
-    "pageTitle": "使用教程 - 654653工具箱",
+    "pageTitle": "使用教程 - OnlyBarcode",
     "pageDescription": "详细的条形码和二维码生成使用教程，包含步骤说明和示例代码。",
     "pageKeywords": "条形码教程,二维码教程,使用指南,操作说明",
     "title": "使用教程",
@@ -116,7 +116,7 @@ const generateTutorialStructuredData = () => {
   return {
     "@context": "https://schema.org",
     "@type": "HowTo",
-    "name": "如何使用654653工具箱生成条形码",
+    "name": "如何使用OnlyBarcode生成条形码",
     "description": "详细的条形码生成教程",
     "step": [
       {
@@ -176,7 +176,7 @@ const FAQ: React.FC = () => {
         title={t('faq.pageTitle')}
         description={t('faq.pageDescription')}
         keywords={t('faq.pageKeywords')}
-        url="https://654653.com/faq"
+        url="https://onlybarcode.com/faq"
       />
       
       <h1 className="text-3xl font-bold mb-8">{t('faq.title')}</h1>
@@ -295,7 +295,7 @@ const CaseStudies: React.FC = () => {
         title={t('cases.pageTitle')}
         description={t('cases.pageDescription')}
         keywords={t('cases.pageKeywords')}
-        url="https://654653.com/cases"
+        url="https://onlybarcode.com/cases"
       />
       
       <h1 className="text-3xl font-bold mb-8">{t('cases.title')}</h1>
@@ -642,7 +642,7 @@ const App: React.FC = () => {
 
 1. 进入"站点地图"部分
 2. 添加新的站点地图
-3. 输入：`https://654653.com/sitemap.xml`
+3. 输入：`https://onlybarcode.com/sitemap.xml`
 4. 提交并监控索引状态
 
 ### 3.2 SEO监控仪表板

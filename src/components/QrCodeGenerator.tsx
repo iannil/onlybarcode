@@ -20,7 +20,7 @@ const QrCodeGenerator: React.FC<QrCodeGeneratorProps> = ({ mode, setMode }) => {
   const seoData = seoConfig.pages['qrcode-generate'][i18n.language as keyof typeof seoConfig.pages['qrcode-generate']] || seoConfig.pages['qrcode-generate'].zh;
   const alternateLanguages = getAlternateLanguages();
   
-  const [singleText, setSingleText] = useState('https://654653.com');
+  const [singleText, setSingleText] = useState('https://onlybarcode.com');
   const [batchText, setBatchText] = useState('');
   const [results, setResults] = useState<string[]>([]);
   const [processing, setProcessing] = useState(false);

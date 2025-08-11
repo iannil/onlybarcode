@@ -419,7 +419,7 @@ const BarcodeProcessor: React.FC<BarcodeProcessorProps> = ({ mode, setMode }) =>
     if (mode === 'batch' && items.length > 0 && items.some(i => i.status === 'completed')) {
       setItems(prev => prev.map(i => i.status === 'completed' ? { ...i, status: 'pending', dataUrl: undefined, error: undefined } : i));
     }
-  }, [width, height, format, displayValue, fontSize, margin, backgroundColor, lineColor, mode]);
+  }, [width, height, format, displayValue, fontSize, margin, backgroundColor, lineColor, mode, items]);
 
   const handleImgLoad = useCallback((id: string, e: React.SyntheticEvent<HTMLImageElement>) => {
     const { naturalWidth, naturalHeight } = e.currentTarget;
@@ -505,7 +505,7 @@ const BarcodeProcessor: React.FC<BarcodeProcessorProps> = ({ mode, setMode }) =>
                     window.location.hash = 'generate';
                   }}
                   className={`flex-1 h-9 px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
-                    (mode === 'batch' as any)
+                    mode === 'batch'
                       ? 'text-slate-600 hover:text-slate-900'
                       : 'bg-white text-blue-600 shadow-sm'
                   }`}
@@ -518,7 +518,7 @@ const BarcodeProcessor: React.FC<BarcodeProcessorProps> = ({ mode, setMode }) =>
                     window.location.hash = 'generate-batch';
                   }}
                   className={`flex-1 h-9 px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
-                    (mode === 'single' as any)
+                    mode === 'single'
                       ? 'text-slate-600 hover:text-slate-900'
                       : 'bg-white text-blue-600 shadow-sm'
                   }`}
@@ -784,7 +784,7 @@ const BarcodeProcessor: React.FC<BarcodeProcessorProps> = ({ mode, setMode }) =>
                     window.location.hash = 'generate';
                   }}
                   className={`flex-1 h-9 px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
-                    (mode === 'batch' as any)
+                    mode === 'batch'
                       ? 'text-slate-600 hover:text-slate-900'
                       : 'bg-white text-blue-600 shadow-sm'
                   }`}
@@ -797,7 +797,7 @@ const BarcodeProcessor: React.FC<BarcodeProcessorProps> = ({ mode, setMode }) =>
                     window.location.hash = 'generate-batch';
                   }}
                   className={`flex-1 h-9 px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
-                    (mode === 'single' as any)
+                    mode === 'single'
                       ? 'text-slate-600 hover:text-slate-900'
                       : 'bg-white text-blue-600 shadow-sm'
                   }`}

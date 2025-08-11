@@ -2,7 +2,7 @@
 
 ## 概述
 
-本次SEO优化针对654653工具箱进行了全面的搜索引擎优化，涵盖了中文和英文两个语言版本，以及条形码和二维码功能。
+本次SEO优化针对OnlyBarcode进行了全面的搜索引擎优化，涵盖了中文和英文两个语言版本，以及条形码和二维码功能。
 
 ## 主要优化内容
 
@@ -10,8 +10,8 @@
 
 #### 标题优化
 
-- **中文**: "654653工具箱 - 专业条形码和二维码生成器"
-- **英文**: "654653 Toolbox - Professional Barcode & QR Code Generator"
+- **中文**: "OnlyBarcode - 专业条形码和二维码生成器"
+- **英文**: "OnlyBarcode - Professional Barcode & QR Code Generator"
 - 增加了品牌名称和功能描述，提高搜索相关性
 
 #### 描述优化
@@ -24,7 +24,7 @@
 
 - 新增二维码相关关键词
 - 增加了"在线工具"、"条码工具"等长尾关键词
-- 包含了品牌名称"654653"
+- 包含了品牌名称"onlybarcode"
 
 #### 页面特定SEO
 
@@ -58,7 +58,7 @@
 
 - `robots`: `index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1`
 - `googlebot`: `index, follow`
-- `author`: `654653工具箱`
+- `author`: `OnlyBarcode`
 - `viewport`: 移动端优化
 - `theme-color`: 主题色彩
 

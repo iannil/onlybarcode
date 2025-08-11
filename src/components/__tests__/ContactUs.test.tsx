@@ -24,7 +24,7 @@ describe('ContactUs', () => {
     renderWithI18n(<ContactUs />)
     
     // Check for the email text
-    const emailText = screen.getByText('hi@654653.com')
+    const emailText = screen.getByText('hi@onlybarcode.com')
     expect(emailText).toBeInTheDocument()
     
     // Check if the email is within a link element

@@ -2,7 +2,7 @@
 
 ## 项目信息
 
-- **项目名称**: 654653工具箱
+- **项目名称**: OnlyBarcode
 - **检查日期**: 2025年1月27日
 - **检查人员**: SEO团队
 - **文档版本**: 1.0
@@ -14,8 +14,8 @@
 #### 1. HTML Meta标签
 
 - [x] 页面标题 (Title) 优化
-  - [x] 中文版本: "654653工具箱 - 专业条形码和二维码生成器"
-  - [x] 英文版本: "654653 Toolbox - Professional Barcode & QR Code Generator"
+  - [x] 中文版本: "OnlyBarcode - 专业条形码和二维码生成器"
+  - [x] 英文版本: "OnlyBarcode - Professional Barcode & QR Code Generator"
   - [x] 长度控制在50-60字符内
   - [x] 包含主要关键词
 

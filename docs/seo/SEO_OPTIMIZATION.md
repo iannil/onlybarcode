@@ -1,6 +1,6 @@
 # SEO 优化说明
 
-本文档记录了654653应用的SEO优化措施。
+本文档记录了onlybarcode应用的SEO优化措施。
 
 ## 已实施的SEO优化
 
@@ -87,8 +87,8 @@ src/
 
 ### URL结构
 
-- 中文版本: `https://654653.com/`
-- 英文版本: `https://654653.com/en/`
+- 中文版本: `https://onlybarcode.com/`
+- 英文版本: `https://onlybarcode.com/en/`
 
 ### 关键词策略
 
@@ -148,7 +148,7 @@ src/
 
 ## 注意事项
 
-- 请将示例域名 `654653.com` 替换为实际域名
+- 请将示例域名 `onlybarcode.com` 替换为实际域名
 - 需要创建实际的Open Graph图片（og-image.png）
 - 需要创建PWA图标文件（icon-192x192.png, icon-512x512.png）
 - 定期更新sitemap.xml中的lastmod日期

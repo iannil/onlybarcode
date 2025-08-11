@@ -1,6 +1,6 @@
 {
-  "name": "654653工具箱 - 专业条形码和二维码生成器",
-  "short_name": "654653工具箱",
+  "name": "OnlyBarcode - 专业条形码和二维码生成器",
+  "short_name": "OnlyBarcode",
   "description": "免费的在线条形码和二维码生成器、扫描器。支持多种格式，快速生成、批量处理、PDF导出功能。",
   "start_url": "/",
   "display": "standalone",

@@ -14,12 +14,12 @@ interface FAQItem {
 interface FAQCategory {
   id: string;
   name: string;
-  icon: React.ComponentType<any>;
+  icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
   description: string;
 }
 
 const FAQ: React.FC = () => {
-  const { t, i18n } = useTranslation();
+  const { i18n } = useTranslation();
   const [activeCategory, setActiveCategory] = useState('general');
   const [openItems, setOpenItems] = useState<string[]>([]);
 
@@ -58,10 +58,10 @@ const FAQ: React.FC = () => {
     // 通用问题
     {
       id: 'faq1',
-      question: i18n.language === 'zh' ? '654653工具箱是免费的吗？' : 'Is 654653 Toolbox free?',
+      question: i18n.language === 'zh' ? 'OnlyBarcode是免费的吗？' : 'Is OnlyBarcode free?',
       answer: i18n.language === 'zh' 
-        ? '是的，654653工具箱完全免费使用。我们提供所有功能，包括条形码生成、二维码制作、扫描识别等，无需付费。'
-        : 'Yes, 654653 Toolbox is completely free to use. We provide all features including barcode generation, QR code creation, scanning recognition, etc., without any cost.',
+        ? '是的，OnlyBarcode完全免费使用。我们提供所有功能，包括条形码生成、二维码制作、扫描识别等，无需付费。'
+        : 'Yes, OnlyBarcode is completely free to use. We provide all features including barcode generation, QR code creation, scanning recognition, etc., without any cost.',
       category: 'general'
     },
     {
@@ -257,8 +257,8 @@ const FAQ: React.FC = () => {
             </h1>
             <p className="text-lg text-slate-600">
               {i18n.language === 'zh' 
-                ? '在这里找到关于654653工具箱的常见问题解答。如果您的问题没有在这里找到答案，请随时联系我们。'
-                : 'Find answers to frequently asked questions about 654653 Toolbox here. If your question is not answered here, please feel free to contact us.'
+                ? '在这里找到关于OnlyBarcode的常见问题解答。如果您的问题没有在这里找到答案，请随时联系我们。'
+                : 'Find answers to frequently asked questions about OnlyBarcode here. If your question is not answered here, please feel free to contact us.'
               }
             </p>
           </div>

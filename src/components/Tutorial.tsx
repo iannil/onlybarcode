@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ChevronDown, ChevronRight, Download, Scan, Settings } from 'lucide-react';
+import { ChevronDown, ChevronRight, Download, Scan } from 'lucide-react';
 import SEOHead from './SEOHead';
 import { getAlternateLanguages } from '../config/seo';
 
@@ -18,7 +18,7 @@ interface TutorialSection {
   id: string;
   title: string;
   description: string;
-  icon: React.ComponentType<any>;
+  icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
   tutorials: TutorialStep[];
 }
 
@@ -29,7 +29,7 @@ const Tutorial: React.FC = () => {
 
   // SEO配置
   const seoData = {
-    title: i18n.language === 'zh' ? '使用教程 - 654653工具箱' : 'Tutorial - 654653 Toolbox',
+    title: i18n.language === 'zh' ? '使用教程 - OnlyBarcode' : 'Tutorial - OnlyBarcode',
     description: i18n.language === 'zh' 
       ? '详细的条形码和二维码生成使用教程，包含步骤说明和操作指南。'
       : 'Detailed tutorials for barcode and QR code generation with step-by-step instructions.',
@@ -200,49 +200,7 @@ const Tutorial: React.FC = () => {
         }
       ]
     },
-    {
-      id: 'data-converter',
-      title: i18n.language === 'zh' ? '数据转换教程' : 'Data Conversion Tutorial',
-      description: i18n.language === 'zh' ? '学习如何使用数据转换工具' : 'Learn how to use data conversion tools',
-      icon: Settings,
-      tutorials: [
-        {
-          id: 'csv-json',
-          title: i18n.language === 'zh' ? 'CSV与JSON转换' : 'CSV and JSON Conversion',
-          description: i18n.language === 'zh' ? '在CSV和JSON格式之间转换数据' : 'Convert data between CSV and JSON formats',
-          steps: [
-            i18n.language === 'zh' ? '1. 打开数据转换页面' : '1. Open the data conversion page',
-            i18n.language === 'zh' ? '2. 选择转换模式（CSV→JSON 或 JSON→CSV）' : '2. Select conversion mode (CSV→JSON or JSON→CSV)',
-            i18n.language === 'zh' ? '3. 在左侧输入框中粘贴源数据' : '3. Paste source data in the left input box',
-            i18n.language === 'zh' ? '4. 点击转换按钮' : '4. Click the convert button',
-            i18n.language === 'zh' ? '5. 在右侧查看转换结果' : '5. View conversion results on the right',
-            i18n.language === 'zh' ? '6. 复制或下载转换后的数据' : '6. Copy or download the converted data'
-          ],
-          tips: [
-            i18n.language === 'zh' ? '• CSV转JSON时，第一行通常作为字段名' : '• When converting CSV to JSON, the first row is usually used as field names',
-            i18n.language === 'zh' ? '• 支持自定义分隔符（逗号、制表符等）' : '• Supports custom delimiters (comma, tab, etc.)',
-            i18n.language === 'zh' ? '• JSON转CSV时，会自动提取所有字段' : '• When converting JSON to CSV, all fields are automatically extracted'
-          ]
-        },
-        {
-          id: 'json-xml',
-          title: i18n.language === 'zh' ? 'JSON与XML转换' : 'JSON and XML Conversion',
-          description: i18n.language === 'zh' ? '在JSON和XML格式之间转换数据' : 'Convert data between JSON and XML formats',
-          steps: [
-            i18n.language === 'zh' ? '1. 选择JSON→XML 或 XML→JSON模式' : '1. Select JSON→XML or XML→JSON mode',
-            i18n.language === 'zh' ? '2. 输入源格式数据' : '2. Input source format data',
-            i18n.language === 'zh' ? '3. 点击转换按钮' : '3. Click the convert button',
-            i18n.language === 'zh' ? '4. 查看转换结果' : '4. View conversion results',
-            i18n.language === 'zh' ? '5. 复制或下载结果' : '5. Copy or download results'
-          ],
-          tips: [
-            i18n.language === 'zh' ? '• XML转JSON时，会保留XML结构信息' : '• When converting XML to JSON, XML structure information is preserved',
-            i18n.language === 'zh' ? '• 支持复杂的嵌套结构' : '• Supports complex nested structures',
-            i18n.language === 'zh' ? '• 自动处理XML命名空间' : '• Automatically handles XML namespaces'
-          ]
-        }
-      ]
-    }
+
   ];
 
   const toggleSection = (sectionId: string) => {
@@ -257,11 +215,11 @@ const Tutorial: React.FC = () => {
   const howToStructuredData = {
     "@context": "https://schema.org",
     "@type": "HowTo",
-    "name": i18n.language === 'zh' ? '如何使用654653工具箱生成条形码和二维码' : 'How to use 654653 Toolbox to generate barcodes and QR codes',
+    "name": i18n.language === 'zh' ? '如何使用OnlyBarcode生成条形码和二维码' : 'How to use OnlyBarcode to generate barcodes and QR codes',
     "description": i18n.language === 'zh' 
       ? '详细的条形码和二维码生成使用教程，包含步骤说明和操作指南。'
       : 'Detailed tutorials for barcode and QR code generation with step-by-step instructions.',
-    "image": "https://654653.com/tutorial-image.png",
+    "image": "https://onlybarcode.com/tutorial-image.png",
     "totalTime": "PT10M",
     "estimatedCost": {
       "@type": "MonetaryAmount",
@@ -281,15 +239,15 @@ const Tutorial: React.FC = () => {
     "tool": [
       {
         "@type": "HowToTool",
-        "name": "654653工具箱"
+        "name": "OnlyBarcode"
       }
     ],
     "step": [
       {
         "@type": "HowToStep",
         "name": i18n.language === 'zh' ? '打开工具网站' : 'Open the tool website',
-        "text": i18n.language === 'zh' ? '访问654653.com网站' : 'Visit 654653.com website',
-        "url": "https://654653.com"
+        "text": i18n.language === 'zh' ? '访问onlybarcode.com网站' : 'Visit onlybarcode.com website',
+        "url": "https://onlybarcode.com"
       },
       {
         "@type": "HowToStep",
@@ -351,7 +309,7 @@ const Tutorial: React.FC = () => {
         <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="mb-8">
             <h2 className="text-3xl font-bold text-slate-900 mb-4">
-              {i18n.language === 'zh' ? '654653工具箱使用指南' : '654653 Toolbox User Guide'}
+              {i18n.language === 'zh' ? 'OnlyBarcode使用指南' : 'OnlyBarcode User Guide'}
             </h2>
             <p className="text-lg text-slate-600">
               {i18n.language === 'zh' 
@@ -492,18 +450,7 @@ const Tutorial: React.FC = () => {
                 </p>
               </button>
 
-              <button
-                onClick={() => { window.location.hash = 'csvjson'; }}
-                className="p-4 bg-white rounded-lg border border-slate-200 hover:border-blue-300 hover:shadow-md transition-all text-left"
-              >
-                <Settings className="w-6 h-6 text-blue-600 mb-2" />
-                <h4 className="font-medium text-slate-900">
-                  {i18n.language === 'zh' ? '数据转换' : 'Data Converter'}
-                </h4>
-                <p className="text-sm text-slate-600">
-                  {i18n.language === 'zh' ? '立即开始转换' : 'Start converting now'}
-                </p>
-              </button>
+
             </div>
           </div>
         </main>

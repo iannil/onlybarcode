@@ -79,7 +79,7 @@ describe('QrCodeGenerator Component', () => {
 
   it('displays single mode by default', () => {
     renderQrCodeGenerator();
-    expect(screen.getByDisplayValue('https://654653.com')).toBeInTheDocument();
+    expect(screen.getByDisplayValue('https://onlybarcode.com')).toBeInTheDocument();
   });
 
   it('switches to batch mode when mode prop is batch', () => {
@@ -89,7 +89,7 @@ describe('QrCodeGenerator Component', () => {
 
   it('handles text input change in single mode', () => {
     renderQrCodeGenerator();
-    const textInput = screen.getByDisplayValue('https://654653.com');
+    const textInput = screen.getByDisplayValue('https://onlybarcode.com');
     
     fireEvent.change(textInput, { target: { value: 'new text' } });
     

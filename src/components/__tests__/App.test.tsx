@@ -50,9 +50,7 @@ vi.mock('../QrCodeScanner', () => ({
   default: () => <div data-testid="qr-code-scanner">QR Code Scanner</div>,
 }));
 
-vi.mock('../DataConverter', () => ({
-  default: () => <div data-testid="data-converter">Data Converter</div>,
-}));
+
 
 const renderApp = () => {
   return render(
@@ -72,15 +70,13 @@ describe('App Component', () => {
   it('renders without crashing', () => {
     renderApp();
     // 检查页面主元素是否存在
-    expect(screen.getAllByText(/Toolbox/).length).toBeGreaterThan(0);
+    expect(screen.getByTestId('batch-processor')).toBeInTheDocument();
   });
 
   it('displays main navigation tabs', () => {
     renderApp();
     expect(screen.getAllByText(/Barcode/).length).toBeGreaterThan(0);
     expect(screen.getAllByText(/QR code|QR Code|二维码/i).length).toBeGreaterThan(0);
-    // Data Conversion tab
-    expect(screen.getAllByText('Data Conversion').length).toBeGreaterThan(0);
   });
 
   it('shows barcode tab content by default', () => {
@@ -98,15 +94,7 @@ describe('App Component', () => {
     });
   });
 
-  it('switches to Data Conversion tab when clicked', async () => {
-    renderApp();
-    const tabs = screen.getAllByRole('tab');
-    const dataConversionTab = tabs.find(tab => tab.textContent === 'Data Conversion');
-    expect(dataConversionTab).toBeTruthy();
-    fireEvent.click(dataConversionTab!);
-    // 切换后应有 Data Converter 内容区
-    expect(screen.getByTestId('data-converter')).toBeInTheDocument();
-  });
+
 
   it('handles hash navigation for barcode-scan', async () => {
     window.location.hash = '#barcode-scan';
@@ -144,14 +132,7 @@ describe('App Component', () => {
     });
   });
 
-  it('handles hash navigation for csvjson', async () => {
-    window.location.hash = '#csvjson';
-    renderApp();
-    
-    await waitFor(() => {
-      expect(screen.getByTestId('data-converter')).toBeInTheDocument();
-    });
-  });
+
 
   it('handles hash navigation for privacy page', async () => {
     window.location.hash = '#privacy';

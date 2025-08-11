@@ -35,7 +35,7 @@ Disallow: /generate-test-*.html
 Crawl-delay: 1
 
 # 站点地图
-Sitemap: https://654653.com/sitemap.xml
+Sitemap: https://onlybarcode.com/sitemap.xml
 
 # 主机
-Host: https://654653.com 
+Host: https://onlybarcode.com 

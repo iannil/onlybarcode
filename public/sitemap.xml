@@ -3,261 +3,243 @@
         xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <!-- 中文主页 -->
   <url>
-    <loc>https://654653.com/</loc>
+    <loc>https://onlybarcode.com/</loc>
     <lastmod>2025-01-27</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://654653.com/en/"/>
-    <xhtml:link rel="alternate" hreflang="zh" href="https://654653.com/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://onlybarcode.com/en/"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://onlybarcode.com/"/>
   </url>
   
   <!-- 英文主页 -->
   <url>
-    <loc>https://654653.com/en/</loc>
+    <loc>https://onlybarcode.com/en/</loc>
     <lastmod>2025-01-27</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://654653.com/en/"/>
-    <xhtml:link rel="alternate" hreflang="zh" href="https://654653.com/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://onlybarcode.com/en/"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://onlybarcode.com/"/>
   </url>
   
   <!-- 中文条形码生成页面 -->
   <url>
-    <loc>https://654653.com/#generate</loc>
+    <loc>https://onlybarcode.com/#generate</loc>
     <lastmod>2025-01-27</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://654653.com/en/#generate"/>
-    <xhtml:link rel="alternate" hreflang="zh" href="https://654653.com/#generate"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://onlybarcode.com/en/#generate"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://onlybarcode.com/#generate"/>
   </url>
   
   <!-- 英文条形码生成页面 -->
   <url>
-    <loc>https://654653.com/en/#generate</loc>
+    <loc>https://onlybarcode.com/en/#generate</loc>
     <lastmod>2025-01-27</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://654653.com/en/#generate"/>
-    <xhtml:link rel="alternate" hreflang="zh" href="https://654653.com/#generate"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://onlybarcode.com/en/#generate"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://onlybarcode.com/#generate"/>
   </url>
   
   <!-- 中文条形码扫描页面 -->
   <url>
-    <loc>https://654653.com/#scan</loc>
+    <loc>https://onlybarcode.com/#scan</loc>
     <lastmod>2025-01-27</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://654653.com/en/#scan"/>
-    <xhtml:link rel="alternate" hreflang="zh" href="https://654653.com/#scan"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://onlybarcode.com/en/#scan"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://onlybarcode.com/#scan"/>
   </url>
   
   <!-- 英文条形码扫描页面 -->
   <url>
-    <loc>https://654653.com/en/#scan</loc>
+    <loc>https://onlybarcode.com/en/#scan</loc>
     <lastmod>2025-01-27</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://654653.com/en/#scan"/>
-    <xhtml:link rel="alternate" hreflang="zh" href="https://654653.com/#scan"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://onlybarcode.com/en/#scan"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://onlybarcode.com/#scan"/>
   </url>
   
   <!-- 中文二维码生成页面 -->
   <url>
-    <loc>https://654653.com/#qrcode-generate</loc>
+    <loc>https://onlybarcode.com/#qrcode-generate</loc>
     <lastmod>2025-01-27</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://654653.com/en/#qrcode-generate"/>
-    <xhtml:link rel="alternate" hreflang="zh" href="https://654653.com/#qrcode-generate"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://onlybarcode.com/en/#qrcode-generate"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://onlybarcode.com/#qrcode-generate"/>
   </url>
   
   <!-- 英文二维码生成页面 -->
   <url>
-    <loc>https://654653.com/en/#qrcode-generate</loc>
+    <loc>https://onlybarcode.com/en/#qrcode-generate</loc>
     <lastmod>2025-01-27</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://654653.com/en/#qrcode-generate"/>
-    <xhtml:link rel="alternate" hreflang="zh" href="https://654653.com/#qrcode-generate"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://onlybarcode.com/en/#qrcode-generate"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://onlybarcode.com/#qrcode-generate"/>
   </url>
   
   <!-- 中文二维码扫描页面 -->
   <url>
-    <loc>https://654653.com/#qrcode-scan</loc>
+    <loc>https://onlybarcode.com/#qrcode-scan</loc>
     <lastmod>2025-01-27</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://654653.com/en/#qrcode-scan"/>
-    <xhtml:link rel="alternate" hreflang="zh" href="https://654653.com/#qrcode-scan"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://onlybarcode.com/en/#qrcode-scan"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://onlybarcode.com/#qrcode-scan"/>
   </url>
   
   <!-- 英文二维码扫描页面 -->
   <url>
-    <loc>https://654653.com/en/#qrcode-scan</loc>
+    <loc>https://onlybarcode.com/en/#qrcode-scan</loc>
     <lastmod>2025-01-27</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://654653.com/en/#qrcode-scan"/>
-    <xhtml:link rel="alternate" hreflang="zh" href="https://654653.com/#qrcode-scan"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://onlybarcode.com/en/#qrcode-scan"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://onlybarcode.com/#qrcode-scan"/>
   </url>
   
-  <!-- 中文数据转换页面 -->
-  <url>
-    <loc>https://654653.com/#csvjson</loc>
-    <lastmod>2025-01-27</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://654653.com/en/#csvjson"/>
-    <xhtml:link rel="alternate" hreflang="zh" href="https://654653.com/#csvjson"/>
-  </url>
-  
-  <!-- 英文数据转换页面 -->
-  <url>
-    <loc>https://654653.com/en/#csvjson</loc>
-    <lastmod>2025-01-27</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://654653.com/en/#csvjson"/>
-    <xhtml:link rel="alternate" hreflang="zh" href="https://654653.com/#csvjson"/>
-  </url>
+
   
   <!-- 中文批量生成页面 -->
   <url>
-    <loc>https://654653.com/#generate-batch</loc>
+    <loc>https://onlybarcode.com/#generate-batch</loc>
     <lastmod>2025-01-27</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://654653.com/en/#generate-batch"/>
-    <xhtml:link rel="alternate" hreflang="zh" href="https://654653.com/#generate-batch"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://onlybarcode.com/en/#generate-batch"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://onlybarcode.com/#generate-batch"/>
   </url>
   
   <!-- 英文批量生成页面 -->
   <url>
-    <loc>https://654653.com/en/#generate-batch</loc>
+    <loc>https://onlybarcode.com/en/#generate-batch</loc>
     <lastmod>2025-01-27</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://654653.com/en/#generate-batch"/>
-    <xhtml:link rel="alternate" hreflang="zh" href="https://654653.com/#generate-batch"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://onlybarcode.com/en/#generate-batch"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://onlybarcode.com/#generate-batch"/>
   </url>
   
   <!-- 中文批量二维码生成页面 -->
   <url>
-    <loc>https://654653.com/#qrcode-generate-batch</loc>
+    <loc>https://onlybarcode.com/#qrcode-generate-batch</loc>
     <lastmod>2025-01-27</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://654653.com/en/#qrcode-generate-batch"/>
-    <xhtml:link rel="alternate" hreflang="zh" href="https://654653.com/#qrcode-generate-batch"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://onlybarcode.com/en/#qrcode-generate-batch"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://onlybarcode.com/#qrcode-generate-batch"/>
   </url>
   
   <!-- 英文批量二维码生成页面 -->
   <url>
-    <loc>https://654653.com/en/#qrcode-generate-batch</loc>
+    <loc>https://onlybarcode.com/en/#qrcode-generate-batch</loc>
     <lastmod>2025-01-27</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://654653.com/en/#qrcode-generate-batch"/>
-    <xhtml:link rel="alternate" hreflang="zh" href="https://654653.com/#qrcode-generate-batch"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://onlybarcode.com/en/#qrcode-generate-batch"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://onlybarcode.com/#qrcode-generate-batch"/>
   </url>
   
   <!-- 中文联系我们页面 -->
   <url>
-    <loc>https://654653.com/#contact</loc>
+    <loc>https://onlybarcode.com/#contact</loc>
     <lastmod>2025-01-27</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.6</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://654653.com/en/#contact"/>
-    <xhtml:link rel="alternate" hreflang="zh" href="https://654653.com/#contact"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://onlybarcode.com/en/#contact"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://onlybarcode.com/#contact"/>
   </url>
   
   <!-- 英文联系我们页面 -->
   <url>
-    <loc>https://654653.com/en/#contact</loc>
+    <loc>https://onlybarcode.com/en/#contact</loc>
     <lastmod>2025-01-27</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.6</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://654653.com/en/#contact"/>
-    <xhtml:link rel="alternate" hreflang="zh" href="https://654653.com/#contact"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://onlybarcode.com/en/#contact"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://onlybarcode.com/#contact"/>
   </url>
   
   <!-- 中文隐私政策页面 -->
   <url>
-    <loc>https://654653.com/#privacy</loc>
+    <loc>https://onlybarcode.com/#privacy</loc>
     <lastmod>2025-01-27</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.5</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://654653.com/en/#privacy"/>
-    <xhtml:link rel="alternate" hreflang="zh" href="https://654653.com/#privacy"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://onlybarcode.com/en/#privacy"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://onlybarcode.com/#privacy"/>
   </url>
   
   <!-- 英文隐私政策页面 -->
   <url>
-    <loc>https://654653.com/en/#privacy</loc>
+    <loc>https://onlybarcode.com/en/#privacy</loc>
     <lastmod>2025-01-27</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.5</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://654653.com/en/#privacy"/>
-    <xhtml:link rel="alternate" hreflang="zh" href="https://654653.com/#privacy"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://onlybarcode.com/en/#privacy"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://onlybarcode.com/#privacy"/>
   </url>
   
   <!-- 中文服务条款页面 -->
   <url>
-    <loc>https://654653.com/#terms</loc>
+    <loc>https://onlybarcode.com/#terms</loc>
     <lastmod>2025-01-27</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.5</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://654653.com/en/#terms"/>
-    <xhtml:link rel="alternate" hreflang="zh" href="https://654653.com/#terms"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://onlybarcode.com/en/#terms"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://onlybarcode.com/#terms"/>
   </url>
 
   <!-- 英文服务条款页面 -->
   <url>
-    <loc>https://654653.com/en/#terms</loc>
+    <loc>https://onlybarcode.com/en/#terms</loc>
     <lastmod>2025-01-27</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.5</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://654653.com/en/#terms"/>
-    <xhtml:link rel="alternate" hreflang="zh" href="https://654653.com/#terms"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://onlybarcode.com/en/#terms"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://onlybarcode.com/#terms"/>
   </url>
 
   <!-- 中文使用教程页面 -->
   <url>
-    <loc>https://654653.com/#tutorial</loc>
+    <loc>https://onlybarcode.com/#tutorial</loc>
     <lastmod>2025-01-27</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://654653.com/en/#tutorial"/>
-    <xhtml:link rel="alternate" hreflang="zh" href="https://654653.com/#tutorial"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://onlybarcode.com/en/#tutorial"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://onlybarcode.com/#tutorial"/>
   </url>
 
   <!-- 英文使用教程页面 -->
   <url>
-    <loc>https://654653.com/en/#tutorial</loc>
+    <loc>https://onlybarcode.com/en/#tutorial</loc>
     <lastmod>2025-01-27</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://654653.com/en/#tutorial"/>
-    <xhtml:link rel="alternate" hreflang="zh" href="https://654653.com/#tutorial"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://onlybarcode.com/en/#tutorial"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://onlybarcode.com/#tutorial"/>
   </url>
 
   <!-- 中文常见问题页面 -->
   <url>
-    <loc>https://654653.com/#faq</loc>
+    <loc>https://onlybarcode.com/#faq</loc>
     <lastmod>2025-01-27</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://654653.com/en/#faq"/>
-    <xhtml:link rel="alternate" hreflang="zh" href="https://654653.com/#faq"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://onlybarcode.com/en/#faq"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://onlybarcode.com/#faq"/>
   </url>
 
   <!-- 英文常见问题页面 -->
   <url>
-    <loc>https://654653.com/en/#faq</loc>
+    <loc>https://onlybarcode.com/en/#faq</loc>
     <lastmod>2025-01-27</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://654653.com/en/#faq"/>
-    <xhtml:link rel="alternate" hreflang="zh" href="https://654653.com/#faq"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://onlybarcode.com/en/#faq"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://onlybarcode.com/#faq"/>
   </url>
 </urlset> 
