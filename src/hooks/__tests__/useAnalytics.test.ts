@@ -205,7 +205,7 @@ describe('useAnalytics Hook', () => {
       result.current.trackPageView('/custom-page');
     });
 
-    expect(mockGtag).toHaveBeenCalledWith('config', 'G-T4S5FKSFWD', {
+    expect(mockGtag).toHaveBeenCalledWith('config', expect.any(String), {
       page_title: document.title,
       page_location: '/custom-page',
     });

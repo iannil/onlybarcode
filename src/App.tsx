@@ -12,6 +12,7 @@ import GoogleAnalytics from './components/GoogleAnalytics';
 import { getSeoConfig, getAlternateLanguages } from './config/seo';
 import { ANALYTICS_CONFIG } from './config/analytics';
 import { useAnalytics } from './hooks/useAnalytics';
+import { logAnalyticsDiagnostics } from './utils/analyticsDiagnostics';
 import './App.css';
 import { useTranslation } from 'react-i18next';
 import QrCodeGenerator from './components/QrCodeGenerator';
@@ -34,6 +35,11 @@ function App() {
   const [qrcodeSubTab, setQrcodeSubTab] = useState<QrcodeSubTab>('generate');
 
   useEffect(() => {
+    // Run analytics diagnostics in development
+    if (import.meta.env.DEV) {
+      logAnalyticsDiagnostics();
+    }
+    
     const handleHashChange = () => {
       const hash = window.location.hash.slice(1);
       let newRoute: RouteType = 'home';

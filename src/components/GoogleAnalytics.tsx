@@ -20,10 +20,27 @@ const GoogleAnalytics: React.FC<GoogleAnalyticsProps> = ({ measurementId }) => {
       return;
     }
 
+    // Validate measurement ID
+    if (!measurementId || measurementId === 'G-XXXXXXXXXX') {
+      console.error('Invalid Google Analytics Measurement ID:', measurementId);
+      return;
+    }
+
+    console.log('Loading Google Analytics with Measurement ID:', measurementId);
+
     // Load Google Analytics script
     const script1 = document.createElement('script');
     script1.async = true;
     script1.src = `https://www.googletagmanager.com/gtag/js?id=${measurementId}`;
+    
+    script1.onload = () => {
+      console.log('Google Analytics script loaded successfully');
+    };
+    
+    script1.onerror = () => {
+      console.error('Failed to load Google Analytics script');
+    };
+    
     document.head.appendChild(script1);
 
     // Initialize gtag
@@ -37,6 +54,8 @@ const GoogleAnalytics: React.FC<GoogleAnalyticsProps> = ({ measurementId }) => {
       page_title: document.title,
       page_location: window.location.href,
     });
+
+    console.log('Google Analytics initialized successfully');
 
     // Cleanup function
     return () => {

@@ -39,11 +39,13 @@ export const ANALYTICS_CONFIG = {
 export const isAnalyticsEnabled = (): boolean => {
   // Allow analytics in test environment for testing purposes
   if (import.meta.env.MODE === 'test') {
+    console.log('Analytics enabled for test environment');
     return true;
   }
   
   // Check if we're in production
   if (!import.meta.env.PROD) {
+    console.log('Analytics disabled: not in production environment');
     return false;
   }
   
@@ -51,10 +53,17 @@ export const isAnalyticsEnabled = (): boolean => {
   if (typeof window !== 'undefined') {
     const hostname = window.location.hostname;
     if (hostname === 'localhost' || hostname === '127.0.0.1' || hostname.startsWith('192.168.') || hostname.startsWith('10.') || hostname.startsWith('172.')) {
+      console.log(`Analytics disabled: running on local network (${hostname})`);
       return false;
     }
   }
   
   // Check if measurement ID is valid
-  return !!ANALYTICS_CONFIG.MEASUREMENT_ID;
+  if (!ANALYTICS_CONFIG.MEASUREMENT_ID || ANALYTICS_CONFIG.MEASUREMENT_ID === 'G-XXXXXXXXXX') {
+    console.log('Analytics disabled: invalid or placeholder Measurement ID');
+    return false;
+  }
+  
+  console.log('Analytics enabled for production environment');
+  return true;
 }; 

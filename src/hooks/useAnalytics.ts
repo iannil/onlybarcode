@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { isAnalyticsEnabled } from '../config/analytics';
+import { isAnalyticsEnabled, ANALYTICS_CONFIG } from '../config/analytics';
 
 interface AnalyticsEvent {
   action: string;
@@ -36,7 +36,7 @@ export const useAnalytics = () => {
       }
       
       if (typeof window !== 'undefined' && window.gtag) {
-        window.gtag('config', 'G-T4S5FKSFWD', {
+        window.gtag('config', ANALYTICS_CONFIG.MEASUREMENT_ID, {
           page_title: document.title,
           page_location: url,
         });
