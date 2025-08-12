@@ -2,7 +2,7 @@
 export const ANALYTICS_CONFIG = {
   // Replace with your actual Google Analytics Measurement ID
   // Format: G-XXXXXXXXXX
-  MEASUREMENT_ID: import.meta.env.VITE_GA_MEASUREMENT_ID || 'G-T4S5FKSFWD',
+  MEASUREMENT_ID: import.meta.env.VITE_GA_MEASUREMENT_ID || 'G-891EFN0THT',
   
   // Enable/disable analytics (useful for development)
   ENABLED: import.meta.env.PROD,

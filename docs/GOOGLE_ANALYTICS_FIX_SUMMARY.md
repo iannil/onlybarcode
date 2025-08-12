@@ -7,7 +7,7 @@
 ### 1. **环境变量配置问题**
 
 - `.env` 文件中使用了占位符 `G-XXXXXXXXXX` 而不是真实的Measurement ID
-- `.env.production` 文件中使用了测试ID `G-T4S5FKSFWD`
+- `.env.production` 文件中使用了测试ID `G-891EFN0THT`
 
 ### 2. **代码中的硬编码问题**
 
