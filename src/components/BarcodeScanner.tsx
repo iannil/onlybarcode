@@ -56,9 +56,6 @@ const BarcodeScanner: React.FC = () => {
     setScanning(true);
     setError(null);
 
-    let successCount = 0;
-    let errorCount = 0;
-
     for (const file of files) {
       try {
         const imageUrl = URL.createObjectURL(file);
@@ -74,11 +71,9 @@ const BarcodeScanner: React.FC = () => {
         };
 
         setResults(prev => [scanResult, ...prev]);
-        successCount++;
       } catch (error) {
         console.error(`${t('recognition_failed')} ${file.name}:`, error);
         setError(`${t('cannot_recognize_file')} ${file.name}`);
-        errorCount++;
       }
     }
 
