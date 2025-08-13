@@ -12,7 +12,7 @@ import GoogleAnalytics from './components/GoogleAnalytics';
 import { getSeoConfig, getAlternateLanguages } from './config/seo';
 import { ANALYTICS_CONFIG } from './config/analytics';
 import { useAnalytics } from './hooks/useAnalytics';
-import { logAnalyticsDiagnostics, testAnalyticsTracking, runRealTimeAnalyticsTest, checkRealTimeStatus } from './utils/analyticsDiagnostics';
+import { logAnalyticsDiagnostics, runRealTimeAnalyticsTest, checkRealTimeStatus } from './utils/analyticsDiagnostics';
 import './App.css';
 import { useTranslation } from 'react-i18next';
 import QrCodeGenerator from './components/QrCodeGenerator';
