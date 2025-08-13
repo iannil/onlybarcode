@@ -2,7 +2,6 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { BrowserMultiFormatReader } from '@zxing/library';
 import { Upload, Image, X, CheckCircle, Copy, AlertCircle } from 'lucide-react';
-import { useAnalytics } from '../hooks/useAnalytics';
 import SEOHead from './SEOHead';
 import { seoConfig, getAlternateLanguages } from '../config/seo';
 
@@ -17,7 +16,6 @@ interface QrScanResult {
 
 const QrCodeScanner: React.FC = () => {
   const { t, i18n } = useTranslation();
-  const { trackEvent, trackCustomEvent } = useAnalytics();
   
   // SEO配置
   const seoData = seoConfig.pages['qrcode-scan'][i18n.language as keyof typeof seoConfig.pages['qrcode-scan']] || seoConfig.pages['qrcode-scan'].zh;
@@ -98,12 +96,7 @@ const QrCodeScanner: React.FC = () => {
         successCount++;
         console.log('成功识别:', file.name);
         
-        // Track successful scan
-        trackEvent({
-          action: 'qrcode_scanned',
-          category: 'qrcode',
-          label: result.getBarcodeFormat().toString(),
-        });
+
       } catch (error) {
         console.error(`${t('qrcode_recognition_failed')} ${file.name}:`, error);
         const errorMessage = error instanceof Error ? error.message : String(error);
@@ -111,24 +104,14 @@ const QrCodeScanner: React.FC = () => {
         errorCount++;
         console.log('识别失败:', file.name, errorMessage);
         
-        // Track scan error
-        trackEvent({
-          action: 'error_occurred',
-          category: 'system',
-          label: 'qrcode_scan_failed',
-        });
+
       }
     }
 
     setScanning(false);
     console.log('处理完成，成功:', successCount, '失败:', errorCount);
     
-    // Track batch scan completion
-    trackCustomEvent('qrcode_batch_scan_completed', {
-      total_files: files.length,
-      success_count: successCount,
-      error_count: errorCount,
-    });
+
   };
 
   const copyToClipboard = async (text: string) => {

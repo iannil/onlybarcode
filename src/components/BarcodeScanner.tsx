@@ -2,7 +2,6 @@ import React, { useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { BrowserMultiFormatReader } from '@zxing/library';
 import { Upload, Image, X, CheckCircle, Copy, AlertCircle } from 'lucide-react';
-import { useAnalytics } from '../hooks/useAnalytics';
 import SEOHead from './SEOHead';
 import { seoConfig, getAlternateLanguages } from '../config/seo';
 
@@ -17,7 +16,6 @@ interface ScanResult {
 
 const BarcodeScanner: React.FC = () => {
   const { t, i18n } = useTranslation();
-  const { trackEvent, trackCustomEvent } = useAnalytics();
   
   // SEO配置
   const seoData = seoConfig.pages.scan[i18n.language as keyof typeof seoConfig.pages.scan] || seoConfig.pages.scan.zh;
@@ -77,35 +75,16 @@ const BarcodeScanner: React.FC = () => {
 
         setResults(prev => [scanResult, ...prev]);
         successCount++;
-        
-        // Track successful scan
-        trackEvent({
-          action: 'barcode_scanned',
-          category: 'barcode',
-          label: result.getBarcodeFormat().toString(),
-        });
       } catch (error) {
         console.error(`${t('recognition_failed')} ${file.name}:`, error);
         setError(`${t('cannot_recognize_file')} ${file.name}`);
         errorCount++;
-        
-        // Track scan error
-        trackEvent({
-          action: 'error_occurred',
-          category: 'system',
-          label: 'barcode_scan_failed',
-        });
       }
     }
 
     setScanning(false);
     
-    // Track batch scan completion
-    trackCustomEvent('batch_scan_completed', {
-      total_files: files.length,
-      success_count: successCount,
-      error_count: errorCount,
-    });
+
   };
 
   const copyToClipboard = async (text: string) => {

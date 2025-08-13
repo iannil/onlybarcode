@@ -5,7 +5,6 @@ import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
 import { Download, Package, X, CheckCircle, AlertCircle, Loader, Settings, RefreshCw, Copy, Play, Trash, Info } from 'lucide-react';
 import { PDFDocument } from 'pdf-lib';
-import { useAnalytics } from '../hooks/useAnalytics';
 import SEOHead from './SEOHead';
 import { seoConfig, getAlternateLanguages } from '../config/seo';
 
@@ -25,7 +24,6 @@ interface BarcodeProcessorProps {
 
 const BarcodeProcessor: React.FC<BarcodeProcessorProps> = ({ mode, setMode }) => {
   const { t, i18n } = useTranslation();
-  const { trackEvent, trackCustomEvent } = useAnalytics();
   
   // SEO配置
   const seoData = seoConfig.pages.generate[i18n.language as keyof typeof seoConfig.pages.generate] || seoConfig.pages.generate.zh;
@@ -79,23 +77,9 @@ const BarcodeProcessor: React.FC<BarcodeProcessorProps> = ({ mode, setMode }) =>
           lineColor,
         });
         setSingleError(null);
-        
-        // Track successful barcode generation
-        trackEvent({
-          action: 'barcode_generated',
-          category: 'barcode',
-          label: format,
-        });
       } catch (error) {
         console.error(error);
         setSingleError(t('barcode_generation_failed') + ': ' + (error instanceof Error ? error.message : error));
-        
-        // Track barcode generation error
-        trackEvent({
-          action: 'error_occurred',
-          category: 'system',
-          label: 'barcode_generation_failed',
-        });
         
         // 清空 canvas
         const ctx = canvasRef.current.getContext('2d');
@@ -110,7 +94,7 @@ const BarcodeProcessor: React.FC<BarcodeProcessorProps> = ({ mode, setMode }) =>
         ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
       }
     }
-  }, [singleText, format, width, height, displayValue, fontSize, margin, backgroundColor, lineColor, t, trackEvent]);
+  }, [singleText, format, width, height, displayValue, fontSize, margin, backgroundColor, lineColor, t]);
 
   useEffect(() => {
     if (mode === 'single') generateSingleBarcode();
@@ -123,12 +107,7 @@ const BarcodeProcessor: React.FC<BarcodeProcessorProps> = ({ mode, setMode }) =>
       link.href = canvasRef.current.toDataURL();
       link.click();
       
-      // Track download event
-      trackEvent({
-        action: 'barcode_downloaded',
-        category: 'barcode',
-        label: 'png',
-      });
+
     } else if (type === 'svg' && svgRef.current) {
       if (singleText.trim()) {
         try {
@@ -151,12 +130,7 @@ const BarcodeProcessor: React.FC<BarcodeProcessorProps> = ({ mode, setMode }) =>
           link.click();
           URL.revokeObjectURL(svgUrl);
           
-          // Track download event
-          trackEvent({
-            action: 'barcode_downloaded',
-            category: 'barcode',
-            label: 'svg',
-          });
+
         } catch (error) {
           console.error('Failed to download SVG barcode:', error);
         }
@@ -260,11 +234,7 @@ const BarcodeProcessor: React.FC<BarcodeProcessorProps> = ({ mode, setMode }) =>
     
     console.log('Processing completed. Completed:', completedCount, 'Errors:', errorCount);
     
-    trackCustomEvent('batch_processed', {
-      total_items: items.length,
-      completed_count: completedCount,
-      error_count: errorCount,
-    });
+
   };
 
   const downloadResults = async () => {
@@ -377,11 +347,7 @@ const BarcodeProcessor: React.FC<BarcodeProcessorProps> = ({ mode, setMode }) =>
     const blob = new Blob([pdfBytes], { type: 'application/pdf' });
     saveAs(blob, 'barcodes.pdf');
     
-    // Track PDF export event
-    trackCustomEvent('pdf_exported', {
-      barcode_count: completedItems.length,
-      format: singlePagePDF ? 'single_page' : 'multi_page',
-    });
+
   };
 
   const removeItem = (id: string) => {

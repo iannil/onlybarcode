@@ -184,10 +184,7 @@ describe('App Component', () => {
     expect(screen.getByTestId('seo-head')).toBeInTheDocument();
   });
 
-  it('displays Google Analytics component', () => {
-    renderApp();
-    expect(screen.getByTestId('google-analytics')).toBeInTheDocument();
-  });
+
 
   it('handles window hash change events', async () => {
     renderApp();

@@ -8,12 +8,7 @@ import ContactUs from './components/ContactUs';
 import Tutorial from './components/Tutorial';
 import FAQ from './components/FAQ';
 import SEOHead from './components/SEOHead';
-import GoogleAnalytics from './components/GoogleAnalytics';
 import { getSeoConfig, getAlternateLanguages } from './config/seo';
-import { ANALYTICS_CONFIG } from './config/analytics';
-import { useAnalytics } from './hooks/useAnalytics';
-import { logAnalyticsDiagnostics, runRealTimeAnalyticsTest, checkRealTimeStatus } from './utils/analyticsDiagnostics';
-import { printFixSuggestions, sendTestEvent, getRealTimeUrl } from './utils/analyticsQuickFix';
 import './App.css';
 import { useTranslation } from 'react-i18next';
 import QrCodeGenerator from './components/QrCodeGenerator';
@@ -27,7 +22,6 @@ type QrcodeSubTab = 'generate' | 'scan';
 
 function App() {
   const { t, i18n } = useTranslation();
-  const { trackEvent, trackPageView } = useAnalytics();
   const [activeTab, setActiveTab] = useState<TabType>('barcode');
   const [barcodeSubTab, setBarcodeSubTab] = useState<BarcodeSubTab>('generate');
   const [mode, setMode] = useState<ModeType>('single');
@@ -36,11 +30,6 @@ function App() {
   const [qrcodeSubTab, setQrcodeSubTab] = useState<QrcodeSubTab>('generate');
 
   useEffect(() => {
-    // Run analytics diagnostics in development
-    if (import.meta.env.DEV) {
-      logAnalyticsDiagnostics();
-    }
-    
     const handleHashChange = () => {
       const hash = window.location.hash.slice(1);
       let newRoute: RouteType = 'home';
@@ -92,34 +81,14 @@ function App() {
       setBarcodeSubTab(newBarcodeSubTab);
       if (shouldResetMode) setMode('single');
       setQrcodeSubTab(newQrcodeSubTab);
-      trackPageView(window.location.pathname + window.location.hash);
     };
 
     handleHashChange();
     window.addEventListener('hashchange', handleHashChange);
     return () => window.removeEventListener('hashchange', handleHashChange);
-  }, [trackPageView]);
+  }, []);
 
-  // Debug function for testing analytics
-  const handleAnalyticsTest = () => {
-    if (import.meta.env.DEV) {
-      console.log('🧪 Running Enhanced Analytics Test...');
-      
-      // 运行快速修复检查
-      printFixSuggestions();
-      
-      // 运行详细诊断
-      logAnalyticsDiagnostics();
-      runRealTimeAnalyticsTest();
-      checkRealTimeStatus();
-      
-      // 发送测试事件
-      setTimeout(() => {
-        sendTestEvent();
-        console.log('🔗 实时报告URL:', getRealTimeUrl());
-      }, 1000);
-    }
-  };
+
 
   const tabs = [
     { id: 'barcode' as TabType, label: t('barcode_tab', '条形码'), icon: Barcode, description: t('barcode_tab_desc', '条形码相关功能') },
@@ -128,11 +97,6 @@ function App() {
 
   const changeLanguage = (lng: string) => {
     i18n.changeLanguage(lng);
-    trackEvent({
-      action: 'language_change',
-      category: 'navigation',
-      label: lng,
-    });
   };
 
   const seoConfig = getSeoConfig(i18n.language);
@@ -140,7 +104,6 @@ function App() {
 
   return (
     <>
-      <GoogleAnalytics measurementId={ANALYTICS_CONFIG.MEASUREMENT_ID} />
       <SEOHead 
         title={seoConfig.title}
         description={seoConfig.description}
@@ -177,11 +140,6 @@ function App() {
                         setActiveTab(tab.id);
                         setMode('single');
                         window.location.hash = tab.id;
-                        trackEvent({
-                          action: 'tab_switch',
-                          category: 'navigation',
-                          label: tab.id,
-                        });
                       }}
                       className={`flex items-center gap-1 px-3 py-1.5 rounded text-sm font-medium transition-colors duration-150 border border-transparent ${
                         activeTab === tab.id
@@ -209,16 +167,7 @@ function App() {
                   <option value="zh">{t('chinese')}</option>
                   <option value="en">{t('english')}</option>
                 </select>
-                {/* Debug button for development */}
-                {import.meta.env.DEV && (
-                  <button
-                    onClick={handleAnalyticsTest}
-                    className="ml-2 px-2 py-1 text-xs bg-yellow-100 text-yellow-800 rounded border border-yellow-200 hover:bg-yellow-200"
-                    title="Test Analytics (Development Only)"
-                  >
-                    🧪 Test GA
-                  </button>
-                )}
+
               </nav>
               {/* Mobile Menu Button */}
               <div className="md:hidden flex items-center gap-1">
@@ -253,11 +202,6 @@ function App() {
                         setActiveTab(tab.id);
                         setMobileMenuOpen(false);
                         window.location.hash = tab.id;
-                        trackEvent({
-                          action: 'tab_switch',
-                          category: 'navigation',
-                          label: tab.id,
-                        });
                       }}
                       className={`w-full flex items-center gap-2 px-3 py-2 rounded text-sm font-medium transition-colors duration-150 border border-transparent ${
                         activeTab === tab.id
