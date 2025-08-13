@@ -120,7 +120,7 @@ const SEOHead: React.FC<SEOHeadProps> = ({
     updateMetaTag('viewport', 'width=device-width, initial-scale=1.0');
     updateMetaTag('theme-color', '#2563eb');
     updateMetaTag('msapplication-TileColor', '#2563eb');
-    updateMetaTag('apple-mobile-web-app-capable', 'yes');
+    updateMetaTag('mobile-web-app-capable', 'yes');
     updateMetaTag('apple-mobile-web-app-status-bar-style', 'default');
     updateMetaTag('apple-mobile-web-app-title', i18n.language === 'zh' ? 'OnlyBarcode' : 'OnlyBarcode');
     updateMetaTag('format-detection', 'telephone=no');
