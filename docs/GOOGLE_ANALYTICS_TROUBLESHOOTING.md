@@ -1,194 +1,214 @@
 # Google Analytics 故障排除指南
 
-## 常见问题及解决方案
+## 问题描述
 
-### 1. Google Analytics 不工作
+Google Analytics 初始化成功但收不到数据
 
-#### 问题描述
+## 常见原因和解决方案
 
-Google Analytics 没有收集数据，控制台显示 "Google Analytics disabled" 消息。
+### 1. 环境问题
 
-#### 可能原因
+#### 问题：在本地环境运行
 
-1. **环境变量未正确配置**
-2. **运行在开发环境中**
-3. **使用占位符 Measurement ID**
-4. **网络连接问题**
+- **症状**：控制台显示 "Analytics disabled: running on local network"
+- **原因**：Google Analytics 在 localhost 或本地网络环境下被禁用
+- **解决方案**：
+  - 部署到生产环境
+  - 使用 ngrok 等工具创建公网可访问的 URL
+  - 临时修改 `isAnalyticsEnabled()` 函数允许本地测试
 
-#### 解决方案
+#### 问题：非生产环境
 
-##### 步骤 1: 检查环境变量
+- **症状**：控制台显示 "Analytics disabled: not in production environment"
+- **原因**：代码检查 `import.meta.env.PROD` 为 false
+- **解决方案**：
+  - 确保在生产环境部署
+  - 检查 Vite 配置中的环境变量
 
-确保 `.env` 文件包含正确的 Measurement ID：
+### 2. 配置问题
 
-```env
-VITE_GA_MEASUREMENT_ID=G-XXXXXXXXXX
-```
+#### 问题：Measurement ID 无效
 
-**注意**: 将 `G-XXXXXXXXXX` 替换为您的真实 Google Analytics Measurement ID。
+- **症状**：控制台显示 "Invalid Google Analytics Measurement ID"
+- **原因**：使用了占位符 ID 或无效的 ID
+- **解决方案**：
+  - 在 Google Analytics 后台获取正确的 Measurement ID
+  - 更新 `src/config/analytics.ts` 中的 `MEASUREMENT_ID`
+  - 设置环境变量 `VITE_GA_MEASUREMENT_ID`
 
-##### 步骤 2: 获取正确的 Measurement ID
+#### 问题：脚本加载失败
 
-1. 登录 [Google Analytics](https://analytics.google.com/)
-2. 选择您的数据流
-3. 复制 Measurement ID（格式：G-XXXXXXXXXX）
+- **症状**：控制台显示 "Failed to load Google Analytics script"
+- **原因**：网络问题或防火墙阻止
+- **解决方案**：
+  - 检查网络连接
+  - 确认防火墙允许访问 `googletagmanager.com`
+  - 检查 DNS 解析
 
-##### 步骤 3: 验证配置
+### 3. 浏览器问题
 
-在浏览器控制台中运行诊断：
+#### 问题：广告拦截器
+
+- **症状**：脚本加载但数据不发送
+- **原因**：广告拦截器阻止 Google Analytics
+- **解决方案**：
+  - 禁用广告拦截器
+  - 将 `analytics.google.com` 添加到白名单
+  - 使用浏览器隐私模式测试
+
+#### 问题：隐私设置
+
+- **症状**：启用了 "Do Not Track"
+- **原因**：浏览器隐私设置阻止跟踪
+- **解决方案**：
+  - 检查浏览器隐私设置
+  - 禁用 "Do Not Track" 选项
+  - 清除浏览器缓存和 Cookie
+
+### 4. 代码问题
+
+#### 问题：gtag 函数未定义
+
+- **症状**：控制台显示 "gtag is not defined"
+- **原因**：Google Analytics 脚本未正确加载
+- **解决方案**：
+  - 检查脚本加载顺序
+  - 确保在 DOM 加载完成后初始化
+  - 添加错误处理
+
+#### 问题：重复初始化
+
+- **症状**：多次加载 Google Analytics 脚本
+- **原因**：组件重复渲染导致重复初始化
+- **解决方案**：
+  - 添加脚本存在性检查
+  - 使用 useEffect 依赖项控制初始化
+
+## 诊断步骤
+
+### 1. 运行诊断工具
+
+在开发环境中，点击页面右上角的 "🧪 Test GA" 按钮运行诊断：
 
 ```javascript
-// 在浏览器控制台中运行
-import('./src/utils/analyticsDiagnostics.js').then(module => {
-  module.logAnalyticsDiagnostics();
+// 手动运行诊断
+import { logAnalyticsDiagnostics, testAnalyticsTracking } from './utils/analyticsDiagnostics';
+
+logAnalyticsDiagnostics();
+testAnalyticsTracking();
+```
+
+### 2. 检查控制台输出
+
+查看浏览器控制台的诊断信息：
+
+```
+🔍 Google Analytics Diagnostics
+Enabled: true
+Environment: production
+Production: true
+Hostname: yourdomain.com
+Localhost: false
+Measurement ID: G-XXXXXXXXXX
+Valid Measurement ID: true
+gtag Loaded: true
+DataLayer Exists: true
+Script Loaded: true
+```
+
+### 3. 验证 Google Analytics 设置
+
+1. 登录 Google Analytics
+2. 进入 "管理" > "数据流"
+3. 确认 Measurement ID 正确
+4. 检查数据流状态
+
+### 4. 测试实时数据
+
+1. 在 Google Analytics 中查看 "实时" 报告
+2. 触发页面浏览或事件
+3. 检查数据是否出现在实时报告中
+
+## 调试技巧
+
+### 1. 网络面板检查
+
+1. 打开浏览器开发者工具
+2. 切换到 "网络" 面板
+3. 刷新页面
+4. 查找对 `googletagmanager.com` 的请求
+5. 检查请求是否成功（状态码 200）
+
+### 2. 数据层检查
+
+在浏览器控制台中运行：
+
+```javascript
+// 检查 dataLayer
+console.log('DataLayer:', window.dataLayer);
+
+// 检查 gtag 函数
+console.log('gtag function:', typeof window.gtag);
+
+// 手动发送测试事件
+window.gtag('event', 'test_event', {
+  event_category: 'test',
+  event_label: 'manual_test'
 });
 ```
 
-### 2. 开发环境中测试 Google Analytics
+### 3. 脚本检查
 
-#### 问题描述
-
-需要在本地开发环境中测试 Google Analytics 功能。
-
-#### 解决方案
-
-##### 临时启用开发环境分析
-
-修改 `src/config/analytics.ts` 中的 `isAnalyticsEnabled` 函数：
-
-```typescript
-export const isAnalyticsEnabled = (): boolean => {
-  // 临时注释掉生产环境检查
-  // if (!import.meta.env.PROD) {
-  //   return false;
-  // }
-  
-  // 其他检查保持不变...
-  return true;
-};
-```
-
-**注意**: 测试完成后记得恢复原配置。
-
-### 3. 生产环境部署问题
-
-#### 问题描述
-
-在生产环境中 Google Analytics 仍然不工作。
-
-#### 解决方案
-
-##### 检查构建配置
-
-确保生产构建使用正确的环境变量：
-
-```bash
-# 构建生产版本
-npm run build
-
-# 预览生产版本
-npm run preview
-```
-
-##### 检查域名
-
-确保您的域名不在以下列表中：
-
-- localhost
-- 127.0.0.1
-- 192.168.*
-- 10.*
-- 172.*
-
-### 4. 数据收集延迟
-
-#### 问题描述
-
-Google Analytics 数据没有立即显示。
-
-#### 解决方案
-
-##### 检查实时数据
-
-1. 在 Google Analytics 中查看"实时"报告
-2. 确认数据是否正在收集
-
-##### 验证脚本加载
-
-在浏览器开发者工具中检查：
-
-1. Network 标签页中是否有 Google Analytics 脚本请求
-2. Console 中是否有相关错误信息
-
-### 5. 隐私和合规问题
-
-#### 问题描述
-
-需要确保符合隐私法规。
-
-#### 解决方案
-
-##### 添加用户同意机制
-
-```typescript
-// 在用户同意后启用分析
-const enableAnalytics = () => {
-  // 设置用户同意标志
-  localStorage.setItem('analytics_consent', 'true');
-  // 重新初始化分析
-  initializeAnalytics();
-};
-```
-
-## 调试工具
-
-### 1. 浏览器控制台诊断
-
-在开发环境中，应用会自动运行诊断并输出到控制台。
-
-### 2. 手动诊断
+检查页面中是否存在 Google Analytics 脚本：
 
 ```javascript
-// 在浏览器控制台中运行
-console.log('Analytics Config:', {
-  measurementId: import.meta.env.VITE_GA_MEASUREMENT_ID,
-  isProd: import.meta.env.PROD,
-  mode: import.meta.env.MODE
-});
+// 检查脚本标签
+const scripts = document.querySelectorAll('script[src*="googletagmanager.com"]');
+console.log('GA Scripts found:', scripts.length);
 ```
 
-### 3. 网络请求检查
+## 常见错误代码
 
-在浏览器开发者工具的 Network 标签页中：
+| 错误信息 | 原因 | 解决方案 |
+|---------|------|----------|
+| "Analytics disabled: not in production environment" | 非生产环境 | 部署到生产环境 |
+| "Analytics disabled: running on local network" | 本地网络 | 使用公网域名 |
+| "Invalid Google Analytics Measurement ID" | ID 无效 | 更新正确的 Measurement ID |
+| "Failed to load Google Analytics script" | 脚本加载失败 | 检查网络和防火墙 |
+| "gtag is not defined" | 脚本未加载 | 检查脚本加载顺序 |
 
-1. 过滤 "gtag" 或 "google"
-2. 检查是否有到 Google Analytics 的请求
-3. 确认请求状态码为 200
+## 预防措施
 
-## 最佳实践
+### 1. 环境配置
 
-### 1. 环境变量管理
+- 使用环境变量管理 Measurement ID
+- 在不同环境使用不同的配置
+- 添加配置验证
 
-- 使用 `.env.example` 作为模板
-- 不要将真实的 Measurement ID 提交到版本控制
-- 在生产环境中使用环境变量
+### 2. 错误处理
 
-### 2. 测试策略
+- 添加脚本加载错误处理
+- 实现降级方案
+- 记录错误日志
 
-- 在测试环境中启用分析
-- 使用真实的 Measurement ID 进行测试
-- 验证事件跟踪功能
+### 3. 监控
 
-### 3. 错误处理
-
-- 所有分析调用都包含错误处理
-- 分析错误不应影响应用正常运行
-- 记录分析相关的错误信息
+- 定期检查数据收集状态
+- 设置数据收集告警
+- 监控脚本加载成功率
 
 ## 联系支持
 
-如果问题仍然存在，请：
+如果问题仍然存在，请提供以下信息：
 
-1. 检查浏览器控制台的错误信息
-2. 运行诊断工具并记录结果
-3. 提供环境信息和配置详情
+1. 诊断工具的输出结果
+2. 浏览器控制台的错误信息
+3. 网络面板的请求日志
+4. 环境信息（域名、浏览器版本等）
+5. Google Analytics 账户信息
+
+## 相关文档
+
+- [Google Analytics 4 设置指南](GOOGLE_ANALYTICS_SETUP.md)
+- [SEO 优化指南](../seo/SEO_OPTIMIZATION.md)
+- [测试指南](TESTING.md)

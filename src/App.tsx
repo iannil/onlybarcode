@@ -12,7 +12,7 @@ import GoogleAnalytics from './components/GoogleAnalytics';
 import { getSeoConfig, getAlternateLanguages } from './config/seo';
 import { ANALYTICS_CONFIG } from './config/analytics';
 import { useAnalytics } from './hooks/useAnalytics';
-import { logAnalyticsDiagnostics } from './utils/analyticsDiagnostics';
+import { logAnalyticsDiagnostics, testAnalyticsTracking } from './utils/analyticsDiagnostics';
 import './App.css';
 import { useTranslation } from 'react-i18next';
 import QrCodeGenerator from './components/QrCodeGenerator';
@@ -98,6 +98,15 @@ function App() {
     window.addEventListener('hashchange', handleHashChange);
     return () => window.removeEventListener('hashchange', handleHashChange);
   }, [trackPageView]);
+
+  // Debug function for testing analytics
+  const handleAnalyticsTest = () => {
+    if (import.meta.env.DEV) {
+      console.log('🧪 Running Analytics Test...');
+      logAnalyticsDiagnostics();
+      testAnalyticsTracking();
+    }
+  };
 
   const tabs = [
     { id: 'barcode' as TabType, label: t('barcode_tab', '条形码'), icon: Barcode, description: t('barcode_tab_desc', '条形码相关功能') },
@@ -187,6 +196,16 @@ function App() {
                   <option value="zh">{t('chinese')}</option>
                   <option value="en">{t('english')}</option>
                 </select>
+                {/* Debug button for development */}
+                {import.meta.env.DEV && (
+                  <button
+                    onClick={handleAnalyticsTest}
+                    className="ml-2 px-2 py-1 text-xs bg-yellow-100 text-yellow-800 rounded border border-yellow-200 hover:bg-yellow-200"
+                    title="Test Analytics (Development Only)"
+                  >
+                    🧪 Test GA
+                  </button>
+                )}
               </nav>
               {/* Mobile Menu Button */}
               <div className="md:hidden flex items-center gap-1">
