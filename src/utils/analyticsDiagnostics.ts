@@ -178,3 +178,143 @@ export const testAnalyticsTracking = (): void => {
     console.error('❌ Cannot test tracking - gtag not available');
   }
 };
+
+// Enhanced real-time analytics test with network monitoring
+export const runRealTimeAnalyticsTest = (): void => {
+  console.group('🔍 Real-Time Analytics Test');
+  
+  const diagnostics = runAnalyticsDiagnostics();
+  
+  // Check if we're in a production-like environment
+  if (!diagnostics.isProduction) {
+    console.warn('⚠️ Not in production environment - analytics may not work as expected');
+  }
+  
+  // Check for common blocking issues
+  const blockingIssues: string[] = [];
+  
+  // Check for ad blockers
+  if (typeof window !== 'undefined') {
+    // Test if Google Analytics domains are blocked
+    const testImage = new Image();
+    testImage.onload = () => console.log('✅ Google Analytics domains accessible');
+    testImage.onerror = () => {
+      console.error('❌ Google Analytics domains may be blocked');
+      blockingIssues.push('Google Analytics domains blocked');
+    };
+    testImage.src = 'https://www.google-analytics.com/collect';
+    
+    // Check for privacy settings
+    if ((navigator as { doNotTrack?: string | null }).doNotTrack === '1') {
+      console.warn('⚠️ Do Not Track is enabled');
+      blockingIssues.push('Do Not Track enabled');
+    }
+    
+    // Check for privacy-focused browsers
+    const userAgent = navigator.userAgent.toLowerCase();
+    if (userAgent.includes('brave') || userAgent.includes('duckduckgo')) {
+      console.warn('⚠️ Privacy-focused browser detected');
+      blockingIssues.push('Privacy-focused browser');
+    }
+  }
+  
+  // Test actual tracking
+  if (window.gtag) {
+    console.log('📡 Sending test events...');
+    
+    // Send multiple test events
+    const testEvents = [
+      {
+        name: 'page_view',
+        params: {
+          page_title: 'Analytics Test Page',
+          page_location: window.location.href,
+          page_referrer: document.referrer,
+        }
+      },
+      {
+        name: 'custom_event',
+        params: {
+          event_category: 'diagnostics',
+          event_label: 'real_time_test',
+          value: 1,
+        }
+      },
+      {
+        name: 'timing_complete',
+        params: {
+          name: 'load',
+          value: 100,
+        }
+      }
+    ];
+    
+    testEvents.forEach((event, index) => {
+      if (event.name === 'page_view') {
+        window.gtag('config', ANALYTICS_CONFIG.MEASUREMENT_ID, event.params);
+      } else {
+        window.gtag('event', event.name, event.params);
+      }
+      console.log(`📤 Sent event ${index + 1}: ${event.name}`);
+    });
+    
+    // Monitor network requests
+    if ('performance' in window) {
+      const observer = new PerformanceObserver((list) => {
+        list.getEntries().forEach((entry) => {
+          if (entry.name.includes('google-analytics.com') || entry.name.includes('googletagmanager.com')) {
+            console.log(`🌐 Network request: ${entry.name}`);
+          }
+        });
+      });
+      observer.observe({ entryTypes: ['resource'] });
+    }
+    
+    console.log('✅ Test events sent. Check Google Analytics Real-Time reports.');
+    console.log('💡 If no data appears in Real-Time reports, check:');
+    console.log('   1. Ad blockers or privacy extensions');
+    console.log('   2. Network connectivity to Google Analytics');
+    console.log('   3. Browser privacy settings');
+    console.log('   4. Measurement ID configuration');
+    
+  } else {
+    console.error('❌ gtag function not available');
+  }
+  
+  if (blockingIssues.length > 0) {
+    console.group('🚫 Potential Blocking Issues:');
+    blockingIssues.forEach(issue => console.log(`- ${issue}`));
+    console.groupEnd();
+  }
+  
+  console.groupEnd();
+};
+
+// Function to check Google Analytics Real-Time status
+export const checkRealTimeStatus = (): void => {
+  console.group('📊 Google Analytics Real-Time Status Check');
+  
+  const measurementId = ANALYTICS_CONFIG.MEASUREMENT_ID;
+  console.log(`🔗 Real-Time URL: https://analytics.google.com/analytics/web/#/p${measurementId}/realtime/intro`);
+  console.log(`📋 Measurement ID: ${measurementId}`);
+  
+  // Check if we can access Google Analytics
+  if (typeof window !== 'undefined') {
+    fetch('https://www.google-analytics.com/collect', {
+      method: 'HEAD',
+      mode: 'no-cors'
+    }).then(() => {
+      console.log('✅ Google Analytics endpoint accessible');
+    }).catch(() => {
+      console.error('❌ Google Analytics endpoint not accessible');
+    });
+  }
+  
+  console.log('💡 Instructions:');
+  console.log('1. Open the Real-Time URL above in a new tab');
+  console.log('2. Navigate to "Real-time" > "Overview"');
+  console.log('3. Refresh this page or trigger some events');
+  console.log('4. Check if data appears in the Real-Time reports');
+  
+  console.groupEnd();
+};

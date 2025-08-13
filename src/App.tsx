@@ -12,7 +12,7 @@ import GoogleAnalytics from './components/GoogleAnalytics';
 import { getSeoConfig, getAlternateLanguages } from './config/seo';
 import { ANALYTICS_CONFIG } from './config/analytics';
 import { useAnalytics } from './hooks/useAnalytics';
-import { logAnalyticsDiagnostics, testAnalyticsTracking } from './utils/analyticsDiagnostics';
+import { logAnalyticsDiagnostics, testAnalyticsTracking, runRealTimeAnalyticsTest, checkRealTimeStatus } from './utils/analyticsDiagnostics';
 import './App.css';
 import { useTranslation } from 'react-i18next';
 import QrCodeGenerator from './components/QrCodeGenerator';
@@ -102,9 +102,10 @@ function App() {
   // Debug function for testing analytics
   const handleAnalyticsTest = () => {
     if (import.meta.env.DEV) {
-      console.log('🧪 Running Analytics Test...');
+      console.log('🧪 Running Enhanced Analytics Test...');
       logAnalyticsDiagnostics();
-      testAnalyticsTracking();
+      runRealTimeAnalyticsTest();
+      checkRealTimeStatus();
     }
   };
 

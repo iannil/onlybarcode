@@ -57,6 +57,7 @@ const GoogleAnalytics: React.FC<GoogleAnalyticsProps> = ({ measurementId }) => {
           send_page_view: true,
           anonymize_ip: true,
           cookie_flags: 'SameSite=None;Secure',
+          debug_mode: import.meta.env.DEV,
         });
 
         console.log('Google Analytics initialized successfully');
@@ -69,6 +70,18 @@ const GoogleAnalytics: React.FC<GoogleAnalyticsProps> = ({ measurementId }) => {
         });
         
         console.log('Initial page view sent to Google Analytics');
+        
+        // Additional debugging for production
+        if (import.meta.env.PROD) {
+          // Monitor for successful data transmission
+          setTimeout(() => {
+            if (window.dataLayer && window.dataLayer.length > 0) {
+              console.log('✅ Google Analytics dataLayer contains events:', window.dataLayer.length);
+            } else {
+              console.warn('⚠️ Google Analytics dataLayer appears empty - check for blocking issues');
+            }
+          }, 2000);
+        }
         
       } catch (error) {
         console.error('Failed to initialize Google Analytics:', error);
