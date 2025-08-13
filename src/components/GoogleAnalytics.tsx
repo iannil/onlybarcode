@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { isAnalyticsEnabled } from '../config/analytics';
+import { isAnalyticsEnabled, validateAnalyticsSetup } from '../config/analytics';
 
 declare global {
   interface Window {
@@ -14,6 +14,18 @@ interface GoogleAnalyticsProps {
 
 const GoogleAnalytics: React.FC<GoogleAnalyticsProps> = ({ measurementId }) => {
   useEffect(() => {
+    // Validate setup first
+    const validation = validateAnalyticsSetup();
+    if (!validation.isValid) {
+      console.group('❌ Google Analytics Setup Issues:');
+      validation.issues.forEach(issue => console.error('-', issue));
+      console.groupEnd();
+      console.group('💡 Recommendations:');
+      validation.recommendations.forEach(rec => console.log('-', rec));
+      console.groupEnd();
+      return;
+    }
+
     // Only load Google Analytics if it's enabled
     if (!isAnalyticsEnabled()) {
       console.log('Google Analytics disabled for localhost/development environment');
@@ -58,6 +70,11 @@ const GoogleAnalytics: React.FC<GoogleAnalyticsProps> = ({ measurementId }) => {
           anonymize_ip: true,
           cookie_flags: 'SameSite=None;Secure',
           debug_mode: import.meta.env.DEV,
+          // Enhanced configuration for better tracking
+          site_speed_sample_rate: 100,
+          always_send_referrer: true,
+          allow_google_signals: true,
+          allow_ad_personalization_signals: true,
         });
 
         console.log('Google Analytics initialized successfully');
@@ -67,16 +84,45 @@ const GoogleAnalytics: React.FC<GoogleAnalyticsProps> = ({ measurementId }) => {
           page_title: document.title,
           page_location: window.location.href,
           page_referrer: document.referrer,
+          custom_map: {
+            'custom_parameter_1': 'site_section',
+            'custom_parameter_2': 'user_type',
+          },
+          site_section: 'main',
+          user_type: 'visitor',
         });
         
         console.log('Initial page view sent to Google Analytics');
         
-        // Additional debugging for production
+        // Enhanced debugging for production
         if (import.meta.env.PROD) {
           // Monitor for successful data transmission
           setTimeout(() => {
             if (window.dataLayer && window.dataLayer.length > 0) {
               console.log('✅ Google Analytics dataLayer contains events:', window.dataLayer.length);
+              
+              // Check for network requests to Google Analytics
+              if ('performance' in window) {
+                const observer = new PerformanceObserver((list) => {
+                  list.getEntries().forEach((entry) => {
+                    if (entry.name.includes('google-analytics.com') || entry.name.includes('googletagmanager.com')) {
+                      console.log('🌐 Google Analytics network request:', entry.name);
+                    }
+                  });
+                });
+                observer.observe({ entryTypes: ['resource'] });
+              }
+              
+              // Test network connectivity
+              fetch('https://www.google-analytics.com/collect', {
+                method: 'HEAD',
+                mode: 'no-cors'
+              }).then(() => {
+                console.log('✅ Google Analytics endpoint accessible');
+              }).catch(() => {
+                console.warn('⚠️ Google Analytics endpoint may be blocked');
+              });
+              
             } else {
               console.warn('⚠️ Google Analytics dataLayer appears empty - check for blocking issues');
             }
@@ -90,6 +136,11 @@ const GoogleAnalytics: React.FC<GoogleAnalyticsProps> = ({ measurementId }) => {
     
     script1.onerror = (error) => {
       console.error('Failed to load Google Analytics script:', error);
+      console.error('This may be due to:');
+      console.error('1. Network connectivity issues');
+      console.error('2. Ad blockers or privacy extensions');
+      console.error('3. Firewall blocking Google Analytics domains');
+      console.error('4. Invalid Measurement ID');
     };
     
     document.head.appendChild(script1);

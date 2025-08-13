@@ -13,6 +13,7 @@ import { getSeoConfig, getAlternateLanguages } from './config/seo';
 import { ANALYTICS_CONFIG } from './config/analytics';
 import { useAnalytics } from './hooks/useAnalytics';
 import { logAnalyticsDiagnostics, runRealTimeAnalyticsTest, checkRealTimeStatus } from './utils/analyticsDiagnostics';
+import { printFixSuggestions, sendTestEvent, getRealTimeUrl } from './utils/analyticsQuickFix';
 import './App.css';
 import { useTranslation } from 'react-i18next';
 import QrCodeGenerator from './components/QrCodeGenerator';
@@ -103,9 +104,20 @@ function App() {
   const handleAnalyticsTest = () => {
     if (import.meta.env.DEV) {
       console.log('🧪 Running Enhanced Analytics Test...');
+      
+      // 运行快速修复检查
+      printFixSuggestions();
+      
+      // 运行详细诊断
       logAnalyticsDiagnostics();
       runRealTimeAnalyticsTest();
       checkRealTimeStatus();
+      
+      // 发送测试事件
+      setTimeout(() => {
+        sendTestEvent();
+        console.log('🔗 实时报告URL:', getRealTimeUrl());
+      }, 1000);
     }
   };
 
