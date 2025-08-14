@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Barcode, QrCode, Menu, X, ScanLine, ScanEye } from 'lucide-react';
+import { Barcode, QrCode, Menu, X, ScanLine, ScanEye, BookOpen } from 'lucide-react';
 import BarcodeProcessor from './components/BatchProcessor';
 import BarcodeScanner from './components/BarcodeScanner';
+import BarcodeFormatGuide from './components/BarcodeFormatGuide';
 import PrivacyPolicy from './components/PrivacyPolicy';
 import TermsOfService from './components/TermsOfService';
 import ContactUs from './components/ContactUs';
@@ -17,7 +18,7 @@ import QrCodeScanner from './components/QrCodeScanner';
 type TabType = 'barcode' | 'qrcode';
 type BarcodeSubTab = 'generate' | 'scan';
 type ModeType = 'single' | 'batch';
-type RouteType = 'home' | 'privacy' | 'terms' | 'contact' | 'tutorial' | 'faq';
+type RouteType = 'home' | 'privacy' | 'terms' | 'contact' | 'tutorial' | 'faq' | 'format-guide';
 type QrcodeSubTab = 'generate' | 'scan';
 
 function App() {
@@ -73,6 +74,9 @@ function App() {
         case 'faq':
           newRoute = 'faq';
           break;
+        case 'format-guide':
+          newRoute = 'format-guide';
+          break;
         default:
           break;
       }
@@ -113,20 +117,19 @@ function App() {
       />
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50">
       {/* Header with Navigation */}
-      {currentRoute === 'home' && (
-        <header className="bg-white/80 border-b border-slate-200 sticky top-0 z-50" role="banner">
+      <header className="bg-white/80 border-b border-slate-200 sticky top-0 z-50" role="banner">
           <div className="max-w-6xl mx-auto px-2 sm:px-4 lg:px-6">
             <div className="flex items-center justify-between h-14">
               {/* Logo and Title */}
               <div className="flex items-center gap-2">
-                <div className="w-7 h-7 bg-blue-600 rounded flex items-center justify-center cursor-pointer" aria-hidden="true" onClick={() => { setActiveTab('barcode'); window.location.hash = 'barcode'; }}>
+                <div className="w-7 h-7 bg-blue-600 rounded flex items-center justify-center cursor-pointer" aria-hidden="true" onClick={() => { setActiveTab('barcode'); setCurrentRoute('home'); window.location.hash = 'barcode'; }}>
                   <Barcode className="w-4 h-4 text-white" />
                 </div>
-                <div className="hidden sm:block cursor-pointer" onClick={() => { setActiveTab('barcode'); window.location.hash = 'barcode'; }}>
+                <div className="hidden sm:block cursor-pointer" onClick={() => { setActiveTab('barcode'); setCurrentRoute('home'); window.location.hash = 'barcode'; }}>
                   <h1 className="text-base font-semibold text-slate-900 leading-none">{t('title')}</h1>
                   <p className="text-[10px] text-slate-400 leading-none">{t('slogan')}</p>
                 </div>
-                <div className="sm:hidden cursor-pointer" onClick={() => { setActiveTab('barcode'); window.location.hash = 'barcode'; }}>
+                <div className="sm:hidden cursor-pointer" onClick={() => { setActiveTab('barcode'); setCurrentRoute('home'); window.location.hash = 'barcode'; }}>
                   <h1 className="text-base font-semibold text-slate-900 leading-none">{t('title')}</h1>
                 </div>
               </div>
@@ -139,16 +142,17 @@ function App() {
                       onClick={() => {
                         setActiveTab(tab.id);
                         setMode('single');
+                        setCurrentRoute('home');
                         window.location.hash = tab.id;
                       }}
                       className={`flex items-center gap-1 px-3 py-1.5 rounded text-sm font-medium transition-colors duration-150 border border-transparent ${
-                        activeTab === tab.id
+                        (activeTab === tab.id && currentRoute === 'home')
                           ? 'text-blue-600 border-blue-600 bg-white'
                           : 'text-slate-600 hover:text-blue-600 hover:border-blue-200 bg-transparent'
                       }`}
                       title={tab.description}
                       role="tab"
-                      aria-selected={activeTab === tab.id}
+                      aria-selected={activeTab === tab.id && currentRoute === 'home'}
                       aria-controls={`${tab.id}-panel`}
                     >
                       <tab.icon className="w-4 h-4" aria-hidden="true" />
@@ -200,17 +204,18 @@ function App() {
                       key={tab.id}
                       onClick={() => {
                         setActiveTab(tab.id);
+                        setCurrentRoute('home');
                         setMobileMenuOpen(false);
                         window.location.hash = tab.id;
                       }}
                       className={`w-full flex items-center gap-2 px-3 py-2 rounded text-sm font-medium transition-colors duration-150 border border-transparent ${
-                        activeTab === tab.id
+                        (activeTab === tab.id && currentRoute === 'home')
                           ? 'text-blue-600 border-blue-600 bg-white'
                           : 'text-slate-600 hover:text-blue-600 hover:border-blue-200 bg-transparent'
                       }`}
                       title={tab.description}
                       role="tab"
-                      aria-selected={activeTab === tab.id}
+                      aria-selected={activeTab === tab.id && currentRoute === 'home'}
                       aria-controls={`${tab.id}-panel`}
                     >
                       <tab.icon className="w-5 h-5" aria-hidden="true" />
@@ -222,10 +227,39 @@ function App() {
             )}
           </div>
         </header>
-      )}
 
       {/* Main Content */}
       <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6" role="main">
+        {/* Breadcrumb Navigation */}
+        {currentRoute !== 'home' && (
+          <div className="mb-4 flex items-center justify-between text-sm text-slate-600">
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => { setCurrentRoute('home'); window.location.hash = 'barcode'; }}
+                className="flex items-center gap-1 hover:text-blue-600 transition-colors"
+              >
+                <Barcode className="w-4 h-4" />
+                {t('title')}
+              </button>
+              <span>/</span>
+              <span className="text-slate-900 font-medium">
+                {currentRoute === 'privacy' && t('privacy_policy')}
+                {currentRoute === 'terms' && t('terms_of_service')}
+                {currentRoute === 'contact' && t('contact_us')}
+                {currentRoute === 'tutorial' && t('tutorial')}
+                {currentRoute === 'faq' && t('faq')}
+                {currentRoute === 'format-guide' && t('format_guide', '格式指南')}
+              </span>
+            </div>
+            <button
+              onClick={() => { setCurrentRoute('home'); window.location.hash = 'barcode'; }}
+              className="flex items-center gap-1 px-3 py-1.5 rounded text-sm font-medium transition-colors duration-150 border border-slate-200 text-slate-600 hover:text-blue-600 hover:border-blue-200 bg-white"
+            >
+              <Barcode className="w-4 h-4" />
+              {t('back_to_home', '返回首页')}
+            </button>
+          </div>
+        )}
         <div className="transition-all duration-300">
           {currentRoute === 'home' && (
             <>
@@ -246,6 +280,15 @@ function App() {
                     >
                       <ScanLine className="w-4 h-4 mr-1 inline-block align-text-bottom" />
                       {t('scan')}
+                    </button>
+                    <div className="flex-1"></div>
+                    <button
+                      className="h-9 px-3 py-2 rounded-md border text-sm font-medium transition-colors duration-150 bg-amber-50 border-amber-200 text-amber-700 hover:bg-amber-100 hover:border-amber-300"
+                      onClick={() => { window.location.hash = 'format-guide'; }}
+                      title={t('format_guide_tooltip', '查看支持的条形码格式说明')}
+                    >
+                      <BookOpen className="w-4 h-4 mr-1 inline-block align-text-bottom" />
+                      {t('format_guide', '格式指南')}
                     </button>
                   </div>
                   
@@ -272,6 +315,15 @@ function App() {
                       <ScanEye className="w-4 h-4 mr-1 inline-block align-text-bottom" />
                       {t('qrcode_scan', '二维码识别')}
                     </button>
+                    <div className="flex-1"></div>
+                    <button
+                      className="h-9 px-3 py-2 rounded-md border text-sm font-medium transition-colors duration-150 bg-amber-50 border-amber-200 text-amber-700 hover:bg-amber-100 hover:border-amber-300"
+                      onClick={() => { window.location.hash = 'format-guide'; }}
+                      title={t('format_guide_tooltip', '查看支持的条形码格式说明')}
+                    >
+                      <BookOpen className="w-4 h-4 mr-1 inline-block align-text-bottom" />
+                      {t('format_guide', '格式指南')}
+                    </button>
                   </div>
                   
                     {qrcodeSubTab === 'generate' && <QrCodeGenerator mode={mode} setMode={setMode} />}
@@ -287,12 +339,12 @@ function App() {
           {currentRoute === 'contact' && <ContactUs />}
           {currentRoute === 'tutorial' && <Tutorial />}
           {currentRoute === 'faq' && <FAQ />}
+          {currentRoute === 'format-guide' && <BarcodeFormatGuide />}
         </div>
       </main>
 
       {/* Footer */}
-      {currentRoute === 'home' && (
-        <footer className="bg-slate-50/50 border-t border-slate-200/50 mt-8 sm:mt-12" role="contentinfo">
+      <footer className="bg-slate-50/50 border-t border-slate-200/50 mt-8 sm:mt-12" role="contentinfo">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
           <div className="text-center text-slate-500 text-sm">
             <p>&copy; 2025 {t('footer')}</p>
@@ -306,7 +358,6 @@ function App() {
           </div>
         </div>
       </footer>
-      )}
     </div>
     </>
   );

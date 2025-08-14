@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import JsBarcode from 'jsbarcode';
 import JSZip from 'jszip';
@@ -52,19 +52,94 @@ const BarcodeProcessor: React.FC<BarcodeProcessorProps> = ({ mode, setMode }) =>
   const [singleError, setSingleError] = useState<string | null>(null);
   const [singlePagePDF, setSinglePagePDF] = useState(false);
 
+  // 条码格式说明和验证规则
+  const formatInfo = useMemo(() => ({
+    CODE128: { description: t('format_info_code128', '支持所有ASCII字符，自动选择最佳编码模式'), validation: /^[\u0000-\u007F]+$/ }, // eslint-disable-line no-control-regex
+    CODE128A: { description: t('format_info_code128a', '仅支持大写字母、数字和控制字符'), validation: /^[A-Z0-9\u0000-\u001F]+$/ }, // eslint-disable-line no-control-regex
+    CODE128B: { description: t('format_info_code128b', '支持所有ASCII可打印字符'), validation: /^[\u0020-\u007F]+$/ },
+    CODE128C: { description: t('format_info_code128c', '仅支持数字，必须为偶数位'), validation: /^[0-9]{2,}$/ },
+    EAN13: { description: t('format_info_ean13', '13位数字，最后一位为校验位'), validation: /^[0-9]{13}$/ },
+    EAN8: { description: t('format_info_ean8', '8位数字，最后一位为校验位'), validation: /^[0-9]{8}$/ },
+    EAN5: { description: t('format_info_ean5', '5位数字，用于EAN-13的补充码'), validation: /^[0-9]{5}$/ },
+    EAN2: { description: t('format_info_ean2', '2位数字，用于EAN-13的补充码'), validation: /^[0-9]{2}$/ },
+    UPC: { description: t('format_info_upc', '12位数字，最后一位为校验位'), validation: /^[0-9]{12}$/ },
+    UPCE: { description: t('format_info_upce', '8位数字，压缩的UPC-A格式'), validation: /^[0-9]{8}$/ },
+    CODE39: { description: t('format_info_code39', '支持数字、大写字母和特殊字符'), validation: /^[0-9A-Z\-./+\s$%]+$/ },
+    CODE93: { description: t('format_info_code93', '支持所有ASCII字符，比Code 39更紧凑'), validation: /^[\u0000-\u007F]+$/ }, // eslint-disable-line no-control-regex
+    ITF: { description: t('format_info_itf', '仅支持数字，必须为偶数位'), validation: /^[0-9]{2,}$/ },
+    ITF14: { description: t('format_info_itf14', '14位数字，用于物流包装'), validation: /^[0-9]{14}$/ },
+    MSI: { description: t('format_info_msi', '仅支持数字，用于零售库存'), validation: /^[0-9]+$/ },
+    MSI10: { description: t('format_info_msi10', 'MSI格式，带10位校验位'), validation: /^[0-9]+$/ },
+    MSI11: { description: t('format_info_msi11', 'MSI格式，带11位校验位'), validation: /^[0-9]+$/ },
+    MSI1010: { description: t('format_info_msi1010', 'MSI格式，带10位和10位校验位'), validation: /^[0-9]+$/ },
+    MSI1110: { description: t('format_info_msi1110', 'MSI格式，带11位和10位校验位'), validation: /^[0-9]+$/ },
+    pharmacode: { description: t('format_info_pharmacode', '仅支持数字，用于药品包装'), validation: /^[0-9]+$/ },
+    codabar: { description: t('format_info_codabar', '支持数字、字母和特殊字符，以A-D开头和结尾'), validation: /^[A-D][0-9\-$:/.+]+[A-D]$/ },
+  }), [t]);
+
   const formats = [
     { value: 'CODE128', label: t('barcode_format_code128', 'Code 128') },
+    { value: 'CODE128A', label: t('barcode_format_code128a', 'Code 128A') },
+    { value: 'CODE128B', label: t('barcode_format_code128b', 'Code 128B') },
+    { value: 'CODE128C', label: t('barcode_format_code128c', 'Code 128C') },
     { value: 'EAN13', label: t('barcode_format_ean13', 'EAN-13') },
     { value: 'EAN8', label: t('barcode_format_ean8', 'EAN-8') },
+    { value: 'EAN5', label: t('barcode_format_ean5', 'EAN-5') },
+    { value: 'EAN2', label: t('barcode_format_ean2', 'EAN-2') },
+    { value: 'UPC', label: t('barcode_format_upc', 'UPC-A') },
+    { value: 'UPCE', label: t('barcode_format_upce', 'UPC-E') },
     { value: 'CODE39', label: t('barcode_format_code39', 'Code 39') },
+    { value: 'CODE93', label: t('barcode_format_code93', 'Code 93') },
+    { value: 'ITF', label: t('barcode_format_itf', 'ITF') },
     { value: 'ITF14', label: t('barcode_format_itf14', 'ITF-14') },
     { value: 'MSI', label: t('barcode_format_msi', 'MSI') },
+    { value: 'MSI10', label: t('barcode_format_msi10', 'MSI10') },
+    { value: 'MSI11', label: t('barcode_format_msi11', 'MSI11') },
+    { value: 'MSI1010', label: t('barcode_format_msi1010', 'MSI1010') },
+    { value: 'MSI1110', label: t('barcode_format_msi1110', 'MSI1110') },
     { value: 'pharmacode', label: t('barcode_format_pharmacode', 'Pharmacode') },
     { value: 'codabar', label: t('barcode_format_codabar', 'Codabar') },
   ];
 
+  // 验证条码内容是否符合格式要求
+  const validateBarcodeContent = useCallback((text: string, format: string): { valid: boolean; message?: string } => {
+    const info = formatInfo[format as keyof typeof formatInfo];
+    if (!info) return { valid: true };
+    
+    if (!info.validation.test(text)) {
+      return { 
+        valid: false, 
+        message: t('format_validation_failed', '内容不符合格式要求') + ': ' + info.description 
+      };
+    }
+    
+    // 特殊验证规则
+    if (format === 'CODE128C' && text.length % 2 !== 0) {
+      return { 
+        valid: false, 
+        message: t('code128c_even_digits', 'Code 128C格式要求偶数位数字') 
+      };
+    }
+    
+    if (format === 'ITF' && text.length % 2 !== 0) {
+      return { 
+        valid: false, 
+        message: t('itf_even_digits', 'ITF格式要求偶数位数字') 
+      };
+    }
+    
+    return { valid: true };
+  }, [formatInfo, t]);
+
   const generateSingleBarcode = useCallback(() => {
     if (canvasRef.current && singleText.trim()) {
+      // 先验证内容格式
+      const validation = validateBarcodeContent(singleText, format);
+      if (!validation.valid) {
+        setSingleError(validation.message || t('barcode_generation_failed'));
+        return;
+      }
+      
       try {
         JsBarcode(canvasRef.current, singleText, {
           format,
@@ -94,7 +169,7 @@ const BarcodeProcessor: React.FC<BarcodeProcessorProps> = ({ mode, setMode }) =>
         ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
       }
     }
-  }, [singleText, format, width, height, displayValue, fontSize, margin, backgroundColor, lineColor, t]);
+  }, [singleText, format, width, height, displayValue, fontSize, margin, backgroundColor, lineColor, t, validateBarcodeContent]);
 
   useEffect(() => {
     if (mode === 'single') generateSingleBarcode();
@@ -156,6 +231,33 @@ const BarcodeProcessor: React.FC<BarcodeProcessorProps> = ({ mode, setMode }) =>
       setSingleText(Math.floor(Math.random() * 1000000000000).toString().padStart(12, '0'));
     } else if (format === 'EAN8') {
       setSingleText(Math.floor(Math.random() * 10000000).toString().padStart(7, '0'));
+    } else if (format === 'EAN5') {
+      setSingleText(Math.floor(Math.random() * 100000).toString().padStart(5, '0'));
+    } else if (format === 'EAN2') {
+      setSingleText(Math.floor(Math.random() * 100).toString().padStart(2, '0'));
+    } else if (format === 'UPC') {
+      setSingleText(Math.floor(Math.random() * 100000000000).toString().padStart(11, '0'));
+    } else if (format === 'UPCE') {
+      setSingleText(Math.floor(Math.random() * 10000000).toString().padStart(7, '0'));
+    } else if (format === 'CODE128C' || format === 'ITF') {
+      // 生成偶数位数字
+      const digits = Math.floor(Math.random() * 1000000).toString().padStart(6, '0');
+      setSingleText(digits);
+    } else if (format === 'ITF14') {
+      setSingleText(Math.floor(Math.random() * 100000000000000).toString().padStart(13, '0'));
+    } else if (format === 'codabar') {
+      const chars = 'ABCD';
+      const startChar = chars[Math.floor(Math.random() * chars.length)];
+      const endChar = chars[Math.floor(Math.random() * chars.length)];
+      const middle = Math.floor(Math.random() * 1000000).toString();
+      setSingleText(startChar + middle + endChar);
+    } else if (format === 'CODE39') {
+      const chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ-. /+$%';
+      let result = '';
+      for (let i = 0; i < 8; i++) {
+        result += chars[Math.floor(Math.random() * chars.length)];
+      }
+      setSingleText(result);
     } else {
       setSingleText(Math.random().toString(36).substring(2, 12).toUpperCase());
     }
@@ -185,6 +287,14 @@ const BarcodeProcessor: React.FC<BarcodeProcessorProps> = ({ mode, setMode }) =>
         reject(new Error(t('barcode_content_empty')));
         return;
       }
+      
+      // 验证内容格式
+      const validation = validateBarcodeContent(text, format);
+      if (!validation.valid) {
+        reject(new Error(validation.message || t('barcode_generation_failed')));
+        return;
+      }
+      
       const canvas = document.createElement('canvas');
       try {
         JsBarcode(canvas, text, {
@@ -566,6 +676,12 @@ const BarcodeProcessor: React.FC<BarcodeProcessorProps> = ({ mode, setMode }) =>
                       )}
                     </ul>
                   )}
+                  {/* 格式说明 */}
+                  <div className="mt-2 p-2 bg-gray-50 rounded-lg border border-gray-200">
+                    <p className="text-xs text-gray-600">
+                      <strong>{t('format_description', '格式说明')}:</strong> {formatInfo[format as keyof typeof formatInfo]?.description || t('no_format_info', '暂无格式说明')}
+                    </p>
+                  </div>
                 </div>
                 <button
                   onClick={() => setShowSettings(!showSettings)}
@@ -817,6 +933,12 @@ const BarcodeProcessor: React.FC<BarcodeProcessorProps> = ({ mode, setMode }) =>
                       )}
                     </ul>
                   )}
+                  {/* 格式说明 */}
+                  <div className="mt-2 p-2 bg-gray-50 rounded-lg border border-gray-200">
+                    <p className="text-xs text-gray-600">
+                      <strong>{t('format_description', '格式说明')}:</strong> {formatInfo[format as keyof typeof formatInfo]?.description || t('no_format_info', '暂无格式说明')}
+                    </p>
+                  </div>
                 </div>
                 <button
                   onClick={() => setShowSettings(!showSettings)}
