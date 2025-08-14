@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import JsBarcode from 'jsbarcode';
+import * as bwipjs from 'bwip-js';
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
 import { Download, Package, X, CheckCircle, AlertCircle, Loader, Settings, RefreshCw, Copy, Play, Trash, Info } from 'lucide-react';
@@ -75,7 +76,20 @@ const BarcodeProcessor: React.FC<BarcodeProcessorProps> = ({ mode, setMode }) =>
     MSI1110: { description: t('format_info_msi1110', 'MSI格式，带11位和10位校验位'), validation: /^[0-9]+$/ },
     pharmacode: { description: t('format_info_pharmacode', '仅支持数字，用于药品包装'), validation: /^[0-9]+$/ },
     codabar: { description: t('format_info_codabar', '支持数字、字母和特殊字符，以A-D开头和结尾'), validation: /^[A-D][0-9\-$:/.+]+[A-D]$/ },
+    // 新增的条码格式
+    DATAMATRIX: { description: t('format_info_datamatrix', 'GS1 DataMatrix，支持数字、字母和特殊字符，用于工业、制药和物流'), validation: /^[\u0000-\u007F]+$/ }, // eslint-disable-line no-control-regex
+    PDF417: { description: t('format_info_pdf417', 'PDF417，支持数字、字母和特殊字符，常见于身份证件、登机牌'), validation: /^[\u0000-\u007F]+$/ }, // eslint-disable-line no-control-regex
+    AZTEC: { description: t('format_info_aztec', 'Aztec Code，支持数字、字母和特殊字符，常见于火车票、电子票务'), validation: /^[\u0000-\u007F]+$/ }, // eslint-disable-line no-control-regex
+    DOTCODE: { description: t('format_info_dotcode', 'DotCode，支持数字、字母和特殊字符，用于高速工业喷码'), validation: /^[\u0000-\u007F]+$/ }, // eslint-disable-line no-control-regex
   }), [t]);
+
+  // 2D条码格式到bwip-js编码器名称的映射
+  const barcodeEncoderMap = useMemo(() => ({
+    DATAMATRIX: 'datamatrix',
+    PDF417: 'pdf417',
+    AZTEC: 'azteccode', // 正确的编码器名称
+    DOTCODE: 'dotcode',
+  }), []);
 
   const formats = [
     { value: 'CODE128', label: t('barcode_format_code128', 'Code 128') },
@@ -99,6 +113,11 @@ const BarcodeProcessor: React.FC<BarcodeProcessorProps> = ({ mode, setMode }) =>
     { value: 'MSI1110', label: t('barcode_format_msi1110', 'MSI1110') },
     { value: 'pharmacode', label: t('barcode_format_pharmacode', 'Pharmacode') },
     { value: 'codabar', label: t('barcode_format_codabar', 'Codabar') },
+    // 新增的条码格式
+    { value: 'DATAMATRIX', label: t('barcode_format_datamatrix', 'GS1 DataMatrix') },
+    { value: 'PDF417', label: t('barcode_format_pdf417', 'PDF417') },
+    { value: 'AZTEC', label: t('barcode_format_aztec', 'Aztec Code') },
+    { value: 'DOTCODE', label: t('barcode_format_dotcode', 'DotCode') },
   ];
 
   // 验证条码内容是否符合格式要求
@@ -141,17 +160,91 @@ const BarcodeProcessor: React.FC<BarcodeProcessorProps> = ({ mode, setMode }) =>
       }
       
       try {
-        JsBarcode(canvasRef.current, singleText, {
-          format,
-          width: width ?? 2,
-          height,
-          displayValue,
-          fontSize,
-          margin,
-          background: backgroundColor,
-          lineColor,
-        });
-        setSingleError(null);
+        // 检查是否为2D条码格式
+        const is2DBarcode = ['DATAMATRIX', 'PDF417', 'AZTEC', 'DOTCODE'].includes(format);
+        
+        if (is2DBarcode) {
+          // 使用bwip-js生成2D条码
+          const canvas = canvasRef.current;
+          const ctx = canvas.getContext('2d');
+          if (ctx) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+          }
+          
+          // 根据不同的2D条码格式设置合适的尺寸
+          let canvasWidth = 300;
+          let canvasHeight = 300;
+          let scale = 3;
+          
+          switch (format) {
+            case 'DATAMATRIX':
+              // DataMatrix通常比较紧凑，适合小尺寸
+              canvasWidth = 200;
+              canvasHeight = 200;
+              scale = 4;
+              break;
+            case 'PDF417':
+              // PDF417需要更多空间，特别是高度
+              canvasWidth = 400;
+              canvasHeight = 300;
+              scale = 2;
+              break;
+            case 'AZTEC':
+              // Aztec Code比较紧凑
+              canvasWidth = 250;
+              canvasHeight = 250;
+              scale = 3;
+              break;
+            case 'DOTCODE':
+              // DotCode需要适当空间
+              canvasWidth = 300;
+              canvasHeight = 300;
+              scale = 3;
+              break;
+            default:
+              canvasWidth = 300;
+              canvasHeight = 300;
+              scale = 3;
+          }
+          
+          // 设置canvas尺寸
+          canvas.width = canvasWidth;
+          canvas.height = canvasHeight;
+          
+          // 定义bwip-js选项
+          const options = {
+            bcid: barcodeEncoderMap[format as keyof typeof barcodeEncoderMap] || format.toLowerCase(), // 使用正确的编码器名称
+            text: singleText, // 条码内容
+            scale: scale, // 根据格式调整缩放比例
+            // 2D条码不需要指定height，让bwip-js自动计算
+            includetext: displayValue, // 是否显示文本
+            textxalign: 'center' as const, // 文本对齐
+            backgroundcolor: backgroundColor, // 背景色
+            paddingwidth: Math.min(margin, 20), // 限制边距
+          };
+          
+          // 使用bwipjs的同步API
+          try {
+            bwipjs.toCanvas(canvas, options);
+            setSingleError(null);
+          } catch (err: unknown) {
+            console.error('2D barcode generation error:', err);
+            setSingleError(t('barcode_generation_failed') + ': ' + (err instanceof Error ? err.message : String(err)));
+          }
+        } else {
+          // 使用jsbarcode生成1D条码
+          JsBarcode(canvasRef.current, singleText, {
+            format,
+            width: width ?? 2,
+            height,
+            displayValue,
+            fontSize,
+            margin,
+            background: backgroundColor,
+            lineColor,
+          });
+          setSingleError(null);
+        }
       } catch (error) {
         console.error(error);
         setSingleError(t('barcode_generation_failed') + ': ' + (error instanceof Error ? error.message : error));
@@ -169,7 +262,7 @@ const BarcodeProcessor: React.FC<BarcodeProcessorProps> = ({ mode, setMode }) =>
         ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
       }
     }
-  }, [singleText, format, width, height, displayValue, fontSize, margin, backgroundColor, lineColor, t, validateBarcodeContent]);
+  }, [singleText, format, width, height, displayValue, fontSize, margin, backgroundColor, lineColor, t, validateBarcodeContent, barcodeEncoderMap]);
 
   useEffect(() => {
     if (mode === 'single') generateSingleBarcode();
@@ -258,6 +351,14 @@ const BarcodeProcessor: React.FC<BarcodeProcessorProps> = ({ mode, setMode }) =>
         result += chars[Math.floor(Math.random() * chars.length)];
       }
       setSingleText(result);
+    } else if (format === 'DATAMATRIX' || format === 'PDF417' || format === 'AZTEC' || format === 'DOTCODE') {
+      // 为2D条码生成包含数字、字母和特殊字符的示例数据
+      const chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz!@#$%^&*()_+-=[]{}|;:,.<>?';
+      let result = '';
+      for (let i = 0; i < 12; i++) {
+        result += chars[Math.floor(Math.random() * chars.length)];
+      }
+      setSingleText(result);
     } else {
       setSingleText(Math.random().toString(36).substring(2, 12).toUpperCase());
     }
@@ -296,20 +397,86 @@ const BarcodeProcessor: React.FC<BarcodeProcessorProps> = ({ mode, setMode }) =>
       }
       
       const canvas = document.createElement('canvas');
-      try {
-        JsBarcode(canvas, text, {
-          format,
-          width: width ?? 2,
-          height,
-          displayValue,
-          fontSize,
-          margin,
-          background: backgroundColor,
-          lineColor,
-        });
-        resolve(canvas.toDataURL());
-      } catch (error) {
-        reject(error);
+      
+      // 检查是否为2D条码格式
+      const is2DBarcode = ['DATAMATRIX', 'PDF417', 'AZTEC', 'DOTCODE'].includes(format);
+      
+      if (is2DBarcode) {
+        // 根据不同的2D条码格式设置合适的尺寸
+        let canvasWidth = 300;
+        let canvasHeight = 300;
+        let scale = 3;
+        
+        switch (format) {
+          case 'DATAMATRIX':
+            // DataMatrix通常比较紧凑，适合小尺寸
+            canvasWidth = 200;
+            canvasHeight = 200;
+            scale = 4;
+            break;
+          case 'PDF417':
+            // PDF417需要更多空间，特别是高度
+            canvasWidth = 400;
+            canvasHeight = 300;
+            scale = 2;
+            break;
+          case 'AZTEC':
+            // Aztec Code比较紧凑
+            canvasWidth = 250;
+            canvasHeight = 250;
+            scale = 3;
+            break;
+          case 'DOTCODE':
+            // DotCode需要适当空间
+            canvasWidth = 300;
+            canvasHeight = 300;
+            scale = 3;
+            break;
+          default:
+            canvasWidth = 300;
+            canvasHeight = 300;
+            scale = 3;
+        }
+        
+        // 设置canvas尺寸用于2D条码
+        canvas.width = canvasWidth;
+        canvas.height = canvasHeight;
+        
+        const options = {
+          bcid: barcodeEncoderMap[format as keyof typeof barcodeEncoderMap] || format.toLowerCase(),
+          text: text,
+          scale: scale,
+          // 2D条码不需要指定height，让bwip-js自动计算
+          includetext: displayValue,
+          textxalign: 'center' as const,
+          backgroundcolor: backgroundColor,
+          paddingwidth: Math.min(margin, 20),
+        };
+        
+        // 使用bwipjs生成2D条码
+        try {
+          bwipjs.toCanvas(canvas, options);
+          resolve(canvas.toDataURL());
+        } catch (err: unknown) {
+          reject(new Error(err instanceof Error ? err.message : String(err)));
+        }
+      } else {
+        // 使用jsbarcode生成1D条码
+        try {
+          JsBarcode(canvas, text, {
+            format,
+            width: width ?? 2,
+            height,
+            displayValue,
+            fontSize,
+            margin,
+            background: backgroundColor,
+            lineColor,
+          });
+          resolve(canvas.toDataURL());
+        } catch (error) {
+          reject(error);
+        }
       }
     });
   };
@@ -799,8 +966,8 @@ const BarcodeProcessor: React.FC<BarcodeProcessorProps> = ({ mode, setMode }) =>
                 <canvas
                   ref={canvasRef}
                   className="max-w-full mx-auto barcode-container bg-white rounded shadow-sm"
-                  width={width || 300}
-                  height={height || 100}
+                  width={['DATAMATRIX', 'PDF417', 'AZTEC', 'DOTCODE'].includes(format) ? 300 : (width || 300)}
+                  height={['DATAMATRIX', 'PDF417', 'AZTEC', 'DOTCODE'].includes(format) ? 300 : (height || 100)}
                 />
                 <svg ref={svgRef} style={{ display: 'none' }} width={width || 300} height={height || 100}></svg>
                 {singleError && (
@@ -820,7 +987,9 @@ const BarcodeProcessor: React.FC<BarcodeProcessorProps> = ({ mode, setMode }) =>
                 </button>
                 <button
                   onClick={() => downloadSingleBarcode('svg')}
-                  className="flex items-center justify-center h-9 px-3 py-2 text-sm rounded-md bg-green-600 text-white hover:bg-green-700 transition-colors shadow-sm"
+                  disabled={['DATAMATRIX', 'PDF417', 'AZTEC', 'DOTCODE'].includes(format)}
+                  className="flex items-center justify-center h-9 px-3 py-2 text-sm rounded-md bg-green-600 text-white hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors shadow-sm"
+                  title={['DATAMATRIX', 'PDF417', 'AZTEC', 'DOTCODE'].includes(format) ? t('svg_not_supported_2d', '2D条码不支持SVG格式') : ''}
                 >
                   <Download className="w-4 h-4 mr-2" />
                   {t('download_svg')}

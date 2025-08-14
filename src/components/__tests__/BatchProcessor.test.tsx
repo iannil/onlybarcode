@@ -17,6 +17,11 @@ vi.mock('jsbarcode', () => ({
   default: vi.fn(),
 }));
 
+// Mock bwip-js for 2D barcodes
+vi.mock('bwip-js', () => ({
+  toCanvas: vi.fn(),
+}));
+
 // Mock pdf-lib
 vi.mock('pdf-lib', () => ({
   PDFDocument: {
@@ -97,6 +102,48 @@ describe('BatchProcessor Component', () => {
     fireEvent.change(textInput, { target: { value: 'new barcode' } });
     
     expect(textInput).toHaveValue('new barcode');
+  });
+
+  it('supports 2D barcode formats', () => {
+    renderBatchProcessor();
+    
+    const formatSelect = screen.getByRole('combobox');
+    expect(formatSelect).toBeInTheDocument();
+    
+    // Check for new 2D formats
+    expect(screen.getByText(/GS1 DataMatrix/i)).toBeInTheDocument();
+    expect(screen.getByText(/PDF417/i)).toBeInTheDocument();
+    expect(screen.getByText(/Aztec Code/i)).toBeInTheDocument();
+    expect(screen.getByText(/DotCode/i)).toBeInTheDocument();
+  });
+
+  it('supports 2D barcode format selection', () => {
+    renderBatchProcessor();
+    
+    const formatSelect = screen.getByRole('combobox');
+    expect(formatSelect).toBeInTheDocument();
+    
+    // Check that 2D formats are available in the select
+    expect(screen.getByText(/GS1 DataMatrix/i)).toBeInTheDocument();
+    expect(screen.getByText(/PDF417/i)).toBeInTheDocument();
+    expect(screen.getByText(/Aztec Code/i)).toBeInTheDocument();
+    expect(screen.getByText(/DotCode/i)).toBeInTheDocument();
+  });
+
+  it('generates random codes for 2D formats', () => {
+    renderBatchProcessor();
+    
+    // Select a 2D format
+    const formatSelect = screen.getByRole('combobox');
+    fireEvent.change(formatSelect, { target: { value: 'DATAMATRIX' } });
+    
+    // Click random generation button
+    const randomButton = screen.getByTitle('Generate Random Code');
+    fireEvent.click(randomButton);
+    
+    // Check that text input has been populated with some content
+    const textInput = screen.getByRole('textbox') as HTMLInputElement;
+    expect(textInput.value.length).toBeGreaterThan(0);
   });
 
   it('handles text input change in batch mode', () => {
@@ -436,5 +483,87 @@ describe('BatchProcessor Component', () => {
       fireEvent.change(formatSelect, { target: { value: format } });
       expect(formatSelect).toHaveValue(format);
     });
+  });
+
+  it('generates 2D barcodes with bwip-js', async () => {
+    const mockBwipJs = vi.fn();
+    const bwipjs = await import('bwip-js');
+    bwipjs.toCanvas = mockBwipJs;
+
+    renderBatchProcessor();
+    const formatSelect = screen.getByRole('combobox');
+    
+    // Select DataMatrix format
+    fireEvent.change(formatSelect, { target: { value: 'DATAMATRIX' } });
+    
+    // Change text input
+    const textInput = screen.getByDisplayValue('123456789012');
+    fireEvent.change(textInput, { target: { value: 'GS1 DataMatrix Test' } });
+    
+    // Wait for bwip-js to be called
+    await waitFor(() => {
+      expect(mockBwipJs).toHaveBeenCalled();
+    });
+  });
+
+  it('uses correct canvas sizes for different 2D barcode formats', async () => {
+    const mockBwipJs = vi.fn();
+    const bwipjs = await import('bwip-js');
+    bwipjs.toCanvas = mockBwipJs;
+
+    renderBatchProcessor();
+    const formatSelect = screen.getByRole('combobox');
+    const textInput = screen.getByDisplayValue('123456789012');
+    
+    // Test different 2D formats and their expected canvas sizes
+    const formatTests = [
+      { format: 'DATAMATRIX', expectedWidth: 200, expectedHeight: 200 },
+      { format: 'PDF417', expectedWidth: 400, expectedHeight: 300 },
+      { format: 'AZTEC', expectedWidth: 250, expectedHeight: 250 },
+      { format: 'DOTCODE', expectedWidth: 300, expectedHeight: 300 },
+    ];
+    
+    for (const test of formatTests) {
+      fireEvent.change(formatSelect, { target: { value: test.format } });
+      fireEvent.change(textInput, { target: { value: `Test ${test.format}` } });
+      
+      await waitFor(() => {
+        expect(mockBwipJs).toHaveBeenCalled();
+        const lastCall = mockBwipJs.mock.calls[mockBwipJs.mock.calls.length - 1];
+        const canvas = lastCall[0] as HTMLCanvasElement;
+        expect(canvas.width).toBe(test.expectedWidth);
+        expect(canvas.height).toBe(test.expectedHeight);
+      });
+    }
+  });
+
+  it('uses correct encoder names for 2D barcode formats', async () => {
+    const mockBwipJs = vi.fn();
+    const bwipjs = await import('bwip-js');
+    bwipjs.toCanvas = mockBwipJs;
+
+    renderBatchProcessor();
+    const formatSelect = screen.getByRole('combobox');
+    const textInput = screen.getByDisplayValue('123456789012');
+    
+    // Test encoder name mapping
+    const encoderTests = [
+      { format: 'DATAMATRIX', expectedEncoder: 'datamatrix' },
+      { format: 'PDF417', expectedEncoder: 'pdf417' },
+      { format: 'AZTEC', expectedEncoder: 'azteccode' }, // 正确的编码器名称
+      { format: 'DOTCODE', expectedEncoder: 'dotcode' },
+    ];
+    
+    for (const test of encoderTests) {
+      fireEvent.change(formatSelect, { target: { value: test.format } });
+      fireEvent.change(textInput, { target: { value: `Test ${test.format}` } });
+      
+      await waitFor(() => {
+        expect(mockBwipJs).toHaveBeenCalled();
+        const lastCall = mockBwipJs.mock.calls[mockBwipJs.mock.calls.length - 1];
+        const options = lastCall[1];
+        expect(options.bcid).toBe(test.expectedEncoder);
+      });
+    }
   });
 }); 

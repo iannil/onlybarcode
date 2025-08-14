@@ -4,7 +4,7 @@ A modern, multilingual barcode generator and scanner web application built with 
 
 ## Features
 
-- 🏷️ **Barcode Generation**: Support for 20+ barcode formats including retail, industrial, logistics, and pharmaceutical formats
+- 🏷️ **Barcode Generation**: Support for 24+ barcode formats including retail, industrial, logistics, pharmaceutical, and 2D formats
 - 📱 **Barcode Scanning**: Upload and scan barcode images with multi-format support
 - 📦 **Batch Processing**: Generate multiple barcodes at once with validation
 - 📄 **PDF Export**: Export barcodes to PDF format with customizable layouts
@@ -16,6 +16,12 @@ A modern, multilingual barcode generator and scanner web application built with 
 - ⚡ **Fast**: Built with Vite for optimal performance
 
 ## Supported Barcode Formats
+
+### 2D Barcode Formats
+- **GS1 DataMatrix**: Industrial, pharmaceutical, and logistics applications
+- **PDF417**: Government documents, ID cards, boarding passes
+- **Aztec Code**: Transportation tickets, mobile payments, electronic ticketing
+- **DotCode**: High-speed industrial printing, tobacco packaging, beverage bottles
 
 ### Retail Formats
 - **EAN-13**: 13-digit retail product codes

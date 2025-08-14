@@ -71,6 +71,7 @@ const resources = {
       barcode_generation_failed: 'Barcode generation failed',
       barcode_content_empty: 'Barcode content cannot be empty',
       processing_failed_generic: 'Processing failed',
+      svg_not_supported_2d: '2D barcodes do not support SVG format',
       
       // QR Code translations
       qrcode_settings: 'Settings',
@@ -232,6 +233,7 @@ const resources = {
       industrial_formats: 'Industrial Formats',
       logistics_formats: 'Logistics Formats',
       pharmaceutical_formats: 'Pharmaceutical Formats',
+      '2d_formats': '2D Formats',
       format_description: 'Format Description',
       no_format_info: 'No format information available',
       example: 'Example',
@@ -266,6 +268,16 @@ const resources = {
       format_info_msi1110: 'MSI format with 11-digit and 10-digit check digits',
       format_info_pharmacode: 'Only supports numbers, for pharmaceutical packaging',
       format_info_codabar: 'Supports numbers, letters, and special characters, must start and end with A-D',
+      format_info_datamatrix: 'GS1 DataMatrix, supports numbers, letters, and special characters, used in industry, pharmaceuticals, and logistics',
+      format_info_pdf417: 'PDF417, supports numbers, letters, and special characters, commonly used in ID cards and boarding passes',
+      format_info_aztec: 'Aztec Code, supports numbers, letters, and special characters, commonly used in train tickets and e-tickets',
+      format_info_dotcode: 'DotCode, supports numbers, letters, and special characters, used for high-speed industrial printing',
+      
+      // 2D Barcode format names
+      barcode_format_datamatrix: 'GS1 DataMatrix',
+      barcode_format_pdf417: 'PDF417',
+      barcode_format_aztec: 'Aztec Code',
+      barcode_format_dotcode: 'DotCode',
       
       // Use case translations
       code128_use_case1: 'Universal product identification',
@@ -311,6 +323,18 @@ const resources = {
       pharmacode_use_case2: 'Medical devices',
       codabar_use_case1: 'Libraries',
       codabar_use_case2: 'Medical laboratories',
+      datamatrix_use_case1: 'Industrial identification',
+      datamatrix_use_case2: 'Pharmaceutical packaging',
+      datamatrix_use_case3: 'Logistics tracking',
+      pdf417_use_case1: 'ID cards and passports',
+      pdf417_use_case2: 'Boarding passes',
+      pdf417_use_case3: 'Government documents',
+      aztec_use_case1: 'Train tickets',
+      aztec_use_case2: 'E-tickets',
+      aztec_use_case3: 'Transportation',
+      dotcode_use_case1: 'High-speed industrial printing',
+      dotcode_use_case2: 'Manufacturing',
+      dotcode_use_case3: 'Product identification',
       
       // Limitation translations
       code128_limit1: 'Requires wider barcode space',
@@ -345,6 +369,14 @@ const resources = {
       msi1110_limit1: 'Only supports numbers',
       pharmacode_limit1: 'Only supports numbers',
       codabar_limit1: 'Must start and end with A-D',
+      datamatrix_limit1: 'Requires specialized scanners',
+      datamatrix_limit2: 'Limited to ASCII characters',
+      pdf417_limit1: 'Requires more space than 1D barcodes',
+      pdf417_limit2: 'Limited to ASCII characters',
+      aztec_limit1: 'Requires specialized scanners',
+      aztec_limit2: 'Limited to ASCII characters',
+      dotcode_limit1: 'Requires specialized printers',
+      dotcode_limit2: 'Limited to ASCII characters',
     },
   },
   zh: {
@@ -415,6 +447,7 @@ const resources = {
       barcode_generation_failed: '条码生成失败',
       barcode_content_empty: '条码内容不能为空',
       processing_failed_generic: '处理失败',
+      svg_not_supported_2d: '2D条码不支持SVG格式',
       
       // QR Code translations
       qrcode_settings: '设置',
@@ -576,6 +609,7 @@ const resources = {
       industrial_formats: '工业格式',
       logistics_formats: '物流格式',
       pharmaceutical_formats: '药品格式',
+      '2d_formats': '2D格式',
       format_description: '格式说明',
       no_format_info: '暂无格式说明',
       example: '示例',
@@ -610,6 +644,16 @@ const resources = {
       format_info_msi1110: 'MSI格式，带11位和10位校验位',
       format_info_pharmacode: '仅支持数字，用于药品包装',
       format_info_codabar: '支持数字、字母和特殊字符，以A-D开头和结尾',
+      format_info_datamatrix: 'GS1 DataMatrix，支持数字、字母和特殊字符，用于工业、制药和物流领域',
+      format_info_pdf417: 'PDF417，支持数字、字母和特殊字符，常见于身份证件、登机牌',
+      format_info_aztec: 'Aztec Code，支持数字、字母和特殊字符，常见于火车票、电子票务',
+      format_info_dotcode: 'DotCode，支持数字、字母和特殊字符，用于高速工业喷码',
+      
+      // 2D Barcode format names
+      barcode_format_datamatrix: 'GS1 DataMatrix',
+      barcode_format_pdf417: 'PDF417',
+      barcode_format_aztec: 'Aztec Code',
+      barcode_format_dotcode: 'DotCode',
       
       // Use case translations
       code128_use_case1: '通用商品标识',
@@ -655,6 +699,18 @@ const resources = {
       pharmacode_use_case2: '医疗设备',
       codabar_use_case1: '图书馆',
       codabar_use_case2: '医疗实验室',
+      datamatrix_use_case1: '工业标识',
+      datamatrix_use_case2: '药品包装',
+      datamatrix_use_case3: '物流追踪',
+      pdf417_use_case1: '身份证件和护照',
+      pdf417_use_case2: '登机牌',
+      pdf417_use_case3: '政府文件',
+      aztec_use_case1: '火车票',
+      aztec_use_case2: '电子票务',
+      aztec_use_case3: '交通运输',
+      dotcode_use_case1: '高速工业喷码',
+      dotcode_use_case2: '制造业',
+      dotcode_use_case3: '产品标识',
       
       // Limitation translations
       code128_limit1: '需要较宽的条码空间',
@@ -689,6 +745,14 @@ const resources = {
       msi1110_limit1: '仅支持数字',
       pharmacode_limit1: '仅支持数字',
       codabar_limit1: '必须以A-D开头和结尾',
+      datamatrix_limit1: '需要专用扫描器',
+      datamatrix_limit2: '仅支持ASCII字符',
+      pdf417_limit1: '比一维条码需要更多空间',
+      pdf417_limit2: '仅支持ASCII字符',
+      aztec_limit1: '需要专用扫描器',
+      aztec_limit2: '仅支持ASCII字符',
+      dotcode_limit1: '需要专用打印机',
+      dotcode_limit2: '仅支持ASCII字符',
     },
   },
 };

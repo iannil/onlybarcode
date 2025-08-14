@@ -35,6 +35,7 @@ const BarcodeFormatGuide: React.FC = () => {
     { value: 'industrial', label: t('industrial_formats', '工业格式') },
     { value: 'logistics', label: t('logistics_formats', '物流格式') },
     { value: 'pharmaceutical', label: t('pharmaceutical_formats', '药品格式') },
+    { value: '2d', label: t('2d_formats', '2D格式') },
   ];
 
   const formats: FormatInfo[] = [
@@ -247,6 +248,47 @@ const BarcodeFormatGuide: React.FC = () => {
       useCases: [t('codabar_use_case1'), t('codabar_use_case2')],
       limitations: [t('codabar_limit1')],
       category: 'pharmaceutical'
+    },
+    // 2D Barcode formats
+    {
+      value: 'DATAMATRIX',
+      label: t('barcode_format_datamatrix'),
+      description: t('format_info_datamatrix'),
+      example: 'ABC123!@#',
+      validation: /^[\u0000-\u007F]+$/, // eslint-disable-line no-control-regex
+      useCases: [t('datamatrix_use_case1'), t('datamatrix_use_case2'), t('datamatrix_use_case3')],
+      limitations: [t('datamatrix_limit1'), t('datamatrix_limit2')],
+      category: '2d'
+    },
+    {
+      value: 'PDF417',
+      label: t('barcode_format_pdf417'),
+      description: t('format_info_pdf417'),
+      example: 'ABC123!@#',
+      validation: /^[\u0000-\u007F]+$/, // eslint-disable-line no-control-regex
+      useCases: [t('pdf417_use_case1'), t('pdf417_use_case2'), t('pdf417_use_case3')],
+      limitations: [t('pdf417_limit1'), t('pdf417_limit2')],
+      category: '2d'
+    },
+    {
+      value: 'AZTEC',
+      label: t('barcode_format_aztec'),
+      description: t('format_info_aztec'),
+      example: 'ABC123!@#',
+      validation: /^[\u0000-\u007F]+$/, // eslint-disable-line no-control-regex
+      useCases: [t('aztec_use_case1'), t('aztec_use_case2'), t('aztec_use_case3')],
+      limitations: [t('aztec_limit1'), t('aztec_limit2')],
+      category: '2d'
+    },
+    {
+      value: 'DOTCODE',
+      label: t('barcode_format_dotcode'),
+      description: t('format_info_dotcode'),
+      example: 'ABC123!@#',
+      validation: /^[\u0000-\u007F]+$/, // eslint-disable-line no-control-regex
+      useCases: [t('dotcode_use_case1'), t('dotcode_use_case2'), t('dotcode_use_case3')],
+      limitations: [t('dotcode_limit1'), t('dotcode_limit2')],
+      category: '2d'
     },
   ];
 
